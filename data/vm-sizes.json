@@ -1,22 +1,26 @@
 {
   "category": {
-    "Compute": [
+    "compute": [
       "Standard_F*"
     ],
-    "Memory": [
+    "memory": [
       "Standard_D*_v2",
       "Standard_G*"
     ],
-    "Storage": [
+    "storage": [
       "Standard_L*"
     ],
-    "GPU": [
+    "gpu": [
       "Standard_N*"
     ],
-    "High performance Compute": [
-      "Standard_H*"
+    "hpc": [
+      "Standard_H*",
+      "Standard_A8",
+      "Standard_A9",
+      "Standard_A10",
+      "Standard_A11"
     ],
-    "Standard": [
+    "standard": [
       "Standard_A*",
       "Standard_D*",
       "Basic_A*"
