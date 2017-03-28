@@ -35,7 +35,8 @@
       "Standard_A1_v2",
       "Standard_A2_v2",
       "Standard_L*",
-      "Standard_F*s"
+      "Standard_F*s",
+      "*Promo"
     ],
     "iaas": [],
     "paas": [
