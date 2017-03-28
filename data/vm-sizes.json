@@ -1,27 +1,41 @@
 {
   "category": {
-    "Standard": ["Standard_A*", "Standard_D*"],
-    "Compute": ["Standard_F*"],
-    "Memory": ["Standard_G*"],
-    "Storage": ["Standard_L*"],
-    "GPU": ["Standard_N*"],
-    "High performance Compute": ["Standard_H*"],
+    "Standard": [
+      "Standard_A*",
+      "Standard_D*",
+      "Basic_A*"
+    ],
+    "Compute": [
+      "Standard_F*"
+    ],
+    "Memory": [
+      "Standard_G*"
+    ],
+    "Storage": [
+      "Standard_L*"
+    ],
+    "GPU": [
+      "Standard_N*"
+    ],
+    "High performance Compute": [
+      "Standard_H*"
+    ]
   },
   "excluded": {
-    "all":  [
-       "Basic_A0",
-       "Standard_A0",
-       "Standard_DS*",
-       "Standard_GS*",
-       "Standard_A1_v2",
-       "Standard_A2_v2",
-       "Standard_L*",
-       "Standard_F*s"
+    "all": [
+      "Basic_A0",
+      "Standard_A0",
+      "Standard_DS*",
+      "Standard_GS*",
+      "Standard_A1_v2",
+      "Standard_A2_v2",
+      "Standard_L*",
+      "Standard_F*s"
     ],
     "iaas": [],
     "paas": [
       "Basic_A*",
       "Standard_G*"
     ]
-  }  
+  }
 }
