@@ -1,10 +1,5 @@
 {
   "category": {
-    "Standard": [
-      "Standard_A*",
-      "Standard_D*",
-      "Basic_A*"
-    ],
     "Compute": [
       "Standard_F*"
     ],
@@ -20,6 +15,11 @@
     ],
     "High performance Compute": [
       "Standard_H*"
+    ],
+    "Standard": [
+      "Standard_A*",
+      "Standard_D*",
+      "Basic_A*"
     ]
   },
   "excluded": {
