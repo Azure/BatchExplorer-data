@@ -9,6 +9,7 @@
       "Standard_F*"
     ],
     "Memory": [
+      "Standard_D*_v2",
       "Standard_G*"
     ],
     "Storage": [
