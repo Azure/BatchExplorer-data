@@ -1,5 +1,5 @@
 {
-  "all":  {
+  "all":  [
      "Basic_A0",
      "Standard_A0",
      "Standard_DS*",
@@ -8,12 +8,10 @@
      "Standard_A2_v2",
      "Standard_L*",
      "Standard_F*s"
-  },
-  "iaas": {
-  
-  },
-  "paas": {
+  ],
+  "iaas": [],
+  "paas": [
     "Basic_A*",
     "Standard_G*"
-  }
+  ]
 }
