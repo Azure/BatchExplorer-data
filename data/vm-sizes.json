@@ -4,8 +4,30 @@
       "Standard_F*"
     ],
     "memory": [
-      "Standard_D*_v2",
-      "Standard_G*"
+      "Standard_G*",
+      "Standard_DS11_v2",
+      "Standard_DS12_v2",
+      "Standard_DS13_v2",
+      "Standard_DS14_v2",
+      "Standard_DS15_v2",
+      
+      "Standard_D11_v2",
+      "Standard_D12_v2",
+      "Standard_D13_v2",
+      "Standard_D14_v2",
+      "Standard_D15_v2",
+       
+      "Standard_DS11",
+      "Standard_DS12",
+      "Standard_DS13",
+      "Standard_DS14",
+      "Standard_DS15",
+      
+      "Standard_D11",
+      "Standard_D12",
+      "Standard_D13",
+      "Standard_D14",
+      "Standard_D15",
     ],
     "storage": [
       "Standard_L*"
