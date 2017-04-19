@@ -1,0 +1,16 @@
+[{
+        "name": "Time-based adjustment",
+        "value": "TimeBasedAdjustment.txt"
+    },
+    {
+        "name": "Task-based adjustment",
+        "value": "TaskBasedAdjustment.txt"
+    },
+    {
+        "name": "Accounting for parallel tasks",
+        "value": "AccountingForParallelTasks.txt"
+    },
+    {
+        "name": "Setting an initial pool size",
+        "value": "SettingInitialPoolSize.txt"
+}]

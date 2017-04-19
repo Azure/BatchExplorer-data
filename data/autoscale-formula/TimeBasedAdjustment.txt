@@ -1,0 +1,5 @@
+$curTime = time();
+$workHours = $curTime.hour >= 8 && $curTime.hour < 18;
+$isWeekday = $curTime.weekday >= 1 && $curTime.weekday <= 5;
+$isWorkingWeekdayHour = $workHours && $isWeekday;
+$TargetDedicated = $isWorkingWeekdayHour ? 20:10;

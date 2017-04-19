@@ -1,0 +1,6 @@
+$TargetDedicated = 4;
+lifespan = time() - time(\"Mon, 06 Oct 2014 10:20:00 GMT\");
+span = TimeInterval_Minute * 60;
+startup = TimeInterval_Minute * 10;
+ratio = 50;
+$TargetDedicated = (lifespan > startup ? (max($RunningTasks.GetSample(span, ratio), $ActiveTasks.GetSample(span, ratio)) == 0 ? 0 : $TargetDedicated) : 4);
