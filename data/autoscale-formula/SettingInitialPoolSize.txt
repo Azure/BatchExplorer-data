@@ -1,0 +1,17 @@
+// This autoscale formula sets the pool size to a certain number of nodes for an initial time period. Then it adjusts the pool size based on the number of running and active tasks after the initial time period has elapsed.
+
+// Sets the initial pool size to 4 nodes.
+initialPoolSize = 4;
+$TargetDedicated = initialPoolSize;
+// "Mon, 06 Oct 2014 10:20:00 GMT" represents the datetime that this autoscale formula starts to evaluate. This is an arbitrary value here.
+lifespan = time() - time(\"Mon, 06 Oct 2014 10:20:00 GMT\");
+// Representing 60 minutes
+span = TimeInterval_Minute * 60;
+// Representing 10 minutes
+startup = TimeInterval_Minute * 10;
+ratio = 50;
+
+// After 10 minutes, obtains the max value of the number of running and active tasks within the past 60 minutes.
+// If both values are 0 (indicating that no tasks were running or active in the last 60 minutes), the pool size is set to 0.
+// If either value is greater than zero, no change is made.
+$TargetDedicated = (lifespan > startup ? (max($RunningTasks.GetSample(span, ratio), $ActiveTasks.GetSample(span, ratio)) == 0 ? 0 : $TargetDedicated) : initialPoolSize );

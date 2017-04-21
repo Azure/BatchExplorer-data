@@ -1,0 +1,16 @@
+// This is another example that adjusts the pool size based on the number of tasks. This formula also takes into account the MaxTasksPerComputeNode value that has been set for the pool. This is particularly useful in situations where parallel task execution has been enabled on your pool.
+
+// Determine whether 70 percent of the samples have been recorded in the past 15 minutes; if not, use last sample
+percentage = 70;
+span = TimeInterval_Minute * 15;
+$samples = $ActiveTasks.GetSamplePercent(span);
+$tasks = $samples < percentage ? max(0,$ActiveTasks.GetSample(1)) : max( $ActiveTasks.GetSample(1), avg($ActiveTasks.GetSample(span)));
+// Set the number of nodes to add to one-fourth the number of active tasks (the MaxTasksPerComputeNode property on this pool is set to 4, adjust this number for your use case)
+multiplier = 0.25;
+$cores = $TargetDedicated * 4;
+$extraVMs = (($tasks - $cores) + 3) * multiplier;
+$targetVMs = ($TargetDedicated + $extraVMs);
+// Attempt to grow the number of compute nodes to match the number of active tasks, with a maximum of 3
+$TargetDedicated = max(0, min($targetVMs, 3));
+// Keep the nodes active until the tasks finish
+$NodeDeallocationOption = taskcompletion;

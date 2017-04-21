@@ -1,0 +1,11 @@
+// Perhaps you want to adjust the pool size based on the day of the week and time of day, to increase or decrease the number of nodes in the pool accordingly.
+// This formula first obtains the current time. If it's a weekday (1-5) and within working hours (8 AM to 6 PM), the target pool size is set to 20 nodes. Otherwise, it's set to 10 nodes.
+
+$curTime = time();
+// Check current time is within working hours (8 AM to 6 PM) or not
+$workHours = $curTime.hour >= 8 && $curTime.hour < 18;
+// Check current day is a weekday (Monday to Friday) or not
+$isWeekday = $curTime.weekday >= 1 && $curTime.weekday <= 5;
+$isWorkingWeekdayHour = $workHours && $isWeekday;
+// Set target pool size to 20 nodes if it's between 8 AM and 6 PM in weekday, otherwise set  to 10 nodes
+$TargetDedicated = $isWorkingWeekdayHour ? 20:10;
