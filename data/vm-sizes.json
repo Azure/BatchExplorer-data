@@ -62,8 +62,7 @@
     ],
     "iaas": [],
     "paas": [
-      "Basic_A*",
-      "Standard_G*"
+      "Basic_A*"
     ]
   }
 }
