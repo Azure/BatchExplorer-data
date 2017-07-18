@@ -4,4 +4,9 @@
     "name": "Blender",
     "description": "Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation."
   },
+  {
+    "id": "maya",
+    "name": "Maya",
+    "description": "Maya® 3D animation, modeling, simulation, and rendering software provides an integrated, powerful toolset. Use it for animation, environments, motion graphics, virtual reality, and character creation."
+  }
 ]
