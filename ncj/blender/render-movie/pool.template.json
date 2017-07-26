@@ -48,5 +48,5 @@
         ],
         "targetDedicatedNodes": "[parameters('numberNodes')]",
         "enableAutoScale": false
-    },
+    }
 }
