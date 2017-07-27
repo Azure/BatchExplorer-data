@@ -1,5 +1,11 @@
 {
     "parameters": {
+        "poolName": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the pool"
+            }
+        },
         "numberNodes": {
             "type": "int",
             "defaultValue": 5,
@@ -37,7 +43,8 @@
         }
     },
     "pool": {
-        "displayName": "Blender pool running: [parameters('jobName')]",
+        "id": "[parameters('poolName')]",
+        "displayName": "Blender pool running: [parameters('poolName')]",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "packageReferences": [
