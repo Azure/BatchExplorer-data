@@ -13,5 +13,30 @@
     "id": "3dsmax",
     "name": "3ds Max",
     "description": "3ds Max® 3D modeling and rendering software helps you create massive worlds in games, stunning scenes for design visualization, and engaging virtual reality (VR) experiences."
+  },
+  {
+    "id": "ffmpeg",
+    "name": "FFmpeg",
+    "description": ""
+  },
+  {
+    "id": "imagemagick",
+    "name": "Image magick",
+    "description": ""
+  },
+  {
+    "id": "vray",
+    "name": "Vray",
+    "description": ""
+  },
+  {
+    "id": "tensorflow",
+    "name": "Tensor flow",
+    "description": "An open-source software library for Machine Intelligence."
+  },
+  {
+    "id": "caffe",
+    "name": "Caffe",
+    "description": "Caffe is a deep learning framework made with expression, speed, and modularity in mind."
   }
 ]
