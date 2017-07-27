@@ -1,8 +1,8 @@
 [
   {
-    "id": "blender",
-    "name": "Blender",
-    "description": "Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation."
+    "id": "3dsmax",
+    "name": "3ds Max",
+    "description": "3ds Max® 3D modeling and rendering software helps you create massive worlds in games, stunning scenes for design visualization, and engaging virtual reality (VR) experiences."
   },
   {
     "id": "maya",
@@ -10,9 +10,19 @@
     "description": "Maya® 3D animation, modeling, simulation, and rendering software provides an integrated, powerful toolset. Use it for animation, environments, motion graphics, virtual reality, and character creation."
   },
   {
-    "id": "3dsmax",
-    "name": "3ds Max",
-    "description": "3ds Max® 3D modeling and rendering software helps you create massive worlds in games, stunning scenes for design visualization, and engaging virtual reality (VR) experiences."
+    "id": "arnold",
+    "name": "Arnold",
+    "description": ""
+  },
+  {
+    "id": "vray",
+    "name": "V-Ray",
+    "description": ""
+  },
+  {
+    "id": "blender",
+    "name": "Blender",
+    "description": "Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation."
   },
   {
     "id": "ffmpeg",
@@ -24,11 +34,7 @@
     "name": "Image magick",
     "description": ""
   },
-  {
-    "id": "vray",
-    "name": "Vray",
-    "description": ""
-  },
+ 
   {
     "id": "tensorflow",
     "name": "Tensor flow",
