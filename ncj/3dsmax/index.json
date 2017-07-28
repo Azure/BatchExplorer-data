@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "id": "render-scene",
+        "name": "Render 3ds max scene",
+        "description": "This job will render different frames of a 3ds max scene in parallel"
+    }
+]

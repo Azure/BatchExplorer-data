@@ -1,0 +1,108 @@
+{
+   "templateMetadata":{
+      "description":"Sample application template for working with Blender."
+   },
+   "parameters":{
+      "sceneFile":{
+         "type":"string",
+         "metadata":{
+            "description":"The 3ds Max scene file to be rendered"
+         }
+      },
+      "pathFile":{
+         "type":"string",
+         "metadata":{
+            "description":"The 3ds Max path file"
+         }
+      },
+      "inputFilegroup":{
+         "type":"string",
+         "metadata":{
+            "description":"The file group where the input data is stored"
+         }
+      },
+      "outputContainerUrl":{
+         "type":"string",
+         "metadata":{
+            "description":"The url to the job output container"
+         }
+      },
+      "outputName":{
+         "type":"string",
+         "defaultValue":"image.jpg",
+         "metadata":{
+            "description":"The output filename to use when naming the rendered outputs"
+         }
+      },
+      "frameStart":{
+         "type":"int",
+         "metadata":{
+            "description":"Index of the first frame to render"
+         }
+      },
+      "frameEnd":{
+         "type":"int",
+         "metadata":{
+            "description":"Index of the last frame to render"
+         }
+      }
+   },
+   "jobPreparationTask":{
+      "resourceFiles":[
+         {
+            "source":{
+               "fileGroup":"[parameters('inputFilegroup')]"
+            },
+            "filePath":"assets\\"
+         }
+      ],
+      "commandLine":"dir"
+   },
+   "taskFactory":{
+      "type":"parametricSweep",
+      "parameterSets":[
+         {
+            "start":"[parameters('frameStart')]",
+            "end":"[parameters('frameEnd')]",
+            "step":1
+         }
+      ],
+      "repeatTask":{
+         "displayName":"Frame {0}",
+         "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -nthFrame:1 -outputName:\"images\\[parameters('outputName')]\" -w 800 -h 600 -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & echo done",
+         "environmentSettings":[
+            {
+               "name":"FLEXLM_TIMEOUT",
+               "value":"5000000"
+            }
+         ],
+         "outputFiles":[
+            {
+               "filePattern":"../*.txt",
+               "destination":{
+                  "container":{
+                     "containerUrl":"[parameters('outputContainerUrl')]",
+                     "path":"{0}/$TaskLog"
+                  }
+               },
+               "uploadOptions":{
+                  "uploadCondition":"taskCompletion"
+               }
+            },
+            {
+               "filePattern":"images/**/*",
+               "destination":{
+                  "container":{
+                     "containerUrl":"[parameters('outputContainerUrl')]",
+                     "path":"{0}/$TaskOutput"
+                  }
+               },
+               "uploadOptions":{
+                  "uploadCondition":"taskSuccess"
+               }
+            }
+         ]
+      }
+   },
+   "onAllTasksComplete":"terminateJob"
+}

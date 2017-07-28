@@ -38,7 +38,8 @@
         "outputFileGroup": {
             "type": "string",
             "metadata": {
-                "description": "The file group where outputs will be stored"
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
             }
         }
     },
