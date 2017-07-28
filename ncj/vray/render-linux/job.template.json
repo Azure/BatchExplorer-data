@@ -4,21 +4,30 @@
   },
   "parameters": {
     "jobId": {
-        "type": "string",
-        "metadata": {
-            "description": "The ID of the job."
-        }
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the job."
+      }
     },
     "poolId": {
-        "type": "string",
-        "metadata": {
-            "description": "The ID of the pool on which to run the job."
-        }
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the pool on which to run the job."
+      }
+    },
+    "projectData": {
+      "type": "string",
+      "metadata": {
+        "description": "The file group where the input data is stored",
+        "advancedType": "file-group"
+      }
     },
     "sceneFile": {
       "type": "string",
       "metadata": {
-        "description": "The Maya scene file to be rendered"
+        "description": "The Maya scene file to be rendered",
+        "advancedType": "file-in-file-group",
+        "dependsOn": "projectData"
       }
     },
     "renderer": {
@@ -30,12 +39,6 @@
       "allowedValues": [
         "vray"
       ]
-    },
-    "projectData": {
-      "type": "string",
-      "metadata": {
-        "description": "The file group where the input data is stored"
-      }
     },
     "frameStart": {
       "type": "int",
@@ -59,27 +62,30 @@
     "outputs": {
       "type": "string",
       "metadata": {
-        "description": "The file group where outputs will be stored"
+        "description": "The file group where outputs will be stored",
+        "advancedType": "file-group"
       }
     }
   },
   "job": {
-    "id": "[parameters('jobId')]",
-    "poolInfo": {
-        "poolId" : "[parameters('poolId')]"
-    },
-    "jobPreparationTask": {
+    "type": "Microsoft.Batch/batchAccounts/jobs",
+    "properties": {
+      "id": "[parameters('jobId')]",
+      "poolInfo": {
+        "poolId": "[parameters('poolId')]"
+      },
+      "jobPreparationTask": {
         "resourceFiles": [
-            {
-                "source": {
-                "fileGroup": "[parameters('projectData')]"
+          {
+            "source": {
+              "fileGroup": "[parameters('projectData')]"
             },
             "filePath": "assets/"
           }
         ],
         "commandLine": "ls"
-    },
-    "taskFactory": {
+      },
+      "taskFactory": {
         "type": "parametricSweep",
         "parameterSets": [
           {
@@ -164,4 +170,5 @@
       },
       "onAllTasksComplete": "terminateJob"
     }
+  }
 }
