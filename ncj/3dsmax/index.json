@@ -1,7 +1,7 @@
 [
     {
         "id": "render-scene",
-        "name": "Render 3ds max scene",
-        "description": "This job will render different frames of a 3ds max scene in parallel"
+        "name": "Render a 3ds Max scene",
+        "description": "This job will render different frames of a 3ds max scene in parallel.  Ensure your scene is exported with a relative 3ds Max path file."
     }
 ]
