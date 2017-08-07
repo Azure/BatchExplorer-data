@@ -3,26 +3,39 @@
       "description":"Sample application template for working with Blender."
    },
    "parameters":{
-      "sceneFile":{
+      "jobName":{
          "type":"string",
+         "defaultValue":"3dsmax-render",
          "metadata":{
-            "description":"The 3ds Max scene file to be rendered"
-         }
-      },
-      "pathFile":{
-         "type":"string",
-         "metadata":{
-            "description":"The 3ds Max path file"
+            "description":"The job name"
          }
       },
       "inputFilegroup":{
          "type":"string",
          "metadata":{
-            "description":"The file group where the input data is stored"
+            "description":"The file group where the input data is stored",
+            "advancedType":"file-group"
+         }
+      },
+      "sceneFile":{
+         "type":"string",
+         "metadata":{
+            "description":"The 3ds Max scene file to be rendered",
+            "advancedType":"file-in-file-group",
+            "dependsOn":"inputFilegroup"
+         }
+      },
+      "pathFile":{
+         "type":"string",
+         "metadata":{
+            "description":"The 3ds Max path file",
+            "advancedType":"file-in-file-group",
+            "dependsOn":"inputFilegroup"
          }
       },
       "outputContainerUrl":{
          "type":"string",
+         "defaultValue":"https://mayatestsa.blob.core.windows.net/job-3dsmax-render?st=2016-08-01T22%3A26%3A00Z&se=2018-08-02T22%3A26%3A00Z&sp=rwl&sv=2016-05-31&sr=c&sig=GoVWfg9TiCFzZ67432Og1clVx%2BlmxG4IfDJOqBUi8lA%3D",
          "metadata":{
             "description":"The url to the job output container"
          }
@@ -36,73 +49,82 @@
       },
       "frameStart":{
          "type":"int",
+         "defaultValue":1,
          "metadata":{
             "description":"Index of the first frame to render"
          }
       },
       "frameEnd":{
          "type":"int",
+         "defaultValue":2,
          "metadata":{
             "description":"Index of the last frame to render"
          }
       }
    },
-   "jobPreparationTask":{
-      "resourceFiles":[
-         {
-            "source":{
-               "fileGroup":"[parameters('inputFilegroup')]"
-            },
-            "filePath":"assets\\"
-         }
-      ],
-      "commandLine":"dir"
-   },
-   "taskFactory":{
-      "type":"parametricSweep",
-      "parameterSets":[
-         {
-            "start":"[parameters('frameStart')]",
-            "end":"[parameters('frameEnd')]",
-            "step":1
-         }
-      ],
-      "repeatTask":{
-         "displayName":"Frame {0}",
-         "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -nthFrame:1 -outputName:\"images\\[parameters('outputName')]\" -w 800 -h 600 -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & echo done",
-         "environmentSettings":[
-            {
-               "name":"FLEXLM_TIMEOUT",
-               "value":"5000000"
-            }
-         ],
-         "outputFiles":[
-            {
-               "filePattern":"../*.txt",
-               "destination":{
-                  "container":{
-                     "containerUrl":"[parameters('outputContainerUrl')]",
-                     "path":"{0}/$TaskLog"
-                  }
-               },
-               "uploadOptions":{
-                  "uploadCondition":"taskCompletion"
+   "job":{
+      "type":"Microsoft.Batch/batchAccounts/jobs",
+      "properties":{
+         "id":"[parameters('jobName')]",
+         "displayName":"[parameters('jobName')]",
+         "onAllTasksComplete":"terminateJob",
+         "jobPreparationTask":{
+            "resourceFiles":[
+               {
+                  "source":{
+                     "fileGroup":"[parameters('inputFilegroup')]"
+                  },
+                  "filePath":"assets\\"
                }
-            },
-            {
-               "filePattern":"images/**/*",
-               "destination":{
-                  "container":{
-                     "containerUrl":"[parameters('outputContainerUrl')]",
-                     "path":"{0}/$TaskOutput"
-                  }
-               },
-               "uploadOptions":{
-                  "uploadCondition":"taskSuccess"
+            ],
+            "commandLine":"dir"
+         },
+         "taskFactory":{
+            "type":"parametricSweep",
+            "parameterSets":[
+               {
+                  "start":"[parameters('frameStart')]",
+                  "end":"[parameters('frameEnd')]",
+                  "step":1
                }
+            ],
+            "repeatTask":{
+               "displayName":"Frame {0}",
+               "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -nthFrame:1 -outputName:\"images\\[parameters('outputName')]\" -w 800 -h 600 -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & echo done",
+               "environmentSettings":[
+                  {
+                     "name":"FLEXLM_TIMEOUT",
+                     "value":"5000000"
+                  }
+               ],
+               "outputFiles":[
+                  {
+                     "filePattern":"../*.txt",
+                     "destination":{
+                        "container":{
+                           "containerUrl":"[parameters('outputContainerUrl')]",
+                           "path":"{0}/$TaskLog"
+                        }
+                     },
+                     "uploadOptions":{
+                        "uploadCondition":"taskCompletion"
+                     }
+                  },
+                  {
+                     "filePattern":"images/**/*",
+                     "destination":{
+                        "container":{
+                           "containerUrl":"[parameters('outputContainerUrl')]",
+                           "path":"{0}/$TaskOutput"
+                        }
+                     },
+                     "uploadOptions":{
+                        "uploadCondition":"taskSuccess"
+                     }
+                  }
+               ]
             }
-         ]
+         }
       }
-   },
-   "onAllTasksComplete":"terminateJob"
+   }
 }
