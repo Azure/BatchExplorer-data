@@ -1,12 +1,22 @@
 [
     {
-        "id": "render-scene",
-        "name": "Render a 3ds Max scene",
-        "description": "This job will render different frames of a 3ds max scene in parallel."
+        "id": "arnold-scene",
+        "name": "Render a Arnold scene",
+        "description": "This job will render different frames of a 3ds max scene in parallel using Arnold."
     },
     {
-        "id": "render-scene-w-pathfile",
-        "name": "Render a 3ds Max scene with a path file (.mxp)",
-        "description": "This job will render different frames of a 3ds max scene in parallel.  Ensure your scene is exported with a 3ds Max path file with relative paths."
+        "id": "arnold-scene-w-pathfile",
+        "name": "Render a Arnold scene with a path file",
+        "description": "This job will render different frames of a 3ds max scene in parallel using Arnold.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
+    },
+    {
+        "id": "vray-scene",
+        "name": "Render a VRay scene",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
+    },
+    {
+        "id": "vray-scene-w-pathfile",
+        "name": "Render a VRay scene with a path file",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
     }
 ]

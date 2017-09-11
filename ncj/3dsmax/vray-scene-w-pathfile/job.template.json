@@ -5,7 +5,7 @@
    "parameters":{
       "jobName":{
          "type":"string",
-         "defaultValue":"3dsmax-render-pathfile",
+         "defaultValue":"3dsmax-vray-w-pathfile",
          "metadata":{
             "description":"The job name"
          }

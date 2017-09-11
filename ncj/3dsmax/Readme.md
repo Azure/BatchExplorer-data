@@ -1,9 +1,9 @@
 
-# 3ds Max Arnold Batch Labs Template
+# 3ds Max Batch Labs Template
 
 ## Summary
 
-The 3ds Max Batch Labs templates allow you to render Arnold scenes using the Azure Batch Rendering Service.  There are two variations of the template, one for standard scenes and one for more complex scenes that require a 3ds Max path file to assets and textures (.mxp file).
+The 3ds Max Batch Labs templates allow you to render VRay and Arnold scenes using the Azure Batch Rendering Service.  There are two variations of the template for VRay and Arnold, one for standard scenes and one for more complex scenes that require a 3ds Max path file to assets and textures (.mxp file).
 
 For the following tutorial we'll be using the 3ds Max Arnold robot scene provided by the Solid Angle [Introduction to Arnold for 3ds Max](https://support.solidangle.com/display/A5AF3DSUG/Introduction+to+Arnold+for+3ds+Max) tutorial.
 
@@ -71,6 +71,6 @@ In this case you can navigate to the '3dsmax-tutorial-project' filegroup and see
 
 Renders are executed on the compute nodes within a pool.  A render job can use either an existing static pool, or a auto pool that is created on demand for the lifetime of the job.
 
-When using an existing pool for renders, ensure that the pool was created with '3dsmax' and 'arnold' application licenses.  If the application licenses haven't been included with a pool you will see watermarks on the render outputs.
+When using an existing pool for renders, ensure that the pool was created with '3dsmax' and 'arnold' or 'vray' application licenses.  If the application licenses haven't been included with a pool you will see watermarks on the render outputs.
 
-Auto pools will use the provided template and automatically include the '3dsmax' and 'arnold' licenses.
+Auto pools will use the provided template and automatically include the '3dsmax' and 'arnold' or 'vray' licenses.
