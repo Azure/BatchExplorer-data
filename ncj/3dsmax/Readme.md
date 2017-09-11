@@ -34,6 +34,7 @@ To submit a render job with Batch Labs navigate to:
 Market -> 3ds Max -> Render a 3ds Max scene* -> Run job with auto pool**
 
 \* Or alternatively 'Render a 3ds Max scene with a path file'
+
 \*\* Pool modes are explained in more detail below.
 
 Give your pool a meaningful name, choose the number of compute nodes and select a compute node size.  For this example we'll use a single Standard_D2_v2 compute node which has 2 cores.
