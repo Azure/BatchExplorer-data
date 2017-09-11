@@ -2,6 +2,11 @@
     {
         "id": "render-scene",
         "name": "Render a 3ds Max scene",
-        "description": "This job will render different frames of a 3ds max scene in parallel.  Ensure your scene is exported with a relative 3ds Max path file."
+        "description": "This job will render different frames of a 3ds max scene in parallel."
+    },
+    {
+        "id": "render-scene-w-pathfile",
+        "name": "Render a 3ds Max scene with a path file (.mxp)",
+        "description": "This job will render different frames of a 3ds max scene in parallel.  Ensure your scene is exported with a 3ds Max path file with relative paths."
     }
 ]
