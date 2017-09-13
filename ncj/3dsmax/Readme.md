@@ -11,6 +11,8 @@ You can download the scene directly from [here](https://support.solidangle.com/d
 
 Download and extract Introduction-to-Arnold_robot_final.zip into a directory by itself.
 
+![Final Output](images/FinalOutput.jpg)
+
 
 ### 1. Upload inputs to a File Group
 
