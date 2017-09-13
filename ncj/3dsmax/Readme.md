@@ -9,6 +9,8 @@ For the following tutorial we'll be using the 3ds Max Arnold robot final scene p
 
 You can download the scene directly from [here](https://support.solidangle.com/download/attachments/40665256/Introduction-to-Arnold_robot_final.zip?version=1&modificationDate=1490281794000&api=v2).
 
+Download and extract Introduction-to-Arnold_robot_final.zip into a directory by itself.
+
 
 ### 1. Upload inputs to a File Group
 
@@ -22,11 +24,11 @@ Select the root folder of your assets.  If you're using a 3ds Max path file with
 
 Ensure 'Include sub directories' is checked.  Under File options keep the Prefix empty, Flatten and Full path disabled.
 
-Click 'Upload and close'.  You'll see the form close and the upload progressing under background tasks near the top of the screen.
-
 ![Create Input Filegroup](images/CreateFilegroup.png)
 
-You can view your new file group and the data in it under 'Data -> 3dsmax-project'.
+Click 'Upload and close'.  You'll see the form close and the upload progressing under background tasks near the top of the screen.
+
+You can view your new file group and the data in it under 'Data -> 3dsmax-project'.  Below you can see that your filegroup has a single scene file 'Introduction-to-Arnold_robot_final.max'.
 
 ![View Filegroup](images/ViewFilegroupInputs.png)
 
@@ -38,17 +40,13 @@ Market -> 3ds Max
 
 ![Select 3ds Max Template](images/Market3dsMax.png)
 
-Then navigate to 'Render a Arnold scene'*
-
-\* Or alternatively 'Render a Arnold scene with a path file' for more complex scenes
+Then navigate to 'Render a Arnold scene'.  See below for more details on rendering basic scenes and scenes with path files.
 
 ![Select 3ds Max Arnold Scene](images/Market3dsMax-Arnold.png)
 
-Now you need to select the pool mode**.  For this tutorial we'll use 'Run job with auto pool'.
+Now you need to select the pool mode.  For this tutorial we'll use 'Run job with auto pool'.  Pool modes are explained in more detail below.
 
-\*\* Pool modes are explained in more detail below.
-
-![Select 3ds Max Template](images/Market3dsMax.png)
+![Select Pool Mode](images/Market3dsMax-PoolInput.png)
 
 Give your pool a meaningful name, choose the number of compute nodes and select a compute node size.  For this example we'll use a single Standard_D2_v2 compute node which has 2 cores.
 
@@ -93,3 +91,10 @@ Renders are executed on the compute nodes within a pool.  A render job can use e
 When using an existing pool for renders, ensure that the pool was created with '3dsmax' and 'arnold' or 'vray' application licenses.  If the application licenses haven't been included with a pool you will see watermarks on the render outputs.
 
 Auto pools will use the provided template and automatically include the '3dsmax' and 'arnold' or 'vray' licenses.
+
+
+## Rendering Scenes
+
+When rendering more complex 3ds Max scenes you'll often need to include a 3ds Max path file (.mxp) to ensure all assets and textures can be resolved at run time.  If using a path file ensure that all paths are relative, and map to the root of the input filegroup that you create.  For example if you path file contains 'RenderAssets=.\sceneassets\renderassets', your filegroup should contain 'sceneassets' in the root and the 'renderassets' subdirectory in 'sceneassets', assuming the .\sceneassets\renderassets folder isn't empty.
+
+!Important - Due to a bug in 3ds Max 2018 you need to ensure that the scene file being rendered is in the root of your filegroup, not in the scenes subdirectory.
