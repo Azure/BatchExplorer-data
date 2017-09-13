@@ -54,8 +54,6 @@ Auto pools will use the provided template and automatically include the '3dsmax'
 
 For this tutorial we'll use 'Run job with auto pool'.
 
-![Select Pool Mode](images/Market3dsMax-PoolInput.png)
-
 Give your pool a meaningful name, choose the number of compute nodes and select a compute node size.  For this example we'll use a single Standard_D2_v2 compute node which has 2 cores.
 
 You can see more information about the various Azure virtual machine sizes [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes).
