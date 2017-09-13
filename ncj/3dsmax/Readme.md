@@ -40,15 +40,25 @@ Market -> 3ds Max
 
 ![Select 3ds Max Template](images/Market3dsMax.png)
 
-Then navigate to 'Render a Arnold scene'.  See below for more details on rendering basic scenes and scenes with path files.
+Then navigate to 'Render a Arnold scene'.  See below for more details on rendering scenes with path files.
 
 ![Select 3ds Max Arnold Scene](images/Market3dsMax-Arnold.png)
 
-Now you need to select the pool mode.  For this tutorial we'll use 'Run job with auto pool'.  Pool modes are explained in more detail below.
+Now you need to select the pool mode.
+
+Renders are executed on the compute nodes within a pool.  A render job can use either an existing static pool, or a auto pool that is created on demand for the lifetime of the job.
+
+When using an existing pool for renders, ensure that the pool was created with '3dsmax' and 'arnold' or 'vray' application licenses.  If the application licenses haven't been included with a pool you will see watermarks on the render outputs.
+
+Auto pools will use the provided template and automatically include the '3dsmax' and 'arnold' or 'vray' licenses.
+
+For this tutorial we'll use 'Run job with auto pool'.
 
 ![Select Pool Mode](images/Market3dsMax-PoolInput.png)
 
 Give your pool a meaningful name, choose the number of compute nodes and select a compute node size.  For this example we'll use a single Standard_D2_v2 compute node which has 2 cores.
+
+You can see more information about the various Azure virtual machine sizes [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes).
 
 ![Pool Parameters](images/Market3dsMax-PoolInput.png)
 
@@ -76,6 +86,7 @@ Here you'll see all the job tasks and their current state.  By clicking on a tas
 
 ![View Job](images/ViewJob.png)
 
+
 ### 4. View and Download the outputs
 
 When a task completes it will upload its log files and render outputs to the output filegroup select.
@@ -89,16 +100,7 @@ Your final output should look like this.
 ![Final Output](images/FinalOutput.jpg)
 
 
-## Pool Modes
-
-Renders are executed on the compute nodes within a pool.  A render job can use either an existing static pool, or a auto pool that is created on demand for the lifetime of the job.
-
-When using an existing pool for renders, ensure that the pool was created with '3dsmax' and 'arnold' or 'vray' application licenses.  If the application licenses haven't been included with a pool you will see watermarks on the render outputs.
-
-Auto pools will use the provided template and automatically include the '3dsmax' and 'arnold' or 'vray' licenses.
-
-
-## Rendering Scenes
+## Rendering Scenes with Path Files
 
 When rendering more complex 3ds Max scenes you'll often need to include a 3ds Max path file (.mxp) to ensure all assets and textures can be resolved at run time.  If using a path file ensure that all paths are relative, and map to the root of the input filegroup that you create.  For example if you path file contains 'RenderAssets=.\sceneassets\renderassets', your filegroup should contain 'sceneassets' in the root and the 'renderassets' subdirectory in 'sceneassets', assuming the .\sceneassets\renderassets folder isn't empty.
 
