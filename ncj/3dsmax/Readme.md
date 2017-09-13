@@ -11,8 +11,6 @@ You can download the scene directly from [here](https://support.solidangle.com/d
 
 Download and extract Introduction-to-Arnold_robot_final.zip into a directory by itself.
 
-![Final Output](images/FinalOutput.jpg)
-
 
 ### 1. Upload inputs to a File Group
 
@@ -85,6 +83,11 @@ When a task completes it will upload its log files and render outputs to the out
 In this case you can navigate to the '3dsmax-project' filegroup and see the render outputs in the root of the filegroup.  You'll also find the task log files in the logs subdirectory.
 
 ![View Filegroup outputs](images/ViewFilegroupOutputs.png)
+
+Your final output should look like this.
+
+![Final Output](images/FinalOutput.jpg)
+
 
 ## Pool Modes
 
