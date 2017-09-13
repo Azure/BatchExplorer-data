@@ -111,7 +111,7 @@
             ],
             "repeatTask":{
                "displayName":"Frame {0}",
-               "commandLine":"mkdir images & set PATHFILEARGS= & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" ",
+               "commandLine":"set & mkdir images & set PATHFILEARGS= & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\"",
                "outputFiles":[
                   {
                      "filePattern":"../stdout.txt",
@@ -141,11 +141,24 @@
                      "filePattern":"images/**/*",
                      "destination":{
                         "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]"
+                           "fileGroup":"[parameters('outputFilegroup')]",
+                           "path":"outputs"
                         }
                      },
                      "uploadOptions":{
                         "uploadCondition":"taskSuccess"
+                     }
+                  },
+                  {
+                     "filePattern":"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log",
+                     "destination":{
+                        "autoStorage":{
+                           "fileGroup":"[parameters('outputFilegroup')]",
+                           "path":"logs/Max_{0}.log"
+                        }
+                     },
+                     "uploadOptions":{
+                        "uploadCondition":"taskCompletion"
                      }
                   }
                ]
