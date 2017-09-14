@@ -40,7 +40,7 @@ Market -> 3ds Max
 
 ![Select 3ds Max Template](images/Market3dsMax.png)
 
-Then navigate to 'Render a Arnold scene'.  See below for more details on rendering scenes with path files.
+Then navigate to 'Render an Arnold scene'.  See below for more details on rendering scenes with path files.
 
 ![Select 3ds Max Arnold Scene](images/Market3dsMax-Arnold.png)
 
@@ -87,7 +87,7 @@ Here you'll see all the job tasks and their current state.  By clicking on a tas
 
 ### 4. View and Download the outputs
 
-When a task completes it will upload its log files and render outputs to the output filegroup select.
+When a task completes it will upload its log files and the render outputs to the output filegroup specified previously.
 
 In this case you can navigate to the '3dsmax-project' filegroup and see the render outputs in the root of the filegroup.  You'll also find the task log files in the logs subdirectory.
 
@@ -100,6 +100,6 @@ Your final output should look like this.
 
 ## Rendering Scenes with Path Files
 
-When rendering more complex 3ds Max scenes you'll often need to include a 3ds Max path file (.mxp) to ensure all assets and textures can be resolved at run time.  If using a path file ensure that all paths are relative, and map to the root of the input filegroup that you create.  For example if you path file contains 'RenderAssets=.\sceneassets\renderassets', your filegroup should contain 'sceneassets' in the root and the 'renderassets' subdirectory in 'sceneassets', assuming the .\sceneassets\renderassets folder isn't empty.
+When rendering more complex 3ds Max scenes you'll often need to include a 3ds Max path file (.mxp) to ensure all assets and textures can be resolved at run time.  If using a path file ensure that all paths are relative, and map to the root of the input filegroup that you create.  For example if your path file contains 'RenderAssets=.\sceneassets\renderassets', your filegroup should contain 'sceneassets' in the root and the 'renderassets' subdirectory in 'sceneassets', assuming the .\sceneassets\renderassets folder isn't empty.
 
-!Important - Due to a bug in 3ds Max 2018 you need to ensure that the scene file being rendered is in the root of your filegroup, not in the scenes subdirectory.
+Note - Due to a bug in 3ds Max 2018 you need to ensure that the scene file being rendered is in the root of your filegroup, not in the scenes subdirectory.

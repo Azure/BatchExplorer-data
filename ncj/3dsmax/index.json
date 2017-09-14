@@ -1,12 +1,12 @@
 [
     {
         "id": "arnold-scene",
-        "name": "Render a Arnold scene",
+        "name": "Render an Arnold scene",
         "description": "This job will render different frames of a 3ds max scene in parallel using Arnold."
     },
     {
         "id": "arnold-scene-w-pathfile",
-        "name": "Render a Arnold scene with a path file",
+        "name": "Render an Arnold scene with a path file",
         "description": "This job will render different frames of a 3ds max scene in parallel using Arnold.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
     },
     {
