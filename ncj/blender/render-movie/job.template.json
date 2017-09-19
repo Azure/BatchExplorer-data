@@ -1,0 +1,88 @@
+{
+    "parameters": {
+        "jobName": {
+            "type": "string",
+            "defaultValue": "blender-render-movie-",
+            "metadata": {
+                "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
+            }
+        },
+         "sceneData": {
+            "type": "string",
+            "defaultValue": "blender-data",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "blendFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The Blender scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "sceneData"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "metadata": {
+                "description": "The first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "metadata": {
+                "description": "The last frame to render"
+            }
+        },
+        "outputFileGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]_[parameters('frameStart')]-[parameters('frameEnd')]",
+            "displayName": "[parameters('blendFile')]",
+            "onAllTasksComplete": "terminateJob",
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": 1
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0",
+                    "resourceFiles": [
+                        {
+                            "source": { 
+                                "fileGroup": "[parameters('sceneData')]"
+                            }
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "[parameters('jobName')]_*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFileGroup')]"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "TaskSuccess"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

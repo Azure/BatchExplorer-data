@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.280629mm"
+   height="14.280444mm"
+   viewBox="0 0 50.600654 50.599999"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="vray.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="55.544109"
+     inkscape:cy="11.874933"
+     inkscape:document-units="px"
+     inkscape:current-layer="g3604"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="1912"
+     inkscape:window-y="301"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-69.825341,-97.287174)">
+    <g
+       transform="translate(85.965634,96.550854)"
+       id="layer1-0"
+       inkscape:label="Layer 1">
+      <g
+         transform="translate(-153.04286,347.32649)"
+         id="g3549">
+        <g
+           transform="translate(146.75971,-258.59017)"
+           id="g3705">
+          <rect
+             style="fill:none"
+             x="3"
+             y="1"
+             class="st0"
+             width="431.29999"
+             height="59.099998"
+             id="rect3602" />
+          <g
+             transform="translate(-12.857143,-90)"
+             id="g3604">
+            <path
+               style="fill:#000000"
+               inkscape:connector-curvature="0"
+               class="st1"
+               d="M 28.3,2 C 14.3,2 3,13.3 3,27.3 c 0,14 11.3,25.3 25.3,25.3 14,0 25.3,-11.3 25.3,-25.3 C 53.7,13.3 42.3,2 28.3,2 Z M 17.9,7.5 c 1.7,-1.9 4.6,-3.4 8.5,-3.8 0.6,0 1.2,-0.1 1.9,-0.1 6.4,0 12.1,2.7 16.2,6.9 C 43.9,10.3 43.1,10 41.6,10 29.1,10 24.9,34.7 21.1,34.6 18.7,34.7 10.2,16.2 17.9,7.5 Z M 28.3,48.7 C 15.8,48.7 5.8,38.6 5.8,26.2 5.8,19 9.2,12.5 14.7,8.3 c -9.1,10.2 1,32.1 6.8,32.7 7.2,0.4 10,-22.5 18.5,-25.4 6.4,-2.4 11.2,7.2 8.3,17.9 -3,9.2 -10.5,15.1 -20,15.2 z M 28.8,9.8 c 3.5,0 6.4,-0.9 6.4,-2 0,-1.1 -2.9,-2 -6.4,-2 -3.5,0 -6.4,0.9 -6.5,2 0.1,1.1 3,2 6.5,2 z"
+               id="path3618" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <style
+     type="text/css"
+     id="style3444">
+	.st0{fill:none;}
+	.st1{fill:#FFFFFF;}
+	.st2{fill:#808285;}
+</style>
+  <style
+     type="text/css"
+     id="style3600">
+	.st0{fill:none;}
+	.st1{fill:#FFFFFF;}
+	.st2{fill:#808285;}
+</style>
+  <style
+     type="text/css"
+     id="style3444-9">
+	.st0{fill:none;}
+	.st1{fill:#000;}
+	.st2{fill:#808285;}
+</style>
+  <style
+     type="text/css"
+     id="style3600-5">
+	.st0{fill:none;}
+	.st1{fill:#000;}
+	.st2{fill:#808285;}
+</style>
+</svg>

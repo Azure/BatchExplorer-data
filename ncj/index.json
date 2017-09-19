@@ -1,0 +1,58 @@
+[
+  {
+    "id": "3dsmax",
+    "name": "3ds Max",
+    "description": "3ds Max® 3D modeling and rendering software helps you create massive worlds in games, stunning scenes for design visualization, and engaging virtual reality (VR) experiences."
+  },
+  {
+    "id": "maya",
+    "name": "Maya",
+    "description": "Maya® 3D animation, modeling, simulation, and rendering software provides an integrated, powerful toolset. Use it for animation, environments, motion graphics, virtual reality, and character creation."
+  },
+  {
+    "id": "arnold",
+    "name": "Arnold",
+    "description": ""
+  },
+  {
+    "id": "vray",
+    "name": "V-Ray",
+    "description": ""
+  },
+  {
+    "id": "blender",
+    "name": "Blender",
+    "description": "Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation."
+  },
+  {
+    "id": "ffmpeg",
+    "name": "FFmpeg",
+    "description": ""
+  },
+  {
+    "id": "imagemagick",
+    "name": "Image magick",
+    "description": ""
+  },
+ 
+  {
+    "id": "tensorflow",
+    "name": "Tensor flow",
+    "description": "An open-source software library for Machine Intelligence."
+  },
+  {
+    "id": "caffe",
+    "name": "Caffe",
+    "description": "Caffe is a deep learning framework made with expression, speed, and modularity in mind."
+  },
+  {
+    "id": "matlab",
+    "name": "Matlab",
+    "description": "MathWorks is the leading developer of mathematical computing software for engineers and scientists."
+  },
+  {
+    "id": "r",
+    "name": "R",
+    "description": "R is a language and environment for statistical computing and graphics."
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "id": "render-movie",
+    "name": "Render movie",
+    "description": "Render a blender scene into a movie."
+  }
+]
