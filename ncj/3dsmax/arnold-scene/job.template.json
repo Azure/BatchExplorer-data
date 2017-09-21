@@ -1,6 +1,6 @@
 {
    "templateMetadata":{
-      "description":"Sample application template for working with Blender."
+      "description":"Sample application template for working with 3ds Max and Arnold."
    },
    "parameters":{
       "jobName":{
@@ -8,6 +8,13 @@
          "defaultValue":"3dsmax-arnold",
          "metadata":{
             "description":"The job name"
+         }
+      },
+      "poolId":{
+         "type":"string",
+         "defaultValue":"ignored",
+         "metadata":{
+            "description":"The pool id"
          }
       },
       "inputFilegroup":{
@@ -80,6 +87,9 @@
       "properties":{
          "id":"[parameters('jobName')]",
          "displayName":"[parameters('jobName')]",
+         "poolInfo": {
+            "poolId": "[parameters('poolId')]"
+         },
          "onAllTasksComplete":"terminateJob",
          "jobPreparationTask":{
             "resourceFiles":[
@@ -103,7 +113,7 @@
             ],
             "repeatTask":{
                "displayName":"Frame {0}",
-               "commandLine":"set & mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\"",
+               "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\"",
                "outputFiles":[
                   {
                      "filePattern":"../stdout.txt",
