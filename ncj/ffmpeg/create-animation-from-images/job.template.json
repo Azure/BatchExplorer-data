@@ -1,0 +1,127 @@
+{
+   "templateMetadata":{
+      "description":"Create an animation with Ffmpeg."
+   },
+   "parameters":{
+      "jobName":{
+         "type":"string",
+         "defaultValue":"ffmpeg-animation",
+         "metadata":{
+            "description":"The job name"
+         }
+      },
+      "inputFilegroup":{
+         "type":"string",
+         "metadata":{
+            "description":"The file group where the input frames are stored",
+            "advancedType":"file-group"
+         }
+      },
+      "filegroupImageFolder":{
+         "type":"string",
+         "defaultValue":"outputs",
+         "metadata":{
+            "description":"The relative path in the filegroup where the individual frames reside."
+         }
+      },
+      "filegroupImagePrefix":{
+         "type":"string",
+         "defaultValue":"image0",
+         "metadata":{
+            "description":"The image filename prefix."
+         }
+      },
+      "imagePattern":{
+         "type":"string",
+         "defaultValue":"image%04d.jpg",
+         "metadata":{
+            "description":"The pattern to identify the input images, typically image%04d.jpg if rendered using Batch Labs."
+         }
+      },
+      "width":{
+         "type":"int",
+         "defaultValue":1600,
+         "metadata":{
+            "description":"Frame width"
+         }
+      },
+      "height":{
+         "type":"int",
+         "defaultValue":1200,
+         "metadata":{
+            "description":"Frame height"
+         }
+      },
+      "framesPerSecond":{
+         "type":"int",
+         "defaultValue":25,
+         "metadata":{
+            "description":"Frame per second"
+         }
+      }
+   },
+   "job":{
+      "type":"Microsoft.Batch/batchAccounts/jobs",
+      "properties":{
+         "id":"[parameters('jobName')]",
+         "displayName":"[parameters('jobName')]",
+         "onAllTasksComplete":"terminateJob",
+         "taskFactory":{
+            "type":"taskCollection",
+            "tasks":[
+               {
+                  "id":"ffmpeg",
+                  "displayName":"Create animation with ffmpeg",
+                  "commandLine":"ffmpeg -y -r [parameters('framesPerSecond')] -i [parameters('filegroupImageFolder')]\\[parameters('imagePattern')] -c:v libx264 -vf fps=[parameters('framesPerSecond')] -pix_fmt yuv420p -s [parameters('width')]x[parameters('height')] [parameters('jobName')].mp4",
+                  "resourceFiles":[
+                     {
+                        "source":{
+                           "fileGroup":"[parameters('inputFilegroup')]",
+                           "prefix":"[parameters('filegroupImageFolder')]/[parameters('filegroupImagePrefix')]"
+                        }
+                     }
+                  ],
+                  "outputFiles":[
+                     {
+                        "filePattern":"../stdout.txt",
+                        "destination":{
+                           "autoStorage":{
+                              "fileGroup":"[parameters('inputFilegroup')]",
+                              "path":"logs/ffmpeg.log"
+                           }
+                        },
+                        "uploadOptions":{
+                           "uploadCondition":"taskCompletion"
+                        }
+                     },
+                     {
+                        "filePattern":"../stderr.txt",
+                        "destination":{
+                           "autoStorage":{
+                              "fileGroup":"[parameters('inputFilegroup')]",
+                              "path":"logs/ffmpeg_error.log"
+                           }
+                        },
+                        "uploadOptions":{
+                           "uploadCondition":"taskCompletion"
+                        }
+                     },
+                     {
+                        "filePattern":"[parameters('jobName')].mp4",
+                        "destination":{
+                           "autoStorage":{
+                              "fileGroup":"[parameters('inputFilegroup')]",
+                              "path":"outputs/[parameters('jobName')].mp4"
+                           }
+                        },
+                        "uploadOptions":{
+                           "uploadCondition":"taskSuccess"
+                        }
+                     }
+                  ]
+               }
+            ]
+         }
+      }
+   }
+}
