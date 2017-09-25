@@ -18,5 +18,10 @@
         "id": "vray-scene-w-pathfile",
         "name": "Render a VRay scene with a path file",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
+    },
+    {
+        "id": "vray-scene-gpu",
+        "name": "Render a VRay scene on Azure GPU instances",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     }
 ]
