@@ -20,8 +20,18 @@
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
     },
     {
+        "id": "vray-scene-dr",
+        "name": "DR - Render a VRay scene using Distributed Render",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
+    },
+    {
         "id": "vray-scene-gpu",
-        "name": "Render a VRay scene on Azure GPU instances",
+        "name": "GPU - Render a VRay scene on Azure GPU instances",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
+    },
+    {
+        "id": "vray-scene-gpu-dr",
+        "name": "GPU + DR - Render a VRay scene on Azure GPU instances using Distributed Render",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     }
 ]

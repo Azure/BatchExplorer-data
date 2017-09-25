@@ -61,7 +61,7 @@
             },
             "resourceFiles": [
               {
-                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/vray-scene-gpu/install-azure-nc-drivers.cmd",
+                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/install-azure-nc-drivers.cmd",
                 "filePath":"install-azure-nc-drivers.cmd"
               }
             ]
