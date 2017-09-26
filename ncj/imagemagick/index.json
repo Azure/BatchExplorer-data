@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "id": "resize-images",
+        "name": "Resize a collection of images",
+        "description": "This job will resize a collection of images in parallel using Image Magick by creating one task per image."
+    }
+]
