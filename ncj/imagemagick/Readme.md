@@ -53,11 +53,11 @@ You can see more information about the various Azure virtual machine sizes [here
 
 For the job name either keep the default or enter something meaningful.
 
-For the Input Filegroup select the 'image-magick-inputs' filegroup that you created earlier.
+For the Input file group select the 'image-magick-inputs' file group that you created earlier.
 
 Enter the percentage you would like the images resized by. In this instance we are entering 50, as in reduce in size by 50%.
 
-For the output filegroup we'll re-use the existing 'image-magick-inputs' filegroup.  This is the location output images and logs are uploaded to. I would generally have a filegroup called outputs that i use as a default output container. All outputs from this job will be uploaded into a folder within this filegroup with the name of the job.
+For the output file group we'll re-use the existing 'image-magick-inputs' file group.  This is the location that output images and logs are uploaded to. I would generally have a file group called outputs that i use as a default output container. All outputs from this job will be uploaded into a folder within this file group with the name of the job.
 
 Click the Submit button to start the job.
 
@@ -66,19 +66,24 @@ Click the Submit button to start the job.
 
 At this point you can monitor the job and task(s) for completion.
 
+The job will take some time to start as the auto pool needs to be created and the nodes brought online. A pool will normally take between 5 and 10 minutes to completely come online. You can see from the below screenshot that the 2 nodes in the pool will cost approximately 67 cents an hour (NZD) to run.
+
+![View Pool](images/autopool.png)
+
 Navigate to 'Jobs -> image-magick-resize', or whatever you called your job.
 
 Here you will see all the job's tasks and their current state. By clicking on a task you can view its execution information and log files.  You can even terminate a task, or the entire job, if you have made a mistake. You can use the log files here to investigate any potential issues with the task.
 
-![View Job](images/ViewJob.png)
+![View Job](images/viewjob.png)
 
+Once completed, the auto pool will be deleted.
 
 ### 4. View and Download the outputs
 
-When a task completes, it will upload it's log files and the resized outputs to the output filegroup specified previously.
+When a task completes, it will upload it's log files and the resized outputs to the output file group specified previously.
 
-In this case you can navigate to the 'image-magick-inputs' filegroup and see the resized images in the folder that matches the job's name. You will also find the task log files in the logs subdirectory.
+In this case you can navigate to the 'image-magick-inputs' file group and see the resized images in the folder that matches the job's name. You will also find the task log files in the logs subdirectory.
 
-![View Filegroup outputs](images/ViewFilegroupOutputs.png)
+![View Filegroup outputs](images/outputs.png)
 
-The output files will look the same as the inpurt files, only they will be 50% smaller than the ones you uploaded.
+The output files will look the same as the input files, only they will be 50% smaller than the ones you uploaded. Uploaded size was 1600 x 1200 (294kB) and after the resize operation they were 800 x 600 (65kB)
