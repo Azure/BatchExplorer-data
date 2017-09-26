@@ -1,97 +1,107 @@
 {
-   "templateMetadata":{
-       "description":"Sample application template for working with ImageMagick."
-   },
-   "parameters":{
-        "jobName":{
-            "type":"string",
-            "defaultValue":"image-magick-resize",
-            "metadata":{
-                "description":"The job name"
-            }
-        },
-        "inputFilegroup":{
-            "type":"string",
-            "metadata":{
-                "description":"The file group where the input images are stored. Any non-image files will fail to convert.",
-                "advancedType":"file-group"
-            }
-        },
-        "resize":{
-            "type":"int",
-            "defaultValue":50,
-            "metadata":{
-                "description":"Image resize percent"
-            }
-        },
-        "outputFilegroup":{
-            "type":"string",
-            "metadata":{
-                "description":"The file group where outputs will be stored",
-                "advancedType":"file-group"
-            }
-        }
+    "templateMetadata":{
+        "description":"Sample application template for working with ImageMagick."
     },
-    "job":{
-        "type":"Microsoft.Batch/batchAccounts/jobs",
-        "properties":{
-            "id":"[parameters('jobName')]",
-            "displayName":"[parameters('jobName')]",
-            "onAllTasksComplete":"terminateJob",
-            "taskFactory":{
-                "type":"taskPerFile",
-                "source":{
-                    "fileGroup": "[parameters('inputFilegroup')]"
-                },
-                "repeatTask":{
-                    "displayName":"Convert image {fileName}",
-                    "commandLine":"set & mkdir images & magick convert {fileName} -resize [parameters('resize')]% \"images\\{fileName}\"",
-                    "resourceFiles": [
-                        {
-                            "blobSource": "{url}",
-                            "filePath": "{fileName}"
-                        }
-                    ],
-                    "outputFiles":[
-                        {
-                            "filePattern":"../stdout.txt",
-                            "destination":{
-                                "autoStorage":{
-                                    "fileGroup":"[parameters('outputFilegroup')]",
-                                    "path":"[parameters('jobName')]/logs/{fileName}.log"
-                                }
-                            },
-                            "uploadOptions":{
-                                "uploadCondition":"taskCompletion"
-                            }
-                        },
-                        {
-                            "filePattern":"../stderr.txt",
-                            "destination":{
-                                "autoStorage":{
-                                    "fileGroup":"[parameters('outputFilegroup')]",
-                                    "path":"[parameters('jobName')]/logs/{fileName}_error.log"
-                                }
-                            },
-                            "uploadOptions":{
-                                "uploadCondition":"taskCompletion"
-                            }
-                        },
-                        {
-                            "filePattern":"images/**/*",
-                            "destination":{
-                                "autoStorage":{
-                                    "fileGroup":"[parameters('outputFilegroup')]",
-                                    "path":"[parameters('jobName')]/outputs"
-                                }
-                            },
-                            "uploadOptions":{
-                                "uploadCondition":"taskSuccess"
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
+    "parameters":{
+         "poolId": {
+             "type": "string",
+             "metadata": {
+                 "description": "The ID of the pool on which to run the job."
+             }
+         },
+         "jobName":{
+             "type":"string",
+             "defaultValue":"image-magick-resize",
+             "metadata":{
+                 "description":"The job name"
+             }
+         },
+         "inputFilegroup":{
+             "type":"string",
+             "metadata":{
+                 "description":"The file group where the input images are stored. Any non-image files will fail to convert.",
+                 "advancedType":"file-group"
+             }
+         },
+         "resize":{
+             "type":"int",
+             "defaultValue":50,
+             "metadata":{
+                 "description":"Image resize percent"
+             }
+         },
+         "outputFilegroup":{
+             "type":"string",
+             "metadata":{
+                 "description":"The file group where outputs will be stored",
+                 "advancedType":"file-group"
+             }
+         }
+     },
+     "job":{
+         "type":"Microsoft.Batch/batchAccounts/jobs",
+         "properties":{
+             "id":"[parameters('jobName')]",
+             "displayName":"[parameters('jobName')]",
+             "onAllTasksComplete":"terminateJob",
+             "poolInfo": {
+                 "poolId": "[parameters('poolId')]"
+             },
+             "taskFactory":{
+                 "type":"taskPerFile",
+                 "source":{
+                     "fileGroup": "[parameters('inputFilegroup')]"
+                 },
+                 "repeatTask":{
+                     "displayName":"Convert image {fileName}",
+                     "commandLine":"set & mkdir images & magick convert {fileName} -resize [parameters('resize')]% \"images\\{fileName}\"",
+                     "resourceFiles": [
+                         {
+                             "blobSource": "{url}",
+                             "filePath": "{fileName}"
+                         }
+                     ],
+                     "outputFiles":[
+                         {
+                             "filePattern":"../stdout.txt",
+                             "destination":{
+                                 "autoStorage":{
+                                     "fileGroup":"[parameters('outputFilegroup')]",
+                                     "path":"[parameters('jobName')]/logs/{fileName}.log"
+                                 }
+                             },
+                             "uploadOptions":{
+                                 "uploadCondition":"taskCompletion"
+                             }
+                         },
+                         {
+                             "filePattern":"../stderr.txt",
+                             "destination":{
+                                 "autoStorage":{
+                                     "fileGroup":"[parameters('outputFilegroup')]",
+                                     "path":"[parameters('jobName')]/logs/{fileName}_error.log"
+                                 }
+                             },
+                             "uploadOptions":{
+                                 "uploadCondition":"taskCompletion"
+                             }
+                         },
+                         {
+                             "filePattern":"images/**/*",
+                             "destination":{
+                                 "autoStorage":{
+                                     "fileGroup":"[parameters('outputFilegroup')]",
+                                     "path":"[parameters('jobName')]/outputs"
+                                 }
+                             },
+                             "uploadOptions":{
+                                 "uploadCondition":"taskSuccess"
+                             }
+                         }
+                     ]
+                 }
+             }
+         }
+     }
+ }
+ 
