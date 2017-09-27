@@ -37,9 +37,11 @@ Then navigate to 'Resize a collection of images'.
 
 Now you need to select the pool mode.
 
-Tasks are executed on the compute nodes within a pool.  A job can use either an existing static pool, or an auto pool that is created on demand for the lifetime of the job. When using an existing pool, ensure that the pool was created with a 'Graphics and rendering' image.  ImageMagick is included by default with the Azure Batch rendering images.
+Tasks are executed on the compute nodes within a pool.  A job can use either an existing static pool, or an auto pool that is created on demand for the lifetime of the job. When using an existing pool, ensure that the pool was created with Canonical Ubuntu 16.04 images.
 
-![View Filegroup](images/rendering.png)
+The template uses the Advanced Package Tool, or APT to install the software required for the job. In this case it will install imagemagick from the package manager.
+
+[https://packages.ubuntu.com](https://packages.ubuntu.com)
 
 Auto pools and pools created with the 'create pool for later use' option will use the provided pool template and automatically use the correct image type.
 

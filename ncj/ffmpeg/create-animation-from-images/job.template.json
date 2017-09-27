@@ -13,13 +13,13 @@
             "type": "string",
             "defaultValue": "ffmpeg-animation",
             "metadata": {
-                "description": "The job name"
+                "description": "The job name."
             }
         },
         "inputFilegroup": {
             "type": "string",
             "metadata": {
-                "description": "The file group where the input frames are stored",
+                "description": "The file group where the input frames are stored.",
                 "advancedType": "file-group"
             }
         },
@@ -48,21 +48,28 @@
             "type": "int",
             "defaultValue": 1600,
             "metadata": {
-                "description": "Frame width"
+                "description": "Frame width."
             }
         },
         "height": {
             "type": "int",
             "defaultValue": 1200,
             "metadata": {
-                "description": "Frame height"
+                "description": "Frame height."
             }
         },
         "framesPerSecond": {
             "type": "int",
             "defaultValue": 25,
             "metadata": {
-                "description": "Frame per second"
+                "description": "Frame per second."
+            }
+        },
+        "outputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the output files are uploaded to.",
+                "advancedType": "file-group"
             }
         }
     },
@@ -80,8 +87,7 @@
                 "tasks": [
                     {
                         "id": "ffmpeg",
-                        "displayName": "Create animation with ffmpeg",
-                        "commandLine": "ffmpeg -y -r [parameters('framesPerSecond')] -i [parameters('filegroupImageFolder')]\\[parameters('imagePattern')] -c:v libx264 -vf fps=[parameters('framesPerSecond')] -pix_fmt yuv420p -s [parameters('width')]x[parameters('height')] [parameters('jobName')].mp4",
+                        "commandLine": "ffmpeg -y -r [parameters('framesPerSecond')] -i [parameters('filegroupImageFolder')]/[parameters('imagePattern')] -c:v libx264 -vf fps=[parameters('framesPerSecond')] -pix_fmt yuv420p -s [parameters('width')]x[parameters('height')] [parameters('jobName')].mp4",
                         "resourceFiles": [
                             {
                                 "source": {
@@ -95,7 +101,7 @@
                                 "filePattern": "../stdout.txt",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('inputFilegroup')]",
+                                        "fileGroup": "[parameters('outputFilegroup')]",
                                         "path": "[parameters('jobName')]/logs/ffmpeg.log"
                                     }
                                 },
@@ -107,7 +113,7 @@
                                 "filePattern": "../stderr.txt",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('inputFilegroup')]",
+                                        "fileGroup": "[parameters('outputFilegroup')]",
                                         "path": "[parameters('jobName')]/logs/ffmpeg_error.log"
                                     }
                                 },
@@ -119,7 +125,7 @@
                                 "filePattern": "[parameters('jobName')].mp4",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('inputFilegroup')]",
+                                        "fileGroup": "[parameters('outputFilegroup')]",
                                         "path": "[parameters('jobName')]/outputs/[parameters('jobName')].mp4"
                                     }
                                 },
