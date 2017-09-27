@@ -2,56 +2,53 @@
     "parameters":{
         "poolName":{
             "type":"string",
+            "defaultValue": "image-magick-pool",
             "metadata":{
-                "description":"Id of the pool"
+                "description":"The ID of Azure Batch pool"
             }
         },
-        "numberNodes":{
+        "vmCount":{
             "type":"int",
             "defaultValue":1,
             "metadata":{
-                "description":"The number of nodes in the Azure Batch pool where the job will run"
+                "description":"The number of virtual machines in the Azure Batch pool where the job will run"
             }
         },
         "vmSize":{
             "type":"string",
+            "defaultValue":"STANDARD_D1",
             "metadata":{
                 "description":"The size of the virtual machines that run the application"
             },
-            "defaultValue":"Standard_D2_v2",
             "allowedValues":[
-                "Standard_A1",
-                "Standard_A2",
-                "Standard_A3",
-                "Standard_A4",
-                "Standard_D1",
-                "Standard_D2",
-                "Standard_D3",
-                "Standard_D4",
-                "Standard_D1_v2",
-                "Standard_D2_v2",
-                "Standard_D3_v2",
-                "Standard_D4_v2"
+                "STANDARD_A1",
+                "STANDARD_A2",
+                "STANDARD_A3",
+                "STANDARD_A4",
+                "STANDARD_D1",
+                "STANDARD_D2",
+                "STANDARD_D3",
+                "STANDARD_D4"
             ]
         }
     },
     "variables":{
         "osType":{
             "imageReference":{
-                "publisher":"batch",
-                "offer":"rendering-windows2016",
-                "sku":"rendering",
-                "version":"latest"
+                "publisher": "Canonical",
+                "offer": "UbuntuServer",
+                "sku": "16.04.0-LTS",
+                "version": "latest"
             },
-            "nodeAgentSKUId":"batch.node.windows amd64"
+            "nodeAgentSKUId":"batch.node.ubuntu 16.04"
         }
     },
     "pool":{
         "id":"[parameters('poolName')]",
-        "displayName":"ImageMagick pool running: [parameters('poolName')]",
+        "displayName":"ImageMagick pool",
         "vmSize":"[parameters('vmSize')]",
         "virtualMachineConfiguration":"[variables('osType')]",
-        "targetDedicatedNodes":"[parameters('numberNodes')]",
+        "targetDedicatedNodes":"[parameters('vmCount')]",
         "enableAutoScale":false
     }
 }

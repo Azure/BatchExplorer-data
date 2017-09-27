@@ -42,7 +42,7 @@
          "type":"Microsoft.Batch/batchAccounts/jobs",
          "properties":{
              "id":"[parameters('jobName')]",
-             "displayName":"[parameters('jobName')]",
+             "displayName":"ImageMagick demo job",
              "onAllTasksComplete":"terminateJob",
              "poolInfo": {
                  "poolId": "[parameters('poolId')]"
@@ -54,7 +54,7 @@
                  },
                  "repeatTask":{
                      "displayName":"Convert image {fileName}",
-                     "commandLine":"set & mkdir images & magick convert {fileName} -resize [parameters('resize')]% \"images\\{fileName}\"",
+                     "commandLine":"set & mkdir images & convert {fileName} -resize [parameters('resize')]% \"images/{fileName}\"",
                      "resourceFiles": [
                          {
                              "blobSource": "{url}",
@@ -98,7 +98,13 @@
                                  "uploadCondition":"taskSuccess"
                              }
                          }
-                     ]
+                     ],
+                     "packageReferences": [
+                        {
+                            "type": "aptPackage",
+                            "id": "imagemagick"
+                        }
+                    ]
                  }
              }
          }
