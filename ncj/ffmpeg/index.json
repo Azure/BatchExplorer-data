@@ -1,7 +1,12 @@
 [
     {
+        "id": "convert-wav-to-mp3",
+        "name": "Convert WAV media files to MP3",
+        "description": "This job will convert a collection of WAV media files to MP3 in parallel using FFmpeg by creating one task per file."
+    },
+	{
         "id": "create-animation-from-images",
         "name": "Create an animation from images",
-        "description": "This job will create an animation from a series of individual frames in a filegroup."
+        "description": "This job will create an animation from a series of individual images or render outputs in a filegroup."
     }
 ]
