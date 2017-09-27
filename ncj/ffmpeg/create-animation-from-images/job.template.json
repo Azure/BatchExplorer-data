@@ -96,7 +96,7 @@
                                 "destination": {
                                     "autoStorage": {
                                         "fileGroup": "[parameters('inputFilegroup')]",
-                                        "path": "logs/ffmpeg.log"
+                                        "path": "[parameters('jobName')]/logs/ffmpeg.log"
                                     }
                                 },
                                 "uploadOptions": {
@@ -108,7 +108,7 @@
                                 "destination": {
                                     "autoStorage": {
                                         "fileGroup": "[parameters('inputFilegroup')]",
-                                        "path": "logs/ffmpeg_error.log"
+                                        "path": "[parameters('jobName')]/logs/ffmpeg_error.log"
                                     }
                                 },
                                 "uploadOptions": {
@@ -120,7 +120,7 @@
                                 "destination": {
                                     "autoStorage": {
                                         "fileGroup": "[parameters('inputFilegroup')]",
-                                        "path": "outputs/[parameters('jobName')].mp4"
+                                        "path": "[parameters('jobName')]/outputs/[parameters('jobName')].mp4"
                                     }
                                 },
                                 "uploadOptions": {
