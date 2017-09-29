@@ -1,12 +1,12 @@
 [
     {
-        "id": "render-linux",
-        "name": "Render scene on linux",
-        "description": "Render a maya scene with the V-Ray renderer on linux"
-    },
-    {
         "id": "render-windows",
         "name": "Render scene on windows",
         "description": "Render a maya scene with the V-Ray renderer on windows"
+    },
+    {
+        "id": "render-linux",
+        "name": "Render scene on linux",
+        "description": "Render a maya scene with the V-Ray renderer on linux"
     }
 ]

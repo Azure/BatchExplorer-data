@@ -2,6 +2,7 @@
     "parameters": {
         "poolName": {
             "type": "string",
+            "defaultValue": "vray-maya-pool-centos",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -103,7 +104,7 @@
     },
     "pool": {
         "id": "[parameters('poolName')]",
-        "displayName": "V-Ray Linux rendering pool",
+        "displayName": "V-Ray CentOS rendering pool",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",

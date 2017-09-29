@@ -5,17 +5,19 @@
     "parameters": {
         "poolId": {
             "type": "string",
+            "defaultValue": "vray-maya-pool-centos",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
-        "jobId": {
+        "jobName": {
             "type": "string",
+            "defaultValue": "render-vray-maya",
             "metadata": {
-                "description": "The ID of the job."
+                "description": "The unique name of the job."
             }
         },
-        "projectData": {
+        "inputData": {
             "type": "string",
             "metadata": {
                 "description": "The file group where the input data is stored",
@@ -27,27 +29,19 @@
             "metadata": {
                 "description": "The Maya scene file to be rendered",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "projectData"
+                "dependsOn": "inputData"
             }
-        },
-        "renderer": {
-            "type": "string",
-            "defaultValue": "vray",
-            "metadata": {
-                "description": "The Maya renderer to be used for the render"
-            },
-            "allowedValues": [
-                "vray"
-            ]
         },
         "frameStart": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "Index of the first frame to render"
             }
         },
         "frameEnd": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "Index of the last frame to render"
             }
@@ -70,7 +64,7 @@
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
-            "id": "[parameters('jobId')]",
+            "id": "[parameters('jobName')]",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
@@ -78,7 +72,7 @@
                 "resourceFiles": [
                     {
                         "source": {
-                            "fileGroup": "[parameters('projectData')]"
+                            "fileGroup": "[parameters('inputData')]"
                         },
                         "filePath": "assets/"
                     }
@@ -102,11 +96,11 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer [parameters('renderer')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -verb -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer vray -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -verb -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
-                            "value": "/mnt/resource/batch/tasks/workitems/[parameters('outputs')]/job-1/jobpreparation/wd/scripts"
+                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%/scripts"
                         },
                         {
                             "name": "FLEXLM_TIMEOUT",
@@ -119,34 +113,11 @@
                     ],
                     "outputFiles": [
                         {
-                            "filePattern": "images/**/*",
-                            "destination": {
-                                "autoStorage": {
-                                    "fileGroup": "[parameters('outputs')]"
-                                }
-                            },
-                            "uploadOptions": {
-                                "uploadCondition": "taskSuccess"
-                            }
-                        },
-                        {
-                            "filePattern": "thumbs/*.png",
-                            "destination": {
-                                "autoStorage": {
-                                    "fileGroup": "[parameters('outputs')]",
-                                    "path": "thumbs"
-                                }
-                            },
-                            "uploadOptions": {
-                                "uploadCondition": "taskSuccess"
-                            }
-                        },
-                        {
                             "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputs')]",
-                                    "path": "logs/frame_{0}.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
                                 }
                             },
                             "uploadOptions": {
@@ -158,11 +129,35 @@
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputs')]",
-                                    "path": "logs/frame_{0}_error.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
                                 }
                             },
                             "uploadOptions": {
                                 "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path":"[parameters('jobName')]/images"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        },
+                        {
+                            "filePattern": "thumbs/*.png",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/thumbs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
                             }
                         }
                     ]
