@@ -9,7 +9,7 @@
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "blender-render-movie",
+            "defaultValue": "blender-render",
             "metadata": {
                 "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
             }
@@ -103,7 +103,7 @@
                             }
                         },
                         {
-                            "filePattern": "[parameters('jobName')]-*",
+                            "filePattern": "[parameters('jobName')]_*",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputs')]",
