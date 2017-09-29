@@ -2,15 +2,16 @@
     "parameters": {
         "poolName": {
             "type": "string",
+            "defaultValue": "blender-pool-ubuntu",
             "metadata": {
                 "description": "Id of the pool"
             }
         },
-        "numberNodes": {
+        "vmCount": {
             "type": "int",
             "defaultValue": 5,
             "metadata": {
-                "description": "The number of nodes in the Azure Batch pool where the job will run"
+                "description": "The number of virtual machines in the Azure Batch pool where the job will run"
             }
         },
         "vmSize": {
@@ -47,13 +48,13 @@
         "displayName": "Blender pool running: [parameters('poolName')]",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
+        "targetDedicatedNodes": "[parameters('vmCount')]",
+        "enableAutoScale": false,
         "packageReferences": [
             {
                 "type": "aptPackage",
                 "id": "blender"
             }
-        ],
-        "targetDedicatedNodes": "[parameters('numberNodes')]",
-        "enableAutoScale": false
+        ]
     }
 }

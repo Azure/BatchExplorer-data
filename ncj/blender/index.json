@@ -1,7 +1,7 @@
 [
-  {
-    "id": "render-movie",
-    "name": "Render movie",
-    "description": "Render a blender scene into a movie."
-  }
+    {
+        "id": "render-movie",
+        "name": "Render movie on Ubuntu 16.04",
+        "description": "Render a blender scene into a movie."
+    }
 ]

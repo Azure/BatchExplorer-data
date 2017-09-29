@@ -1,15 +1,21 @@
 {
     "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "blender-pool-ubuntu",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
         "jobName": {
             "type": "string",
-            "defaultValue": "blender-render-movie-",
+            "defaultValue": "blender-render-movie",
             "metadata": {
                 "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
             }
         },
-         "sceneData": {
+         "inputData": {
             "type": "string",
-            "defaultValue": "blender-data",
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
@@ -20,7 +26,7 @@
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "sceneData"
+                "dependsOn": "inputData"
             }
         },
         "frameStart": {
@@ -35,7 +41,7 @@
                 "description": "The last frame to render"
             }
         },
-        "outputFileGroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -46,7 +52,10 @@
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
-            "id": "[parameters('jobName')]_[parameters('frameStart')]-[parameters('frameEnd')]",
+            "id": "[parameters('jobName')]-[parameters('frameStart')]-[parameters('frameEnd')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
             "displayName": "[parameters('blendFile')]",
             "onAllTasksComplete": "terminateJob",
             "taskFactory": {
@@ -64,16 +73,41 @@
                     "resourceFiles": [
                         {
                             "source": { 
-                                "fileGroup": "[parameters('sceneData')]"
+                                "fileGroup": "[parameters('inputData')]"
                             }
                         }
                     ],
                     "outputFiles": [
                         {
-                            "filePattern": "[parameters('jobName')]_*",
+                            "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFileGroup')]"
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "[parameters('jobName')]-*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/outputs"
                                 }
                             },
                             "uploadOptions": {
