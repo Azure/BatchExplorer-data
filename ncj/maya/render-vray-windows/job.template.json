@@ -5,14 +5,14 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "vray-maya-pool-windows",
+            "defaultValue": "maya-vray-pool-windows",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "render-vray-maya",
+            "defaultValue": "render-maya-vray",
             "metadata": {
                 "description": "The unique name of the job."
             }

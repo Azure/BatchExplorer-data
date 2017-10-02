@@ -2,7 +2,7 @@
     "parameters": {
         "poolName": {
             "type": "string",
-            "defaultValue": "vray-maya-pool-centos",
+            "defaultValue": "maya-vray-pool-centos",
             "metadata": {
                 "description": "Id of the pool"
             }

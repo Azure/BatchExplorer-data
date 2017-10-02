@@ -2,7 +2,7 @@
     "parameters": {
         "poolName": {
             "type": "string",
-            "defaultValue": "vray-maya-pool-centos",
+            "defaultValue": "vray-pool-centos",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -110,7 +110,6 @@
         "targetDedicatedNodes": "[parameters('vmCount')]",
         "enableAutoScale": false,
         "applicationLicenses": [
-            "maya",
             "vray"
         ]
     }
