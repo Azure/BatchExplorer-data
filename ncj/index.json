@@ -33,25 +33,5 @@
         "id": "imagemagick",
         "name": "Image magick",
         "description": "Use ImageMagick to create, edit, compose, or convert bitmap images."
-    },
-    {
-        "id": "tensorflow",
-        "name": "Tensor flow",
-        "description": "An open-source software library for Machine Intelligence."
-    },
-    {
-        "id": "caffe",
-        "name": "Caffe",
-        "description": "Caffe is a deep learning framework made with expression, speed, and modularity in mind."
-    },
-    {
-        "id": "matlab",
-        "name": "Matlab",
-        "description": "MathWorks is the leading developer of mathematical computing software for engineers and scientists."
-    },
-    {
-        "id": "r",
-        "name": "R",
-        "description": "R is a language and environment for statistical computing and graphics."
     }
 ]
