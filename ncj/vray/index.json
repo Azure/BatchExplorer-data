@@ -3,10 +3,5 @@
         "id": "render-windows",
         "name": "Render V-Ray scene on windows",
         "description": "Render a standalone V-Ray scene on windows"
-    },
-    {
-        "id": "render-linux",
-        "name": "Render V-Ray scene on linux",
-        "description": "Render a standalone V-Ray scene on linux"
     }
 ]
