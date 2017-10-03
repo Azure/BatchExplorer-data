@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "id": "render-windows",
+        "name": "Render an Arnold frame on Windows",
+        "description": "Render a single frame with Arnold standalone renderer on Windows"
+    }
+]

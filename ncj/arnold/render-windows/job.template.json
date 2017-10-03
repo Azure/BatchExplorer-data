@@ -1,0 +1,115 @@
+{
+    "templateMetadata": {
+        "description": "Application template for working with Arnold standalone renderer on Windows."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "arnold-pool-windows",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "render-arnold",
+            "metadata": {
+                "description": "The unique name of the job."
+            }
+        },
+        "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The Arnold scene file to be rendered (.ass)",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputData"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "taskFactory": {
+                "type": "taskCollection",
+                "tasks": [
+                    {
+                        "id" : "render",
+                        "displayName": "[parameters('sceneFile')]",
+                        "userIdentity": {
+                            "autoUser": {
+                                "scope": "task",
+                                "elevationLevel": "admin"
+                            }
+                        },
+                        "commandLine": "mkdir images & kick -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -dw -v 6 -of png -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\[parameters('sceneFile')].png\"",
+                        "resourceFiles": [
+                            {
+                                "source": {
+                                    "fileGroup": "[parameters('inputData')]"
+                                },
+                                "filePath": "assets/"
+                            }
+                        ],
+                        "outputFiles": [
+                            {
+                                "filePattern": "../stdout.txt",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputs')]",
+                                        "path": "[parameters('jobName')]/logs/stdout.txt"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            },
+                            {
+                                "filePattern": "../stderr.txt",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputs')]",
+                                        "path": "[parameters('jobName')]/logs/stderr.txt"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            },
+                            {
+                                "filePattern": "images/**/*",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputs')]",
+                                        "path":"[parameters('jobName')]/images"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskSuccess"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "onAllTasksComplete": "terminateJob"
+        }
+    }
+}

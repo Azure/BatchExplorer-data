@@ -89,7 +89,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;/usr/autodesk/mayaIO2017/vray/bin/vray -sceneFile=\"/X/[parameters('sceneFile')]\" -frames={0} -imgfile=\"%AZ_BATCH_TASK_WORKING_DIR%/images/image{0}.png\" -display=0;err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;source /etc/profile.d/chaos.sh;/usr/autodesk/mayaIO2017/vray/bin/vray -sceneFile=\"/X/[parameters('sceneFile')]\" -frames={0} -imgfile=\"%AZ_BATCH_TASK_WORKING_DIR%/images/image{0}.png\" -display=0;err=$?;sudo umount \"/X\";exit $err",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
