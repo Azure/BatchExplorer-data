@@ -18,7 +18,7 @@
          "metadata":{
             "description":"The size of the virtual machines that run the application"
          },
-         "defaultValue":"Standard_NC12",
+         "defaultValue":"Standard_NC6",
          "allowedValues":[
             "Standard_NC6",
             "Standard_NC12",
