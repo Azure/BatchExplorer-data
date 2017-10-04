@@ -1,6 +1,7 @@
 
 rem Check for NVIDIA Tesla GPUs
-wmic path win32_VideoController get name | findstr /C:"NVIDIA Tesla" || exit /b 0
+rem Ignore check for now, system doesn't seem to be returning NVIDIA devices
+rem wmic path win32_VideoController get name | findstr /C:"NVIDIA Tesla" || exit /b 0
 
 set driver_version=385.08
 set driver_filename=%driver_version%-tesla-desktop-winserver2016-international-whql.exe
