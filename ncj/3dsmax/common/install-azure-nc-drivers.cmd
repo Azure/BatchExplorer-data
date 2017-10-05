@@ -8,7 +8,7 @@ set driver_version=385.08
 set driver_filename=%driver_version%-tesla-desktop-winserver2016-international-whql.exe
 
 rem If already installed, skip
-if exist init.txt exit /b 0
+if exist %AZ_BATCH_NODE_SHARED_DIR%\init.txt exit /b 0
 
 rem Install Chocolatey - https://chocolatey.org 
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
@@ -30,7 +30,7 @@ setup.exe -s -noreboot
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 rem Write a flag so we know we're done
-echo done > init.txt
+echo done > %AZ_BATCH_NODE_SHARED_DIR%\init.txt
 
 rem Initiate a reboot of the VM
-start shutdown /r /t 5
+start shutdown /r /t 15
