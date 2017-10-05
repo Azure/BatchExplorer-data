@@ -25,7 +25,7 @@ rem Extract and install NVIDIA drivers
 7z x -y %driver_filename%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-setup.exe -s
+setup.exe -s -noreboot
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 rem Write a flag so we know we're done
