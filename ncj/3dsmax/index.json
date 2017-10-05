@@ -11,32 +11,37 @@
     },
     {
         "id": "vray-scene",
-        "name": "Render a VRay scene",
+        "name": "VRay CPU - Render a scene",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
+    },
+    {
+        "id": "vray-scene-cpu-sas",
+        "name": "VRay CPU with SAS - Render a scene",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
     },
     {
         "id": "vray-scene-w-pathfile",
-        "name": "Render a VRay scene with a path file",
+        "name": "VRay CPU with Path file - Render a scene with a path file",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
     },
     {
         "id": "vray-scene-dr",
-        "name": "DR - Render a VRay scene using Distributed Render",
+        "name": "VRay CPU DR - Render a scene using Distributed Render",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
     },
     {
         "id": "vray-scene-gpu",
-        "name": "GPU - Render a VRay scene on Azure GPU instances",
+        "name": "VRay GPU - Render a scene on Azure GPU instances",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     },
     {
         "id": "vray-scene-gpu-sas",
-        "name": "GPU & SAS - Render a VRay scene on Azure GPU instances",
+        "name": "VRay GPU with SAS - Render a scene on Azure GPU instances",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     },
     {
         "id": "vray-scene-gpu-dr",
-        "name": "GPU + DR - Render a VRay scene on Azure GPU instances using Distributed Render",
+        "name": "VRay GPU + DR - Render a scene on Azure GPU instances using Distributed Render",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     }
 ]
