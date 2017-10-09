@@ -23,6 +23,13 @@
             "advancedType":"file-group"
          }
       },
+      "inputFilegroupSas":{
+         "type":"string",
+         "defaultValue":"",
+         "metadata":{
+            "description":"The file group where the input data is stored"
+         }
+      },
       "sceneFile":{
          "type":"string",
          "metadata":{
@@ -91,15 +98,7 @@
                 "poolId": "[parameters('poolId')]"
             },
          "jobPreparationTask":{
-            "resourceFiles":[
-               {
-                  "source":{
-                     "fileGroup":"[parameters('inputFilegroup')]"
-                  },
-                  "filePath":"assets\\"
-               }
-            ],
-            "commandLine":"dir"
+            "commandLine":"azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S && rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0"
          },
          "taskFactory":{
             "type":"taskCollection",

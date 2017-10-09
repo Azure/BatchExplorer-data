@@ -43,5 +43,10 @@
         "id": "vray-scene-gpu-dr",
         "name": "VRay GPU + DR - Render a scene on Azure GPU instances using Distributed Render",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
+    },
+    {
+        "id": "vray-scene-gpu-dr-sas",
+        "name": "VRay GPU + DR with SAS - Render a scene on Azure GPU instances using Distributed Render",
+        "description": "This job will render different frames of a 3ds max scene in parallel using VRay on GPU instances."
     }
 ]
