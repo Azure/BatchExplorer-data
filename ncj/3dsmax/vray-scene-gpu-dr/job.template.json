@@ -124,7 +124,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame_{0}.log"
+                           "path":"logs/frame.log"
                         }
                      },
                      "uploadOptions":{
@@ -136,7 +136,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame_{0}_error.log"
+                           "path":"logs/frame_error.log"
                         }
                      },
                      "uploadOptions":{
@@ -160,7 +160,19 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/Max_{0}.log"
+                           "path":"logs/Max.log"
+                        }
+                     },
+                     "uploadOptions":{
+                        "uploadCondition":"taskCompletion"
+                     }
+                  },
+                  {
+                     "filePattern":"%LOCALAPPDATA%\\Temp\\vraylog.txt",
+                     "destination":{
+                        "autoStorage":{
+                           "fileGroup":"[parameters('outputFilegroup')]",
+                           "path":"logs/vraylog.txt"
                         }
                      },
                      "uploadOptions":{

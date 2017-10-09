@@ -170,6 +170,18 @@
                      "uploadOptions":{
                         "uploadCondition":"taskCompletion"
                      }
+                  },
+                  {
+                     "filePattern":"%LOCALAPPDATA%\\Temp\\vraylog.txt",
+                     "destination":{
+                        "autoStorage":{
+                           "fileGroup":"[parameters('outputFilegroup')]",
+                           "path":"logs/vraylog_{0}.txt"
+                        }
+                     },
+                     "uploadOptions":{
+                        "uploadCondition":"taskCompletion"
+                     }
                   }
                ]
             }
