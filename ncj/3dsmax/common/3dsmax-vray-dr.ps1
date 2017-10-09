@@ -10,6 +10,7 @@ param (
 
 $port = 20207
 $vraydr_file = "vray_dr.cfg"
+$vrayrtdr_file = "vrayrt_dr.cfg"
 $pre_render_script = "enable-dr.ms"
 
 $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
@@ -20,7 +21,8 @@ if ($hosts.Count -ne $nodeCount) {
 }
 
 $env:AZ_BATCH_HOST_LIST.Split(",") | ForEach {
-    "$_ $port" | Out-File -Append $vraydr_file
+    "$_ 1 $port" | Out-File -Append $vraydr_file
+    "$_ 1 $port" | Out-File -Append $vrayrtdr_file
 }
 
 # Create vray_dr.cfg with cluster hosts
@@ -34,12 +36,14 @@ use_cached_assets 1
 cache_limit_type 2
 cache_limit 100.000000
 "@ | Out-File -Append $vraydr_file
-New-Item "$env:LOCALAPPDATA\Autodesk\3dsMax\2018 - 64bit\ENU\en-US\plugcfg" -ItemType Directory
+
+@"
+autostart_local_slave 0
+"@ | Out-File -Append $vrayrtdr_file
+
 New-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg" -ItemType Directory
-cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMax\2018 - 64bit\ENU\en-US\plugcfg\vray_dr.cfg"
-cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMax\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
 cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vray_dr.cfg"
-cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
+cp $vrayrtdr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
 
 # Create preRender script to enable distributed rendering in the scene
 @"
