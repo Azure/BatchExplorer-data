@@ -120,7 +120,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame_{0}.log"
+                           "path":"outputs/[parameters('jobName')]/logs/frame_{0}.log"
                         }
                      },
                      "uploadOptions":{
@@ -132,7 +132,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame_{0}_error.log"
+                           "path":"outputs/[parameters('jobName')]/logs/frame_{0}_error.log"
                         }
                      },
                      "uploadOptions":{
@@ -144,7 +144,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs"
+                           "path":"outputs/[parameters('jobName')]"
                         }
                      },
                      "uploadOptions":{
@@ -156,7 +156,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/Max_{0}.log"
+                           "path":"outputs/[parameters('jobName')]/logs/Max_{0}.log"
                         }
                      },
                      "uploadOptions":{

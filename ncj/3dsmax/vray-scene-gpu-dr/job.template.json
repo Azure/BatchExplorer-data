@@ -124,7 +124,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame.log"
+                           "path":"outputs/[parameters('jobName')]/logs/frame.log"
                         }
                      },
                      "uploadOptions":{
@@ -136,7 +136,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/frame_error.log"
+                           "path":"outputs/[parameters('jobName')]/logs/frame_error.log"
                         }
                      },
                      "uploadOptions":{
@@ -148,7 +148,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs"
+                           "path":"outputs/[parameters('jobName')]"
                         }
                      },
                      "uploadOptions":{
@@ -160,7 +160,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/Max.log"
+                           "path":"outputs/[parameters('jobName')]/logs/Max.log"
                         }
                      },
                      "uploadOptions":{
@@ -172,7 +172,7 @@
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"logs/vraylog.txt"
+                           "path":"outputs/[parameters('jobName')]/logs/vraylog.txt"
                         }
                      },
                      "uploadOptions":{

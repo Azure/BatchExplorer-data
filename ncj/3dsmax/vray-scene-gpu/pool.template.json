@@ -49,7 +49,7 @@
          "vray"
       ],
       "enableAutoScale":false,
-      "enableInterNodeCommunication":true,
+      "enableInterNodeCommunication":false,
       "startTask":{
             "commandLine":"cmd.exe /c install-azure-nc-drivers.cmd",
             "waitForSuccess":true,
