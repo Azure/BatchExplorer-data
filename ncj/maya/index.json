@@ -1,12 +1,12 @@
 [
     {
         "id": "render-vray-windows",
-        "name": "Render Maya/V-ray scene on windows",
-        "description": "Render a Maya scene with the V-Ray renderer on windows"
+        "name": "Render Maya/V-ray scene on Windows",
+        "description": "Render a Maya scene with the V-Ray renderer on Windows"
     },
     {
         "id": "render-vray-linux",
-        "name": "Render Maya/V-ray scene on linux",
-        "description": "Render a Maya scene with the V-Ray renderer on linux"
+        "name": "Render Maya/V-ray scene on CentOS",
+        "description": "Render a Maya scene with the V-Ray renderer on Linux"
     }
 ]
