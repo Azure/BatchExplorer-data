@@ -1,7 +1,12 @@
 [
     {
         "id": "render-windows",
-        "name": "Render V-Ray scene on windows",
-        "description": "Render a standalone V-Ray scene on windows"
+        "name": "Render V-Ray scene on Windows",
+        "description": "Render a standalone V-Ray scene on Windows"
+    },
+    {
+        "id": "render-linux",
+        "name": "Render V-Ray scene on CentOS",
+        "description": "Render a standalone V-Ray scene on CentOS"
     } 
 ]
