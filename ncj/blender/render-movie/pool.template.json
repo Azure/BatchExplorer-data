@@ -1,6 +1,6 @@
 {
     "parameters": {
-        "poolName": {
+        "poolId": {
             "type": "string",
             "defaultValue": "blender-pool-ubuntu",
             "metadata": {
@@ -51,8 +51,8 @@
         }
     },
     "pool": {
-        "id": "[parameters('poolName')]",
-        "displayName": "Blender pool running: [parameters('poolName')]",
+        "id": "[parameters('poolId')]",
+        "displayName": "Blender pool running: [parameters('poolId')]",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",
