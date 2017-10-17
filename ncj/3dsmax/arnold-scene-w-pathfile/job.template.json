@@ -121,7 +121,7 @@
             ],
             "repeatTask":{
                "displayName":"Frame {0}",
-               "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\"",
+               "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & if exist \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" copy /Y \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" Max_{0}.log",
                "outputFiles":[
                   {
                      "filePattern":"../stdout.txt",
@@ -160,11 +160,11 @@
                      }
                   },
                   {
-                     "filePattern":"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log",
+                     "filePattern":"Max_*.log",
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/Max_{0}.log"
+                           "path":"outputs/[parameters('jobName')]/logs"
                         }
                      },
                      "uploadOptions":{

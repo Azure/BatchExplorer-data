@@ -155,11 +155,11 @@
                      }
                   },
                   {
-                     "filePattern":"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log",
+                     "filePattern":"Max*.log",
                      "destination":{
                         "autoStorage":{
                            "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/Max.log"
+                           "path":"outputs/[parameters('jobName')]/logs"
                         }
                      },
                      "uploadOptions":{
