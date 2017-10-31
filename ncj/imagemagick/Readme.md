@@ -1,4 +1,3 @@
-
 # ImageMagick Batch Labs Template
 
 ## Summary
@@ -18,13 +17,13 @@ Select the root folder that contains your images.
 
 Ensure 'Include sub directories' is checked. Under 'File options', keep the 'Prefix' empty, 'Flatten' and 'Full path' disabled.
 
-![Create Input Filegroup](images/create.png)
+![Create Input Filegroup](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/create.png)
 
 Click 'Upload and close'.  You will see the form close and the upload progressing under the background tasks near the top of the screen.
 
 You can view your new file group and it's files under 'Data -> image-magick-inputs'.
 
-![View Filegroup](images/view.png)
+![View Filegroup](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/view.png)
 
 
 ### 2. Job Submission
@@ -51,7 +50,7 @@ Give your pool a meaningful name, choose the number of compute nodes, and select
 
 You can see more information about the various Azure virtual machine sizes [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes).
 
-![Pool Parameters](images/parameters.png)
+![Pool Parameters](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/parameters.png)
 
 For the job name, either keep the default or enter something meaningful.
 
@@ -70,13 +69,13 @@ At this point you can monitor the job and task(s) for completion.
 
 The job will take some time to start as the auto pool needs to be created and the nodes brought online. A pool will normally take between 5 and 10 minutes to completely come online. You can see from the below screenshot that the 2 nodes in the pool will cost approximately 67 cents an hour (NZD) to run.
 
-![View Pool](images/autopool.png)
+![View Pool](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/autopool.png)
 
 Navigate to 'Jobs -> image-magick-resize', or whatever you called your job.
 
 Here you will see all the job's tasks and their current state. By clicking on a task you can view its execution information and log files.  You can even terminate a task, or the entire job, if you have made a mistake. You can use the log files here to investigate any potential issues with the task.
 
-![View Job](images/viewjob.png)
+![View Job](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/viewjob.png)
 
 Once the job has completed, the auto pool will be automatically deleted.
 
@@ -86,6 +85,6 @@ When a task completes, it will upload it's log files and the resized outputs to 
 
 In this case you can navigate to the 'image-magick-inputs' file group and see the resized images in the folder that matches the job's name. You will also find the task log files in the logs subdirectory.
 
-![View Filegroup outputs](images/outputs.png)
+![View Filegroup outputs](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/outputs.png)
 
 The output files will look the same as the input files, only they will be 50% smaller than the ones you uploaded. Uploaded size was 1600 x 1200 (294kB) and after the resize operation they were 800 x 600 (65kB)
