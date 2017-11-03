@@ -6,7 +6,7 @@
     },
 	{
         "id": "create-animation-from-images",
-        "name": "Create an animation from images",
+        "name": "Create animation from images",
         "description": "This job will create an animation from a series of individual images or render outputs in a filegroup."
     }
 ]
