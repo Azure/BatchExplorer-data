@@ -2,7 +2,7 @@
 
 ## Summary
 
-The ImageMagick templates provide a quick and easy demontration of how you can leverage the power of the Azure Batch Service to run parallel workloads in the cloud. In this case we can resize a container of images over multiple VM's.
+The ImageMagick templates provide a quick and easy demonstration of how you can leverage the power of the Azure Batch Service to run parallel workloads in the cloud. In this case we can resize a container of images over multiple VM's.
 
 
 ### 1. Upload inputs to a File Group
@@ -21,7 +21,7 @@ Ensure 'Include sub directories' is checked. Under 'File options', keep the 'Pre
 
 Click 'Upload and close'.  You will see the form close and the upload progressing under the background tasks near the top of the screen.
 
-You can view your new file group and it's files under 'Data -> image-magick-inputs'.
+You can view your new file group and its files under 'Data -> image-magick-inputs'.
 
 ![View Filegroup](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/view.png)
 
@@ -46,7 +46,7 @@ Auto pools and pools created with the 'create pool for later use' option will us
 
 For this tutorial we will use the 'Run job with auto pool' option.
 
-Give your pool a meaningful name, choose the number of compute nodes, and select a compute node size.  For this example we will use a single Standard_A2 compute node which has 2 cores. By default your Batch account has a default hard limit of 20 cores, so you can select up to 10 nodes in the pool. Depending on the number of images you want to resize, these operations take very little CPU time so for the purpose of this exercise you only need to have 2 or 3 nodes in the pool to run the job.
+Give your pool a meaningful name, choose the number of compute nodes, and select a compute node size.  For this example, we will use a single Standard_A2 compute node which has 2 cores. By default, your Batch account has a default hard limit of 20 cores, so you can select up to 10 nodes in the pool. Depending on the number of images you want to resize, these operations take very little CPU time so for this exercise you only need to have 2 or 3 nodes in the pool to run the job.
 
 You can see more information about the various Azure virtual machine sizes [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes).
 
@@ -58,7 +58,7 @@ For the Input file group, select the 'image-magick-inputs' file group that you c
 
 Enter the percentage you would like the images resized by. In this instance we are entering 50, as in reduce in size by 50%.
 
-For the output file group we will re-use the existing 'image-magick-inputs' file group.  This is the location that output images and logs are uploaded to. I would generally have a file group called outputs that i use as a default output container. All outputs from this job will be uploaded into a folder within this file group with the name of the job.
+For the output file group, we will re-use the existing 'image-magick-inputs' file group.  This is the location that output images and logs are uploaded to. I would generally have a file group called outputs that i use as a default output container. All outputs from this job will be uploaded into a folder within this file group with the name of the job.
 
 Click the Submit button to start the job.
 
@@ -73,7 +73,7 @@ The job will take some time to start as the auto pool needs to be created and th
 
 Navigate to 'Jobs -> image-magick-resize', or whatever you called your job.
 
-Here you will see all the job's tasks and their current state. By clicking on a task you can view its execution information and log files.  You can even terminate a task, or the entire job, if you have made a mistake. You can use the log files here to investigate any potential issues with the task.
+Here you will see all the job's tasks and their current state. By clicking on a task, you can view its execution information and log files.  You can even terminate a task, or the entire job, if you have made a mistake. You can use the log files here to investigate any potential issues with the task.
 
 ![View Job](https://github.com/Azure/BatchLabs-data/raw/master/ncj/imagemagick/images/viewjob.png)
 
@@ -81,7 +81,7 @@ Once the job has completed, the auto pool will be automatically deleted.
 
 ### 4. View and Download the outputs
 
-When a task completes, it will upload it's log files and the resized outputs to the output file group specified previously.
+When a task completes, it will upload its log files and the resized outputs to the output file group specified previously.
 
 In this case you can navigate to the 'image-magick-inputs' file group and see the resized images in the folder that matches the job's name. You will also find the task log files in the logs subdirectory.
 
