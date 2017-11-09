@@ -69,7 +69,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0",
+                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0",
                     "resourceFiles": [
                         {
                             "source": { 
