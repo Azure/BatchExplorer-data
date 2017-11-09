@@ -1,0 +1,122 @@
+{
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "blender-pool-ubuntu",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "blender-render",
+            "metadata": {
+                "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
+            }
+        },
+         "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "blendFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The Blender scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputData"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "metadata": {
+                "description": "The first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "metadata": {
+                "description": "The last frame to render"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]-[parameters('frameStart')]-[parameters('frameEnd')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "displayName": "[parameters('blendFile')]",
+            "onAllTasksComplete": "terminateJob",
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": 1
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0",
+                    "resourceFiles": [
+                        {
+                            "source": { 
+                                "fileGroup": "[parameters('inputData')]"
+                            }
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "[parameters('jobName')]_*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/outputs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "TaskSuccess"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
