@@ -37,6 +37,13 @@
                 "Standard_D3_v2",
                 "Standard_D4_v2"
             ]
+        },
+        "maxTasksPerNode": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of tasks per node. Less CPU bound jobs can run 1 task per core on the VM."
+            }
         }
     },
     "variables": {
@@ -57,6 +64,7 @@
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",
         "enableAutoScale": false,
+        "maxTasksPerNode": "[parameters('tasksPerNode')]",
         "packageReferences": [
             {
                 "type": "aptPackage",
