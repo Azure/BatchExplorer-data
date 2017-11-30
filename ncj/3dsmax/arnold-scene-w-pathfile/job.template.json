@@ -1,179 +1,179 @@
 {
-   "templateMetadata":{
-      "description":"Sample application template for working with 3ds Max and Arnold."
-   },
-   "parameters":{
-      "jobName":{
-         "type":"string",
-         "defaultValue":"3dsmax-arnold-w-pathfile",
-         "metadata":{
-            "description":"The job name"
-         }
-      },
-      "poolId":{
-         "type":"string",
-         "defaultValue":"ignored",
-         "metadata":{
-            "description":"The pool id"
-         }
-      },
-      "inputFilegroup":{
-         "type":"string",
-         "metadata":{
-            "description":"The file group where the input data is stored",
-            "advancedType":"file-group"
-         }
-      },
-      "sceneFile":{
-         "type":"string",
-         "metadata":{
-            "description":"The 3ds Max scene file to be rendered",
-            "advancedType":"file-in-file-group",
-            "dependsOn":"inputFilegroup"
-         }
-      },
-      "pathFile":{
-         "type":"string",
-         "metadata":{
-            "description":"The 3ds Max path file",
-            "advancedType":"file-in-file-group",
-            "dependsOn":"inputFilegroup"
-         }
-      },
-      "outputName":{
-         "type":"string",
-         "defaultValue":"image.jpg",
-         "metadata":{
-            "description":"The output filename to use when naming the rendered outputs"
-         }
-      },
-      "frameStart":{
-         "type":"int",
-         "defaultValue":1,
-         "metadata":{
-            "description":"Index of the first frame to render"
-         }
-      },
-      "frameEnd":{
-         "type":"int",
-         "defaultValue":1,
-         "metadata":{
-            "description":"Index of the last frame to render"
-         }
-      },
-      "frameStep":{
-         "type":"int",
-         "defaultValue":1,
-         "metadata":{
-            "description":"Incremental step in frame sequeunce"
-         }
-      },
-      "frameWidth":{
-         "type":"int",
-         "defaultValue":1600,
-         "metadata":{
-            "description":"Frame width"
-         }
-      },
-      "frameHeight":{
-         "type":"int",
-         "defaultValue":1200,
-         "metadata":{
-            "description":"Frame height"
-         }
-      },
-      "outputFilegroup":{
-         "type":"string",
-         "metadata":{
-            "description":"The file group where outputs will be stored",
-            "advancedType":"file-group"
-         }
-      }
-   },
-   "job":{
-      "type":"Microsoft.Batch/batchAccounts/jobs",
-      "properties":{
-         "id":"[parameters('jobName')]",
-         "displayName":"[parameters('jobName')]",
-         "poolInfo": {
-            "poolId": "[parameters('poolId')]"
-         },
-         "onAllTasksComplete":"terminateJob",
-         "jobPreparationTask":{
-            "resourceFiles":[
-               {
-                  "source":{
-                     "fileGroup":"[parameters('inputFilegroup')]"
-                  },
-                  "filePath":"assets\\"
-               }
-            ],
-            "commandLine":"dir"
-         },
-         "taskFactory":{
-            "type":"parametricSweep",
-            "parameterSets":[
-               {
-                  "start":"[parameters('frameStart')]",
-                  "end":"[parameters('frameEnd')]",
-                  "step":"[parameters('frameStep')]"
-               }
-            ],
-            "repeatTask":{
-               "displayName":"Frame {0}",
-               "commandLine":"mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & if exist \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" copy /Y \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" Max_{0}.log",
-               "outputFiles":[
-                  {
-                     "filePattern":"../stdout.txt",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/frame_{0}.log"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  },
-                  {
-                     "filePattern":"../stderr.txt",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/frame_{0}_error.log"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  },
-                  {
-                     "filePattern":"images/**/*",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskSuccess"
-                     }
-                  },
-                  {
-                     "filePattern":"Max_*.log",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  }
-               ]
+    "templateMetadata": {
+        "description": "Sample application template for working with 3ds Max and Arnold."
+    },
+    "parameters": {
+        "jobName": {
+            "type": "string",
+            "defaultValue": "3dsmax-arnold-w-pathfile",
+            "metadata": {
+                "description": "The job name"
             }
-         }
-      }
-   }
+        },
+        "poolId": {
+            "type": "string",
+            "defaultValue": "ignored",
+            "metadata": {
+                "description": "The pool id"
+            }
+        },
+        "inputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The 3ds Max scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "pathFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The 3ds Max path file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "outputName": {
+            "type": "string",
+            "defaultValue": "image.jpg",
+            "metadata": {
+                "description": "The output filename to use when naming the rendered outputs"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the last frame to render"
+            }
+        },
+        "frameStep": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Incremental step in frame sequeunce"
+            }
+        },
+        "frameWidth": {
+            "type": "int",
+            "defaultValue": 1600,
+            "metadata": {
+                "description": "Frame width"
+            }
+        },
+        "frameHeight": {
+            "type": "int",
+            "defaultValue": 1200,
+            "metadata": {
+                "description": "Frame height"
+            }
+        },
+        "outputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "displayName": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "onAllTasksComplete": "terminateJob",
+            "jobPreparationTask": {
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputFilegroup')]"
+                        },
+                        "filePath": "assets\\"
+                    }
+                ],
+                "commandLine": "dir"
+            },
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": "[parameters('frameStep')]"
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "commandLine": "mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] -pathFile:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\" \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & if exist \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" copy /Y \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" Max_{0}.log",
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "path": "[parameters('jobName')]/outputs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        },
+                        {
+                            "filePattern": "Max_*.log",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "path": "[parameters('jobName')]/logs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
 }
