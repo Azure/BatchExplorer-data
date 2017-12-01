@@ -1,187 +1,189 @@
 {
-   "templateMetadata":{
-      "description":"Sample application template for working with Blender."
-   },
-   "parameters":{
-      "jobName":{
-         "type":"string",
-         "defaultValue":"3dsmax-vray",
-         "metadata":{
-            "description":"The job name"
-         }
-      },
-      "poolId":{
-         "type":"string",
-         "metadata":{
-            "description":"The pool id"
-         }
-      },
-      "inputFilegroup":{
-         "type":"string",
-         "metadata":{
-            "description":"The file group where the input data is stored",
-            "advancedType":"file-group"
-         }
-      },
-      "sceneFile":{
-         "type":"string",
-         "metadata":{
-            "description":"The 3ds Max scene file to be rendered",
-            "advancedType":"file-in-file-group",
-            "dependsOn":"inputFilegroup"
-         }
-      },
-      "outputName":{
-         "type":"string",
-         "defaultValue":"image.jpg",
-         "metadata":{
-            "description":"The output filename to use when naming the rendered outputs"
-         }
-      },
-      "frameStart":{
-         "type":"int",
-         "defaultValue":1,
-         "metadata":{
-            "description":"Index of the first frame to render"
-         }
-      },
-      "frameEnd":{
-         "type":"int",
-         "defaultValue":1,
-         "metadata":{
-            "description":"Index of the last frame to render"
-         }
-      },
-      "frameWidth":{
-         "type":"int",
-         "defaultValue":1600,
-         "metadata":{
-            "description":"Frame width"
-         }
-      },
-      "frameHeight":{
-         "type":"int",
-         "defaultValue":1200,
-         "metadata":{
-            "description":"Frame height"
-         }
-      },
-      "nodeCount":{
-         "type":"int",
-         "defaultValue":2,
-         "metadata":{
-            "description":"Max nodes to use for render, must be equal to or less than pool node count."
-         }
-      },
-      "outputFilegroup":{
-         "type":"string",
-         "metadata":{
-            "description":"The file group where outputs will be stored",
-            "advancedType":"file-group"
-         }
-      }
-   },
-   "job":{
-      "type":"Microsoft.Batch/batchAccounts/jobs",
-      "properties":{
-         "id":"[parameters('jobName')]",
-         "displayName":"[parameters('jobName')]",
-         "onAllTasksComplete":"terminateJob",
+    "templateMetadata": {
+        "description": "Sample application template for working with Blender."
+    },
+    "parameters": {
+        "jobName": {
+            "type": "string",
+            "defaultValue": "3dsmax-vray",
+            "metadata": {
+                "description": "The job name"
+            }
+        },
+        "poolId": {
+            "type": "string",
+            "metadata": {
+                "description": "The pool id"
+            }
+        },
+        "inputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The 3ds Max scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "outputName": {
+            "type": "string",
+            "defaultValue": "image.jpg",
+            "metadata": {
+                "description": "The output filename to use when naming the rendered outputs"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the last frame to render"
+            }
+        },
+        "frameWidth": {
+            "type": "int",
+            "defaultValue": 1600,
+            "metadata": {
+                "description": "Frame width"
+            }
+        },
+        "frameHeight": {
+            "type": "int",
+            "defaultValue": 1200,
+            "metadata": {
+                "description": "Frame height"
+            }
+        },
+        "nodeCount": {
+            "type": "int",
+            "defaultValue": 2,
+            "metadata": {
+                "description": "Max nodes to use for render, must be equal to or less than pool node count."
+            }
+        },
+        "outputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "displayName": "[parameters('jobName')]",
+            "onAllTasksComplete": "terminateJob",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
-         "jobPreparationTask":{
-            "resourceFiles":[
-               {
-                  "source":{
-                     "fileGroup":"[parameters('inputFilegroup')]"
-                  },
-                  "filePath":"assets\\"
-               }
-            ],
-            "commandLine":"dir"
-         },
-         "taskFactory":{
-            "type":"taskCollection",
-            "tasks":[{
-               "id":"Render",
-               "displayName":"Frame",
-               "commandLine":"powershell.exe -File 3dsmax-vray-dr.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')]",
-               "multiInstanceSettings": {
-                  "numberOfInstances": "[parameters('nodeCount')]",
-                  "coordinationCommandLine": "cmd.exe /c start C:\\Autodesk\\MayaIO2017\\vray\\bin\\vray.exe -server -portNumber=20207",
-                  "commonResourceFiles": [ ]
-               },
-               "resourceFiles": [
-                  {
-                     "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/3dsmax-vray-dr.ps1",
-                     "filePath":"3dsmax-vray-dr.ps1"
-                  }
-               ],
-               "outputFiles":[
-                  {
-                     "filePattern":"../stdout.txt",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/frame.log"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  },
-                  {
-                     "filePattern":"../stderr.txt",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/frame_error.log"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  },
-                  {
-                     "filePattern":"images/**/*",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskSuccess"
-                     }
-                  },
-                  {
-                     "filePattern":"Max*.log",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  },
-                  {
-                     "filePattern":"%LOCALAPPDATA%\\Temp\\vraylog.txt",
-                     "destination":{
-                        "autoStorage":{
-                           "fileGroup":"[parameters('outputFilegroup')]",
-                           "path":"outputs/[parameters('jobName')]/logs/vraylog.txt"
-                        }
-                     },
-                     "uploadOptions":{
-                        "uploadCondition":"taskCompletion"
-                     }
-                  }
-               ]
-            }]
-         }
-      }
-   }
+            "jobPreparationTask": {
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputFilegroup')]"
+                        },
+                        "filePath": "assets\\"
+                    }
+                ],
+                "commandLine": "dir"
+            },
+            "taskFactory": {
+                "type": "taskCollection",
+                "tasks": [
+                    {
+                        "id": "Render",
+                        "displayName": "Frame",
+                        "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')]",
+                        "multiInstanceSettings": {
+                            "numberOfInstances": "[parameters('nodeCount')]",
+                            "coordinationCommandLine": "cmd.exe /c start C:\\Autodesk\\MayaIO2017\\vray\\bin\\vray.exe -server -portNumber=20207",
+                            "commonResourceFiles": []
+                        },
+                        "resourceFiles": [
+                            {
+                                "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/3dsmax-vray-dr.ps1",
+                                "filePath": "3dsmax-vray-dr.ps1"
+                            }
+                        ],
+                        "outputFiles": [
+                            {
+                                "filePattern": "../stdout.txt",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "path": "[parameters('jobName')]/logs/frame.log"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            },
+                            {
+                                "filePattern": "../stderr.txt",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "path": "[parameters('jobName')]/logs/frame_error.log"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            },
+                            {
+                                "filePattern": "images/**/*",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "path": "[parameters('jobName')]/outputs"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskSuccess"
+                                }
+                            },
+                            {
+                                "filePattern": "Max*.log",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "path": "[parameters('jobName')]/logs"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            },
+                            {
+                                "filePattern": "%LOCALAPPDATA%\\Temp\\vraylog.txt",
+                                "destination": {
+                                    "autoStorage": {
+                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "path": "[parameters('jobName')]/logs/vraylog.txt"
+                                    }
+                                },
+                                "uploadOptions": {
+                                    "uploadCondition": "taskCompletion"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 }
