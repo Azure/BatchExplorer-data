@@ -7,7 +7,8 @@ param (
     [string]$sceneFile,
     [int]$nodeCount = 1,
     [switch]$dr,
-    [string]$irradianceMap = ""
+    [string]$irradianceMap = "",
+    [string]$pathFile = $null
 )
 
 $port = 20207
@@ -85,12 +86,30 @@ vr.adv_irradmap_loadFileName = "$irMap"
 "@ | Out-File -Append $pre_render_script
 }
 
+$pathFileParam = ""
+if ($pathFile)
+{
+    # If we're using a path file we need to ensure the scene file is located at the same
+    # location otherwise 3ds Max 2018 IO has issues finding textures.
+    $sceneFileName = [System.IO.Path]::GetFileName($sceneFile)
+    $sceneFileDirectory = [System.IO.Path]::GetDirectoryName("$sceneFile")
+    $pathFileDirectory = [System.IO.Path]::GetDirectoryName($pathFile)
+    if ($sceneFileDirectory -ne $pathFileDirectory)
+    {
+        Write-Host "Copying scene file from $sceneFile to $pathFileDirectory"
+        Copy-Item "$sceneFile" "$pathFileDirectory"
+        $sceneFile = "$pathFileDirectory\$sceneFileName"
+    }
+    $pathFileParam = "-pathFile:$pathFile"
+}
+
 # Create folder for outputs
 mkdir images
 
 # Render
-3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -preRenderScript:$pre_render_script -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height "$sceneFile"
+3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -preRenderScript:$pre_render_script -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
+$result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
 
-exit $lastexitcode
+exit $result

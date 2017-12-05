@@ -107,7 +107,7 @@
                     {
                         "id": "Render",
                         "displayName": "Frame",
-                        "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName [parameters('outputName')] -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')]",
+                        "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName [parameters('outputName')] -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')] -dr",
                         "multiInstanceSettings": {
                             "numberOfInstances": "[parameters('nodeCount')]",
                             "coordinationCommandLine": "cmd.exe /c start C:\\Autodesk\\MayaIO2017\\vray\\bin\\vray.exe -server -portNumber=20207",
