@@ -24,14 +24,6 @@
                 "advancedType": "file-group"
             }
         },
-        "inputFilegroupSas": {
-            "type": "string",
-            "metadata": {
-                "description": "SAS token for reading the data from the selected file group",
-                "advancedType": "file-group-sas",
-                "dependsOn": "inputFilegroup"
-            }
-        },
         "sceneFile": {
             "type": "string",
             "metadata": {
@@ -108,7 +100,15 @@
             },
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask": {
-                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S && rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0"
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputFilegroup')]"
+                        },
+                        "filePath": "assets\\"
+                    }
+                ],
+                "commandLine": "dir"
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -121,7 +121,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')] -pathFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\"",
+                    "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -pathFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('pathFile')]\"",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
