@@ -1,6 +1,6 @@
 {
     "jobName":{
-        "value":"myvrayjob"
+        "value":"myvraydrjob"
     },
     "poolId":{
         "value":"mypool"
@@ -23,9 +23,6 @@
     "frameEnd":{
         "value":1
     },
-    "frameStep":{
-        "value":1
-    },
     "frameWidth":{
         "value":1600
     },
@@ -34,5 +31,8 @@
     },
     "outputFilegroup":{
         "value":"myfilegroup"
+    },
+    "nodeCount":{
+        "value":1
     }
 }

@@ -5,27 +5,33 @@ param (
     [int]$width = 800,
     [int]$height = 600,
     [string]$sceneFile,
-    [int]$nodeCount = 1
+    [int]$nodeCount = 1,
+    [switch]$dr,
+    [string]$irradianceMap = ""
 )
 
 $port = 20207
 $vraydr_file = "vray_dr.cfg"
 $vrayrtdr_file = "vrayrt_dr.cfg"
-$pre_render_script = "enable-dr.ms"
+$pre_render_script = "prerender.ms"
 
-$hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
+function SetupDistributedRendering
+{
+    Write-Host "Setting up DR..."
+    
+    $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
 
-if ($hosts.Count -ne $nodeCount) {
-    Write-Host "Host count $hosts.Count must equal nodeCount $nodeCount"
-    exit 1
-}
+    if ($hosts.Count -ne $nodeCount) {
+        Write-Host "Host count $hosts.Count must equal nodeCount $nodeCount"
+        exit 1
+    }
 
-$env:AZ_BATCH_HOST_LIST.Split(",") | ForEach {
-    "$_ 1 $port" | Out-File -Append $vraydr_file
-    "$_ 1 $port" | Out-File -Append $vrayrtdr_file
-}
+    $env:AZ_BATCH_HOST_LIST.Split(",") | ForEach {
+        "$_ 1 $port" | Out-File -Append $vraydr_file
+        "$_ 1 $port" | Out-File -Append $vrayrtdr_file
+    }
 
-# Create vray_dr.cfg with cluster hosts
+    # Create vray_dr.cfg with cluster hosts
 @"
 restart_slaves 0
 list_in_scene 0
@@ -41,9 +47,9 @@ cache_limit 100.000000
 autostart_local_slave 0
 "@ | Out-File -Append $vrayrtdr_file
 
-New-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg" -ItemType Directory
-cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vray_dr.cfg"
-cp $vrayrtdr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
+    New-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg" -ItemType Directory
+    cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vray_dr.cfg"
+    cp $vrayrtdr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
 
 # Create preRender script to enable distributed rendering in the scene
 @"
@@ -56,7 +62,28 @@ index = findString rendererName "V_Ray_"
 if index != 1 then (print "VRay renderer not used, please save the scene with a VRay renderer selected.")
 index = findString rendererName "V_Ray_RT_"
 if index == 1 then (vr.distributed_rendering = true) else (vr.system_distributedRender = true;vr.system_vrayLog_level = 4; vr.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.txt")
+"@ | Out-File -Append $pre_render_script
+}
+
+@"
+-- Pre render script
 "@ | Out-File $pre_render_script
+
+if ($dr)
+{
+    SetupDistributedRendering
+}
+
+if ($irradianceMap)
+{
+    $irMap = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets\$irradianceMap"
+    Write-Host "Setting IR map to $irMap"
+@"
+-- Set the IR path
+vr = renderers.current
+vr.adv_irradmap_loadFileName = "$irMap"
+"@ | Out-File -Append $pre_render_script
+}
 
 # Create folder for outputs
 mkdir images
