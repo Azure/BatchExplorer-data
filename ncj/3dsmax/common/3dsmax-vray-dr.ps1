@@ -18,12 +18,12 @@ $pre_render_script = "prerender.ms"
 
 function SetupDistributedRendering
 {
-    Write-Host "Setting up DR..."
+    Write-Error "Setting up DR..."
     
     $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
 
     if ($hosts.Count -ne $nodeCount) {
-        Write-Host "Host count $hosts.Count must equal nodeCount $nodeCount"
+        Write-Error "Host count $hosts.Count must equal nodeCount $nodeCount"
         exit 1
     }
 
@@ -78,7 +78,7 @@ if ($dr)
 if ($irradianceMap)
 {
     $irMap = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets\$irradianceMap"
-    Write-Host "Setting IR map to $irMap"
+    Write-Error "Setting IR map to $irMap"
 @"
 -- Set the IR path
 vr = renderers.current
@@ -96,18 +96,17 @@ if ($pathFile)
     $pathFileDirectory = [System.IO.Path]::GetDirectoryName($pathFile)
     if ($sceneFileDirectory -ne $pathFileDirectory)
     {
-        Write-Host "Copying scene file from $sceneFile to $pathFileDirectory"
-        Copy-Item "$sceneFile" "$pathFileDirectory"
+        Copy-Item -Force "$sceneFile" "$pathFileDirectory" -ErrorAction Stop > $null
         $sceneFile = "$pathFileDirectory\$sceneFileName"
     }
     $pathFileParam = "-pathFile:$pathFile"
 }
 
 # Create folder for outputs
-mkdir images
+mkdir -Force images > $null
 
 # Render
-3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -preRenderScript:$pre_render_script -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
+3dsmaxcmd.exe -secure off -v:5 -rfw:0 -preRenderScript:$pre_render_script -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
