@@ -100,7 +100,13 @@
                         "filePath": "assets\\"
                     }
                 ],
-                "commandLine": "dir"
+                "commandLine": "dir",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "nonAdmin",
+                        "scope": "pool"
+                    }
+                }
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -113,10 +119,16 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "powershell.exe -File 3dsmax-vray-dr.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -renderer arnold",
+                    "userIdentity": {
+                        "autoUser": {
+                            "elevationLevel": "nonAdmin",
+                            "scope": "pool"
+                        }
+                    },
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -renderer arnold",
                     "resourceFiles":[
                         {
-                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/christis/arnold-fail-on-lic-error/ncj/3dsmax/common/3dsmax.ps1",
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/3dsmax.ps1",
                             "filePath":"3dsmax.ps1"
                         }
                     ],
