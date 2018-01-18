@@ -100,7 +100,13 @@
                         "filePath": "assets\\"
                     }
                 ],
-                "commandLine": "dir"
+                "commandLine": "dir",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "nonAdmin",
+                        "scope": "pool"
+                    }
+                }
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -113,7 +119,19 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & if exist \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" copy /Y \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" Max_{0}.log",
+                    "userIdentity": {
+                        "autoUser": {
+                            "elevationLevel": "nonAdmin",
+                            "scope": "pool"
+                        }
+                    },
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -renderer arnold",
+                    "resourceFiles":[
+                        {
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/3dsmax.ps1",
+                            "filePath":"3dsmax.ps1"
+                        }
+                    ],
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
