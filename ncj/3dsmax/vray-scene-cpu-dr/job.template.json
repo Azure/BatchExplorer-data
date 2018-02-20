@@ -99,7 +99,13 @@
                         "filePath": "assets\\"
                     }
                 ],
-                "commandLine": "dir"
+                "commandLine": "dir",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "nonAdmin",
+                        "scope": "pool"
+                    }
+                }
             },
             "taskFactory":{
                 "type":"taskCollection",
@@ -108,6 +114,12 @@
                         "id":"Render",
                         "displayName":"Frame",
                         "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -nodeCount [parameters('nodeCount')] -dr",
+                        "userIdentity": {
+                            "autoUser": {
+                                "elevationLevel": "nonAdmin",
+                                "scope": "pool"
+                            }
+                        },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
                             "coordinationCommandLine":"cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=20207",
