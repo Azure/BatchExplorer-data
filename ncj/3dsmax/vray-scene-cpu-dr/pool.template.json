@@ -111,6 +111,7 @@
          "3dsmax",
          "vray"
       ],
-      "enableAutoScale":false
+      "enableAutoScale":false,
+      "enableInterNodeCommunication":true
    }
 }

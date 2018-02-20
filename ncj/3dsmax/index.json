@@ -25,7 +25,7 @@
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay.  Ensure your scene is exported with a 3ds Max path file (.mxp) with relative paths."
     },
     {
-        "id": "vray-scene-dr",
+        "id": "vray-scene-cpu-dr",
         "name": "VRay CPU DR - Render a scene using Distributed Render",
         "description": "This job will render different frames of a 3ds max scene in parallel using VRay."
     },
