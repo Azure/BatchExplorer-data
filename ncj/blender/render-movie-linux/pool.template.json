@@ -64,7 +64,7 @@
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",
         "enableAutoScale": false,
-        "maxTasksPerNode": "[parameters('tasksPerNode')]",
+        "maxTasksPerNode": "[parameters('maxTasksPerNode')]",
         "packageReferences": [
             {
                 "type": "aptPackage",
