@@ -5,14 +5,14 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "maya-vray-pool-centos",
+            "defaultValue": "maya-sw-pool-centos",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "maya-vray-centos",
+            "defaultValue": "maya-sw-centos",
             "metadata": {
                 "description": "The unique name of the job."
             }
@@ -96,7 +96,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer vray -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer sw -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
@@ -105,10 +105,6 @@
                         {
                             "name": "FLEXLM_TIMEOUT",
                             "value": "5000000"
-                        },
-                        {
-                            "name": "VRAY_AUTH_CLIENT_FILE_PATH",
-                            "value": "/etc/vray"
                         }
                     ],
                     "outputFiles": [

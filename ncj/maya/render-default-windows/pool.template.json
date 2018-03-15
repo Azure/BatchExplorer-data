@@ -2,7 +2,7 @@
     "parameters": {
         "poolName": {
             "type": "string",
-            "defaultValue": "maya-vray-pool-centos",
+            "defaultValue": "maya-sw-pool-windows",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -95,23 +95,22 @@
         "osType": {
             "imageReference": {
                 "publisher": "batch",
-                "offer": "rendering-centos73",
+                "offer": "rendering-windows2016",
                 "sku": "rendering",
                 "version": "latest"
             },
-            "nodeAgentSKUId": "batch.node.centos 7"
+            "nodeAgentSKUId": "batch.node.windows amd64"
         }
     },
     "pool": {
         "id": "[parameters('poolName')]",
-        "displayName": "Maya V-Ray rendering pool for CentOS",
+        "displayName": "Maya default rendering pool for Windows",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",
         "enableAutoScale": false,
         "applicationLicenses": [
-            "maya",
-            "vray"
+            "maya"
         ]
     }
 }

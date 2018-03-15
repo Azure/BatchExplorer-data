@@ -1,18 +1,18 @@
 {
     "templateMetadata": {
-        "description": "Application template for working with Maya and V-Ray on CentOS."
+        "description": "Application template for working with Maya default renderer on Windows."
     },
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "maya-vray-pool-centos",
+            "defaultValue": "maya-sw-pool-windows",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "maya-vray-centos",
+            "defaultValue": "maya-sw-windows",
             "metadata": {
                 "description": "The unique name of the job."
             }
@@ -77,7 +77,7 @@
                         "filePath": "assets/"
                     }
                 ],
-                "commandLine": "ls"
+                "commandLine": "dir"
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -96,19 +96,15 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer vray -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & render -renderer sw -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
-                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%/scripts"
+                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%\\scripts"
                         },
                         {
                             "name": "FLEXLM_TIMEOUT",
                             "value": "5000000"
-                        },
-                        {
-                            "name": "VRAY_AUTH_CLIENT_FILE_PATH",
-                            "value": "/etc/vray"
                         }
                     ],
                     "outputFiles": [

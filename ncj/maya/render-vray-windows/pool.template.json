@@ -104,7 +104,7 @@
     },
     "pool": {
         "id": "[parameters('poolName')]",
-        "displayName": "V-Ray Windows rendering pool",
+        "displayName": "Maya V-Ray rendering pool for Windows",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",

@@ -12,7 +12,7 @@
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "render-maya-vray",
+            "defaultValue": "maya-vray-windows",
             "metadata": {
                 "description": "The unique name of the job."
             }
@@ -96,7 +96,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & render -renderer vray -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -verb -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"",
+                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & render -renderer vray -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
@@ -145,7 +145,7 @@
                             }
                         },
                         {
-                            "filePattern": "thumbs/*.png",
+                            "filePattern": "thumbs/**/*",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputs')]",
