@@ -42,7 +42,7 @@
         },
         "pathFile": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "None",
             "metadata": {
                 "description": "Optional 3ds Max path file",
                 "advancedType": "file-in-file-group",
@@ -51,7 +51,7 @@
         },
         "preRenderScript": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "None",
             "metadata": {
                 "description": "Optional 3ds Max pre-render script to execute",
                 "advancedType": "file-in-file-group",
@@ -118,7 +118,7 @@
             },
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask": {
-                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0"
+                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0",
                 "userIdentity": {
                     "autoUser": {
                         "elevationLevel": "nonAdmin",

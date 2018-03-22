@@ -97,21 +97,37 @@ r.abort_on_license_fail = true
 "@ | Out-File -Append $pre_render_script
 }
 
-if ($preRenderScript && [System.IO.File]::Exists($path))
+if ($preRenderScript -and -Not ($preRenderScript -eq "none"))
 {
+    if (-Not [System.IO.File]::Exists($preRenderScript))
+    {        
+        Write-Host "Pre-render script $preRenderScript not found, exiting."
+        exit 1
+    }
+
     "`r`n" | Out-File -Append $pre_render_script
     Get-Content -Path $preRenderScript | Out-File -Append $pre_render_script
+}
+else
+{
+    Write-Host "No pre-render script specified"
 }
 
 $sceneFile = "$workingDirectory\$sceneFile"
 Write-Host "Using absolute scene file $sceneFile"
 
 $pathFileParam = ""
-if ($pathFile)
+if ($pathFile -and -Not ($pathFile -eq "none"))
 {
     $pathFile = "$workingDirectory\$pathFile"
-    
-    Write-Host "Using absolute path file $pathFile"
+
+    if (-Not [System.IO.File]::Exists($pathFile))
+    {        
+        Write-Host "Path file $pathFile not found, exiting."
+        exit 1
+    }
+
+    Write-Host "Using path file $pathFile"
     
     # If we're using a path file we need to ensure the scene file is located at the same
     # location otherwise 3ds Max 2018 IO has issues finding textures.
