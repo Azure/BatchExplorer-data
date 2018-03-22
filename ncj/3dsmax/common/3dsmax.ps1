@@ -9,7 +9,9 @@ param (
     [switch]$dr,
     [string]$renderer = "vray",
     [string]$irradianceMap = "",
-    [string]$pathFile = $null
+    [string]$pathFile = $null,
+    [string]$workingDirectory = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets",
+    [string]$preRenderScript = $null
 )
 
 function SetupDistributedRendering
@@ -95,9 +97,22 @@ r.abort_on_license_fail = true
 "@ | Out-File -Append $pre_render_script
 }
 
+if ($preRenderScript && [System.IO.File]::Exists($path))
+{
+    "`r`n" | Out-File -Append $pre_render_script
+    Get-Content -Path $preRenderScript | Out-File -Append $pre_render_script
+}
+
+$sceneFile = "$workingDirectory\$sceneFile"
+Write-Host "Using absolute scene file $sceneFile"
+
 $pathFileParam = ""
 if ($pathFile)
 {
+    $pathFile = "$workingDirectory\$pathFile"
+    
+    Write-Host "Using absolute path file $pathFile"
+    
     # If we're using a path file we need to ensure the scene file is located at the same
     # location otherwise 3ds Max 2018 IO has issues finding textures.
     $sceneFileName = [System.IO.Path]::GetFileName($sceneFile)
@@ -109,6 +124,10 @@ if ($pathFile)
         $sceneFile = "$pathFileDirectory\$sceneFileName"
     }
     $pathFileParam = "-pathFile:$pathFile"
+}
+else
+{
+    Write-Host "No path file specified"
 }
 
 # Create folder for outputs

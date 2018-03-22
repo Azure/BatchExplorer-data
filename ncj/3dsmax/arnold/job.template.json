@@ -5,7 +5,7 @@
     "parameters": {
         "jobName": {
             "type": "string",
-            "defaultValue": "3dsmax-arnold",
+            "defaultValue": "3dsmax-arnold-w-pathfile",
             "metadata": {
                 "description": "The job name"
             }
@@ -24,10 +24,36 @@
                 "advancedType": "file-group"
             }
         },
+        "inputFilegroupSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputFilegroup"
+            }
+        },
         "sceneFile": {
             "type": "string",
             "metadata": {
                 "description": "The 3ds Max scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "pathFile": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional 3ds Max path file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "preRenderScript": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional 3ds Max pre-render script to execute",
                 "advancedType": "file-in-file-group",
                 "dependsOn": "inputFilegroup"
             }
@@ -92,15 +118,7 @@
             },
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask": {
-                "resourceFiles": [
-                    {
-                        "source": {
-                            "fileGroup": "[parameters('inputFilegroup')]"
-                        },
-                        "filePath": "assets\\"
-                    }
-                ],
-                "commandLine": "dir",
+                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0"
                 "userIdentity": {
                     "autoUser": {
                         "elevationLevel": "nonAdmin",
@@ -125,10 +143,10 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -renderer arnold",
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer arnold -preRenderScript \"[parameters('preRenderScript')]\"",
                     "resourceFiles":[
                         {
-                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/common/3dsmax.ps1",
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/common/3dsmax.ps1",
                             "filePath":"3dsmax.ps1"
                         }
                     ],
