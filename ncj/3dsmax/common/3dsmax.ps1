@@ -143,7 +143,8 @@ if (ParameterValueSet $pathFile)
     $pathFileDirectory = [System.IO.Path]::GetDirectoryName($pathFile)
     if ($sceneFileDirectory -ne $pathFileDirectory)
     {
-        Copy-Item -Force "$sceneFile" "$pathFileDirectory" -ErrorAction Stop > $null
+        Write-Host "Moving scene file to $pathFileDirectory"
+        Move-Item -Force "$sceneFile" "$pathFileDirectory" -ErrorAction Stop > $null
         $sceneFile = "$pathFileDirectory\$sceneFileName"
     }
     $pathFileParam = "-pathFile:$pathFile"
