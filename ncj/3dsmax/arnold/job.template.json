@@ -5,7 +5,7 @@
     "parameters": {
         "jobName": {
             "type": "string",
-            "defaultValue": "3dsmax-arnold-w-pathfile",
+            "defaultValue": "3dsmax-arnold",
             "metadata": {
                 "description": "The job name"
             }
@@ -63,6 +63,20 @@
             "defaultValue": "image.jpg",
             "metadata": {
                 "description": "The output filename to use when naming the rendered outputs"
+            }
+        },
+        "camera": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional camera to render, if not specified the scene selected camera will be used."
+            }
+        },
+        "additionalArgs": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1"
             }
         },
         "frameStart": {
@@ -143,7 +157,7 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer arnold -preRenderScript \"[parameters('preRenderScript')]\"",
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer arnold -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\"",
                     "resourceFiles":[
                         {
                             "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/common/3dsmax.ps1",

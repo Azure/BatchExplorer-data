@@ -11,8 +11,15 @@ param (
     [string]$irradianceMap = "",
     [string]$pathFile = $null,
     [string]$workingDirectory = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets",
-    [string]$preRenderScript = $null
+    [string]$preRenderScript = $null,
+    [string]$camera = $null,
+    [string]$additionalArgs = $null
 )
+
+function ParameterValueSet([string]$value)
+{
+    return ($value -and -Not ($value -eq "none") -and -Not ($value -eq " "))
+}
 
 function SetupDistributedRendering
 {
@@ -97,7 +104,7 @@ r.abort_on_license_fail = true
 "@ | Out-File -Append $pre_render_script
 }
 
-if ($preRenderScript -and -Not ($preRenderScript -eq "none"))
+if (ParameterValueSet $preRenderScript)
 {
     if (-Not [System.IO.File]::Exists($preRenderScript))
     {        
@@ -117,7 +124,7 @@ $sceneFile = "$workingDirectory\$sceneFile"
 Write-Host "Using absolute scene file $sceneFile"
 
 $pathFileParam = ""
-if ($pathFile -and -Not ($pathFile -eq "none"))
+if (ParameterValueSet $pathFile)
 {
     $pathFile = "$workingDirectory\$pathFile"
 
@@ -146,11 +153,29 @@ else
     Write-Host "No path file specified"
 }
 
+$cameraParam = ""
+if (ParameterValueSet $camera)
+{
+    Write-Host "Using camera $camera"
+    $cameraParam = "-camera:$camera"
+}
+else
+{
+    Write-Host "No camera specified"
+}
+
+$additionalArgumentsParam = ""
+if (ParameterValueSet $additionalArgs)
+{
+    Write-Host "Using additional arguments $additionalArgs"
+    $additionalArgumentsParam = $additionalArgs
+}
+
 # Create folder for outputs
 mkdir -Force images > $null
 
 # Render
-3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -preRenderScript:$pre_render_script -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
+3dsmaxcmdio.exe -secure off -v:5 -rfw:0 $cameraParam $additionalArgumentsParam -preRenderScript:"$pre_render_script" -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
