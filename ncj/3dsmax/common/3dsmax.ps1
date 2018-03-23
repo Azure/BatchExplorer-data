@@ -106,6 +106,8 @@ r.abort_on_license_fail = true
 
 if (ParameterValueSet $preRenderScript)
 {
+    $preRenderScript = "$workingDirectory\$preRenderScript"
+    
     if (-Not [System.IO.File]::Exists($preRenderScript))
     {        
         Write-Host "Pre-render script $preRenderScript not found, exiting."
@@ -180,5 +182,6 @@ mkdir -Force images > $null
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
+Copy-Item "$env:LOCALAPPDATA\Temp\vraylog.txt" . -ErrorAction SilentlyContinue
 
 exit $result

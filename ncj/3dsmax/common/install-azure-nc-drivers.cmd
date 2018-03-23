@@ -1,4 +1,11 @@
 
+set vmsize=%~1
+if "%vmsize%" == "" goto InstallDrivers
+if "%vmsize:~0,11%" == "Standard_NC" goto InstallDrivers
+goto Done
+
+
+:InstallDrivers
 rem Check for NVIDIA Tesla GPUs
 rem Ignore check for now, system doesn't seem to be returning NVIDIA devices
 rem wmic path win32_VideoController get name | findstr /C:"NVIDIA Tesla" || exit /b 0
@@ -34,3 +41,6 @@ echo done > %AZ_BATCH_NODE_SHARED_DIR%\init.txt
 
 rem Initiate a reboot of the VM
 start shutdown /r /t 15
+
+:Done
+exit /b 0

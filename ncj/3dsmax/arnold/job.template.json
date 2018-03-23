@@ -17,6 +17,17 @@
                 "description": "The pool id"
             }
         },
+        "renderer": {
+            "type": "string",
+            "defaultValue": "arnold",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "arnold",
+                "vray"
+            ]
+        },
         "inputFilegroup": {
             "type": "string",
             "metadata": {
@@ -157,7 +168,7 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer arnold -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\"",
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('renderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\"",
                     "resourceFiles":[
                         {
                             "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/common/3dsmax.ps1",
@@ -170,7 +181,7 @@
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}.log"
                                 }
                             },
                             "uploadOptions": {
@@ -182,7 +193,7 @@
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}_error.log"
                                 }
                             },
                             "uploadOptions": {
@@ -206,7 +217,19 @@
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "vraylog.*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}"
                                 }
                             },
                             "uploadOptions": {
