@@ -13,17 +13,6 @@
             "description":"The number of nodes in the Azure Batch pool where the job will run"
          }
       },
-      "renderer":{
-         "type":"string",
-         "defaultValue":"arnold",
-         "metadata":{
-            "description":"The renderer to use"
-         },
-         "allowedValues":[
-            "arnold",
-            "vray"
-         ]
-      },
       "vmSize":{
          "type":"string",
          "metadata":{
@@ -100,10 +89,10 @@
       "targetDedicatedNodes":"[parameters('numberNodes')]",
       "applicationLicenses":[
          "3dsmax",
-         "[parameters('renderer')]"
+         "vray"
       ],
       "enableAutoScale":false,
-      "enableInterNodeCommunication":false,
+      "enableInterNodeCommunication":true,
       "startTask":{
             "commandLine":"cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')]",
             "waitForSuccess":true,
@@ -115,7 +104,7 @@
             },
             "resourceFiles": [
               {
-                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/common/install-azure-nc-drivers.cmd",
+                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
                 "filePath":"install-azure-nc-drivers.cmd"
               }
             ]

@@ -24,13 +24,13 @@ Select the root folder of your assets.  If you're using a 3ds Max path file with
 
 Ensure 'Include sub directories' is checked.  Under File options keep the Prefix empty, Flatten and Full path disabled.
 
-![Create Input Filegroup](images/CreateFilegroup.png)
+![Create Input Filegroup](docs/images/CreateFilegroup.png)
 
 Click 'Upload and close'.  You'll see the form close and the upload progressing under background tasks near the top of the screen.
 
 You can view your new file group and the data in it under 'Data -> 3dsmax-project'.  Below you can see that your filegroup has a single scene file 'Introduction-to-Arnold_robot_final.max'.
 
-![View Filegroup](images/ViewFilegroupInputs.png)
+![View Filegroup](docs/images/ViewFilegroupInputs.png)
 
 ### 2. Job Submission
 
@@ -38,11 +38,11 @@ To submit a render job with Batch Labs navigate to:
 
 Market -> 3ds Max
 
-![Select 3ds Max Template](images/Market3dsMax.png)
+![Select 3ds Max Template](docs/images/Market3dsMax.png)
 
 Then navigate to 'Render an Arnold scene'.  See below for more details on rendering scenes with path files.
 
-![Select 3ds Max Arnold Scene](images/Market3dsMax-Arnold.png)
+![Select 3ds Max Arnold Scene](docs/images/Market3dsMax-Arnold.png)
 
 Now you need to select the pool mode.
 
@@ -58,7 +58,7 @@ Give your pool a meaningful name, choose the number of compute nodes and select 
 
 You can see more information about the various Azure virtual machine sizes [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes).
 
-![Pool Parameters](images/Market3dsMax-PoolInput.png)
+![Pool Parameters](docs/images/Market3dsMax-PoolInput.png)
 
 For the job name either keep the default or enter something meaningful.
 
@@ -72,7 +72,7 @@ For the output filegroup we'll re-use the existing '3dsmax-project' filegroup.  
 
 Click the Submit button to start the job.
 
-![Job Parameters](images/Market3dsMax-JobInput.png)
+![Job Parameters](docs/images/Market3dsMax-JobInput.png)
 
 ### 3. Monitor your Job
 
@@ -82,7 +82,7 @@ Navigate to 'Jobs -> 3dsmax-render'.
 
 Here you'll see all the job tasks and their current state.  By clicking on a task you can view its execution information and log files.  You can even terminate a task if you've made a mistake.  You can use the log files here to investigate any potential issues with the scene or render.
 
-![View Job](images/ViewJob.png)
+![View Job](docs/images/ViewJob.png)
 
 
 ### 4. View and Download the outputs
@@ -91,11 +91,11 @@ When a task completes it will upload its log files and the render outputs to the
 
 In this case you can navigate to the '3dsmax-project' filegroup and see the render outputs in the root of the filegroup.  You'll also find the task log files in the logs subdirectory.
 
-![View Filegroup outputs](images/ViewFilegroupOutputs.png)
+![View Filegroup outputs](docs/images/ViewFilegroupOutputs.png)
 
 Your final output should look like this.
 
-![Final Output](images/FinalOutput.jpg)
+![Final Output](docs/images/FinalOutput.jpg)
 
 
 ## Rendering Scenes with Path Files
