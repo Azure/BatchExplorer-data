@@ -8,7 +8,7 @@
       },
       "numberNodes":{
          "type":"int",
-         "defaultValue":1,
+         "defaultValue":2,
          "metadata":{
             "description":"The number of nodes in the Azure Batch pool where the job will run"
          }
@@ -20,36 +20,10 @@
          },
          "defaultValue":"Standard_D2_v2",
          "allowedValues":[
-            "Standard_A1",
-            "Standard_A2",
-            "Standard_A3",
-            "Standard_A4",
-            "Standard_A5",
-            "Standard_A6",
-            "Standard_A7",
             "Standard_A8",
             "Standard_A9",
             "Standard_A10",
             "Standard_A11",
-            "Standard_A1_v2",
-            "Standard_A2_v2",
-            "Standard_A4_v2",
-            "Standard_A8_v2",
-            "Standard_A2m_v2",
-            "Standard_A4m_v2",
-            "Standard_A8m_v2",
-            "Standard_D1",
-            "Standard_D2",
-            "Standard_D3",
-            "Standard_D4",
-            "Standard_D11",
-            "Standard_D12",
-            "Standard_D13",
-            "Standard_D14",
-            "Standard_D11",
-            "Standard_D12",
-            "Standard_D13",
-            "Standard_D14",
             "Standard_D1_v2",
             "Standard_D2_v2",
             "Standard_D3_v2",
@@ -64,6 +38,8 @@
             "Standard_D4_v3",
             "Standard_D8_v3",
             "Standard_D16_v3",
+            "Standard_D32_v3",
+            "Standard_D64_v3",
             "Standard_E2_v3",
             "Standard_E4_v3",
             "Standard_E8_v3",
@@ -80,13 +56,31 @@
             "Standard_G3",
             "Standard_G4",
             "Standard_G5",
+            "Standard_H8",
+            "Standard_H16",
+            "Standard_H8m",
+            "Standard_H16m",
+            "Standard_H16r",
+            "Standard_H16mr",
             "Standard_L4",
             "Standard_L8",
             "Standard_L16",
             "Standard_L32",
             "Standard_M64s",
             "Standard_M64ms",
-            "Standard_M128s"
+            "Standard_M128s",
+            "Standard_NC6",
+            "Standard_NC12",
+            "Standard_NC24",
+            "Standard_NC24r",
+            "Standard_NC6s_v2",
+            "Standard_NC12s_v2",
+            "Standard_NC24s_v2",
+            "Standard_NC24rs_v2",
+            "Standard_NC6s_v3",
+            "Standard_NC12s_v3",
+            "Standard_NC24s_v3",
+            "Standard_NC24rs_v3"
          ]
       }
    },
@@ -112,6 +106,22 @@
          "vray"
       ],
       "enableAutoScale":false,
-      "enableInterNodeCommunication":true
+      "enableInterNodeCommunication":true,
+      "startTask":{
+            "commandLine":"cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')]",
+            "waitForSuccess":true,
+            "maxTaskRetryCount":0,
+            "userIdentity":{
+               "autoUser":{
+                  "elevationLevel":"admin"
+               }
+            },
+            "resourceFiles": [
+              {
+                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
+                "filePath":"install-azure-nc-drivers.cmd"
+              }
+            ]
+      }
    }
 }

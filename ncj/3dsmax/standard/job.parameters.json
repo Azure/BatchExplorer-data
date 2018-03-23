@@ -8,11 +8,17 @@
    "inputFilegroup":{
       "value":"myfilegroup"
    },
+   "inputFilegroupSas":{
+      "value":"https://myfilegroup"
+   },
    "sceneFile":{
       "value":"MyScene.max"
    },
    "pathFile":{
       "value":"MyScene.mxp"
+   },
+   "preRenderScript":{
+      "value":"prerender.ms"
    },
    "outputName":{
       "value":"image.jpg"

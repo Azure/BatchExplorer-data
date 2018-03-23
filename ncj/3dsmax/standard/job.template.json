@@ -1,11 +1,11 @@
 {
     "templateMetadata": {
-        "description": "Sample application template for working with 3ds Max and VRay."
+        "description": "Sample application template for working with 3ds Max and Arnold."
     },
     "parameters": {
         "jobName": {
             "type": "string",
-            "defaultValue": "3dsmax-vray",
+            "defaultValue": "3dsmax-render",
             "metadata": {
                 "description": "The job name"
             }
@@ -17,11 +17,30 @@
                 "description": "The pool id"
             }
         },
+        "renderer": {
+            "type": "string",
+            "defaultValue": "arnold",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "arnold",
+                "vray"
+            ]
+        },
         "inputFilegroup": {
             "type": "string",
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
+            }
+        },
+        "inputFilegroupSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputFilegroup"
             }
         },
         "sceneFile": {
@@ -32,11 +51,61 @@
                 "dependsOn": "inputFilegroup"
             }
         },
+        "pathFile": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional 3ds Max path file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "preRenderScript": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional 3ds Max pre-render script to execute",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "irradianceMapFile": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional VRay irradiance map",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "renderPresetFile": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional render preset file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
         "outputName": {
             "type": "string",
             "defaultValue": "image.jpg",
             "metadata": {
                 "description": "The output filename to use when naming the rendered outputs"
+            }
+        },
+        "camera": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional camera to render, if not specified the scene selected camera will be used."
+            }
+        },
+        "additionalArgs": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1"
             }
         },
         "frameStart": {
@@ -92,15 +161,13 @@
             },
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask": {
-                "resourceFiles": [
-                    {
-                        "source": {
-                            "fileGroup": "[parameters('inputFilegroup')]"
-                        },
-                        "filePath": "assets\\"
+                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "nonAdmin",
+                        "scope": "pool"
                     }
-                ],
-                "commandLine": "dir"
+                }
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -113,14 +180,26 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "mkdir images & 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 -start:{0} -end:{0} -outputName:\"images\\[parameters('outputName')]\" -w [parameters('frameWidth')] -h [parameters('frameHeight')] \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" & if exist \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" copy /Y \"%LOCALAPPDATA%\\Autodesk\\3dsMaxIO\\2018 - 64bit\\ENU\\Network\\Max.log\" Max_{0}.log",
+                    "userIdentity": {
+                        "autoUser": {
+                            "elevationLevel": "nonAdmin",
+                            "scope": "pool"
+                        }
+                    },
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('renderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -renderPresetFile \"[parameters('renderPresetFile')]\"",
+                    "resourceFiles":[
+                        {
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                            "filePath":"3dsmax.ps1"
+                        }
+                    ],
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}.log"
                                 }
                             },
                             "uploadOptions": {
@@ -132,7 +211,7 @@
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}_error.log"
                                 }
                             },
                             "uploadOptions": {
@@ -152,11 +231,11 @@
                             }
                         },
                         {
-                            "filePattern": "Max_*.log",
+                            "filePattern": "*.log",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}"
                                 }
                             },
                             "uploadOptions": {
@@ -164,11 +243,11 @@
                             }
                         },
                         {
-                            "filePattern": "%LOCALAPPDATA%\\Temp\\vraylog.txt",
+                            "filePattern": "vraylog.*",
                             "destination": {
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/vraylog_{0}.txt"
+                                    "path": "[parameters('jobName')]/logs/frame_{0}"
                                 }
                             },
                             "uploadOptions": {
