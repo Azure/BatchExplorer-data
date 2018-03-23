@@ -189,7 +189,7 @@
                     "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('renderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -renderPresetFile \"[parameters('renderPresetFile')]\"",
                     "resourceFiles":[
                         {
-                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/scripts/3dsmax.ps1",
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                             "filePath":"3dsmax.ps1"
                         }
                     ],

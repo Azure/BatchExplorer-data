@@ -118,7 +118,7 @@
             },
             "resourceFiles": [
               {
-                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
+                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
                 "filePath":"install-azure-nc-drivers.cmd"
               }
             ]
