@@ -182,6 +182,10 @@ mkdir -Force images > $null
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
-Copy-Item "$env:LOCALAPPDATA\Temp\vraylog.txt" . -ErrorAction SilentlyContinue
+
+if ($renderer -eq "vray")
+{
+    Copy-Item "$env:LOCALAPPDATA\Temp\vraylog.txt" . -ErrorAction SilentlyContinue
+}
 
 exit $result
