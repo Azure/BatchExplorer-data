@@ -72,7 +72,7 @@ rendererName = r as string
 index = findString rendererName "V_Ray_"
 if index != 1 then (print "VRay renderer not used, please save the scene with a VRay renderer selected.")
 index = findString rendererName "V_Ray_RT_"
-if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.txt")
+if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log")
 "@ | Out-File -Append $pre_render_script
 }
 
