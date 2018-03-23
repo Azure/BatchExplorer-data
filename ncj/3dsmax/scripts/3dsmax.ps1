@@ -13,7 +13,8 @@ param (
     [string]$workingDirectory = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets",
     [string]$preRenderScript = $null,
     [string]$camera = $null,
-    [string]$additionalArgs = $null
+    [string]$additionalArgs = $null,
+    [int]$vrayPort = 20204
 )
 
 $OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
@@ -27,7 +28,7 @@ function SetupDistributedRendering
 {
     Write-Host "Setting up DR..."
 
-    $port = 20207
+    $port = $vrayPort
     $vraydr_file = "vray_dr.cfg"
     $vrayrtdr_file = "vrayrt_dr.cfg"
     $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")

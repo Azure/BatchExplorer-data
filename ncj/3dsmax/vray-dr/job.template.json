@@ -152,8 +152,7 @@
             "type": "string",
             "defaultValue": "20204",
             "metadata": {
-                "description": "The file group where outputs will be stored",
-                "advancedType": "file-group"
+                "description": "The file group where outputs will be stored"
             }
         }
     },
@@ -185,7 +184,7 @@
                     {
                         "id":"Render",
                         "displayName":"Frame",
-                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMap')]\" -nodeCount [parameters('nodeCount')] -dr",
+                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMap')]\" -nodeCount [parameters('nodeCount')] -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
                                 "elevationLevel": "nonAdmin",
