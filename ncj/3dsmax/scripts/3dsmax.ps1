@@ -14,7 +14,8 @@ param (
     [string]$preRenderScript = $null,
     [string]$camera = $null,
     [string]$additionalArgs = $null,
-    [int]$vrayPort = 20204
+    [int]$vrayPort = 20204,
+    [string]$renderPresetFile = $null
 )
 
 $OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
@@ -152,7 +153,7 @@ if (ParameterValueSet $pathFile)
         Move-Item -Force "$sceneFile" "$pathFileDirectory" -ErrorAction Stop > $null
         $sceneFile = "$pathFileDirectory\$sceneFileName"
     }
-    $pathFileParam = "-pathFile:$pathFile"
+    $pathFileParam = "-pathFile:`"$pathFile`""
 }
 else
 {
@@ -177,11 +178,25 @@ if (ParameterValueSet $additionalArgs)
     $additionalArgumentsParam = $additionalArgs
 }
 
+$renderPresetFileParam = ""
+if (ParameterValueSet $renderPresetFile)
+{
+    $renderPresetFile = "$workingDirectory\$renderPresetFile"
+
+    if (-Not [System.IO.File]::Exists($renderPresetFile))
+    {
+        Write-Host "Render preset file $renderPresetFile not found, exiting."
+        exit 1
+    }
+
+    $renderPresetFileParam = "-preset:`"$renderPresetFile`""
+}
+
 # Create folder for outputs
 mkdir -Force images > $null
 
 # Render
-cmd.exe /c 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 $cameraParam $additionalArgumentsParam -preRenderScript:"$pre_render_script" -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile" `>Max_frame.log 2`>`&1
+cmd.exe /c 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:"$pre_render_script" -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile" `>Max_frame.log 2`>`&1
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
