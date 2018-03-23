@@ -1,7 +1,7 @@
 [
     {
         "id": "standard",
-        "name": "Render a VRay or Arnold scene",
+        "name": "VRay or Arnold scene",
         "description": "This job will render different frames of a 3ds max scene in parallel using the VRay or Arnold renderer."
     },
     {

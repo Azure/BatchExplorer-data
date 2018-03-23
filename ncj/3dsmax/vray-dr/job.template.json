@@ -155,7 +155,7 @@
                 "description": "The file group where outputs will be stored",
                 "advancedType": "file-group"
             }
-        },
+        }
     },
    "variables":{
       "VRayRT":"cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')]",

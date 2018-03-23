@@ -5,7 +5,7 @@
     "parameters": {
         "jobName": {
             "type": "string",
-            "defaultValue": "3dsmax-arnold",
+            "defaultValue": "3dsmax-render",
             "metadata": {
                 "description": "The job name"
             }

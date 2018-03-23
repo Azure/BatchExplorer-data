@@ -25,7 +25,7 @@ function ParameterValueSet([string]$value)
 
 function SetupDistributedRendering
 {
-    Write-Error "Setting up DR..."
+    Write-Host "Setting up DR..."
 
     $port = 20207
     $vraydr_file = "vray_dr.cfg"
@@ -33,7 +33,7 @@ function SetupDistributedRendering
     $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
 
     if ($hosts.Count -ne $nodeCount) {
-        Write-Error "Host count $hosts.Count must equal nodeCount $nodeCount"
+        Write-Host "Host count $hosts.Count must equal nodeCount $nodeCount"
         exit 1
     }
 
@@ -91,7 +91,7 @@ if ($dr)
 if (ParameterValueSet $irradianceMap -and $renderer -eq "vray")
 {
     $irMap = "$workingDirectory\$irradianceMap"
-    Write-Error "Setting IR map to $irMap"
+    Write-Host "Setting IR map to $irMap"
 @"
 -- Set the IR path
 r.adv_irradmap_loadFileName = "$irMap"
@@ -180,7 +180,7 @@ if (ParameterValueSet $additionalArgs)
 mkdir -Force images > $null
 
 # Render
-3dsmaxcmdio.exe -secure off -v:5 -rfw:0 $cameraParam $additionalArgumentsParam -preRenderScript:"$pre_render_script" -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile"
+cmd.exe /c 3dsmaxcmdio.exe -secure off -v:5 -rfw:0 $cameraParam $additionalArgumentsParam -preRenderScript:"$pre_render_script" -start:$start -end:$end -outputName:"$outputName" -width:$width -height:$height $pathFileParam "$sceneFile" `>Max_frame.log 2`>`&1
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" . -ErrorAction SilentlyContinue
