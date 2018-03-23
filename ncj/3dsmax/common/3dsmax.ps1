@@ -16,6 +16,8 @@ param (
     [string]$additionalArgs = $null
 )
 
+$OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
+
 function ParameterValueSet([string]$value)
 {
     return ($value -and -Not ($value -eq "none") -and -Not ($value -eq " "))
