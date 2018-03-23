@@ -108,6 +108,14 @@ r.abort_on_license_fail = true
 "@ | Out-File -Append $pre_render_script
 }
 
+if ($renderer -eq "vray")
+{
+@"
+-- Fail on arnold license error
+r.output_splitfilename = "$env:AZ_BATCH_TASK_WORKING_DIR\images"
+"@ | Out-File -Append $pre_render_script
+}
+
 if (ParameterValueSet $preRenderScript)
 {
     $preRenderScript = "$workingDirectory\$preRenderScript"

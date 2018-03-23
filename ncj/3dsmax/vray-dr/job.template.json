@@ -69,18 +69,18 @@
                 "dependsOn": "inputFilegroup"
             }
         },
-        "irradianceMap": {
+        "irradianceMapFile": {
             "type": "string",
-            "defaultValue": " ",
+            "defaultValue": "None",
             "metadata": {
-                "description": "Optional VRay irradiance map",
+                "description": "Optional VRay irradiance map file",
                 "advancedType": "file-in-file-group",
                 "dependsOn": "inputFilegroup"
             }
         },
         "renderPresetFile": {
             "type": "string",
-            "defaultValue": " ",
+            "defaultValue": "None",
             "metadata": {
                 "description": "Optional render preset file",
                 "advancedType": "file-in-file-group",
@@ -193,7 +193,7 @@
                     {
                         "id":"Render",
                         "displayName":"Frame",
-                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMap')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
+                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
                                 "elevationLevel": "nonAdmin",
