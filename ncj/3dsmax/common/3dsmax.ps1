@@ -8,7 +8,7 @@ param (
     [int]$nodeCount = 1,
     [switch]$dr,
     [string]$renderer = "vray",
-    [string]$irradianceMap = "",
+    [string]$irradianceMap = $null,
     [string]$pathFile = $null,
     [string]$workingDirectory = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets",
     [string]$preRenderScript = $null,
@@ -20,13 +20,13 @@ $OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
 
 function ParameterValueSet([string]$value)
 {
-    return ($value -and -Not ($value -eq "none") -and -Not ($value -eq " "))
+    return ($value -and -Not ($value -eq "none") -and -Not ([string]::IsNullOrWhiteSpace($value)))
 }
 
 function SetupDistributedRendering
 {
     Write-Error "Setting up DR..."
-    
+
     $port = 20207
     $vraydr_file = "vray_dr.cfg"
     $vrayrtdr_file = "vrayrt_dr.cfg"
@@ -88,9 +88,9 @@ if ($dr)
     SetupDistributedRendering
 }
 
-if ($irradianceMap)
+if (ParameterValueSet $irradianceMap -and $renderer -eq "vray")
 {
-    $irMap = "$env:AZ_BATCH_JOB_PREP_WORKING_DIR\assets\$irradianceMap"
+    $irMap = "$workingDirectory\$irradianceMap"
     Write-Error "Setting IR map to $irMap"
 @"
 -- Set the IR path

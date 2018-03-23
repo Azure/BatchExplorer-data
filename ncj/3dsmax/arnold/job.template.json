@@ -69,6 +69,13 @@
                 "dependsOn": "inputFilegroup"
             }
         },
+        "irradianceMap": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional VRay irradiance map"
+            }
+        },
         "outputName": {
             "type": "string",
             "defaultValue": "image.jpg",
@@ -168,7 +175,7 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('renderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\"",
+                    "commandLine": "powershell.exe -File 3dsmax.ps1 -start {0} -end {0} -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('renderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMap')]\"",
                     "resourceFiles":[
                         {
                             "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/remove-a-fix-exitcode/ncj/3dsmax/common/3dsmax.ps1",
