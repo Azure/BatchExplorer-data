@@ -31,12 +31,14 @@
         },
         "frameStart": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The first frame to render"
             }
         },
         "frameEnd": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The last frame to render"
             }
