@@ -32,6 +32,22 @@
                 "dependsOn": "inputData"
             }
         },
+		"inputFilegroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter file group name",
+                "advancedType": "file-group-name",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+		"inputFilegroupSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputFilegroup"
+            }
+        },
         "frameStart": {
             "type": "int",
             "defaultValue": 1,
@@ -60,22 +76,32 @@
             "id": "[parameters('jobName')]",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
-            },
-            "jobPreparationTask": {
-				"resourceFiles": [
-							{
-								"source": {
-									"fileGroup": "[parameters('inputData')]"
-								},
-								"filePath": "assets/"
-							},
-							{
-                                "blobSource":"https://tatsd.blob.core.windows.net/fgrp-testblobfu/test-Centos-withconf.sh",
-                                "filePath":"test-Centos-withconf.sh"
-                            }
-						],
-                "commandLine": "ls"
-            },
+            },		
+			"jobPreparationTask": {
+				"resourceFiles":[
+					{
+						"blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux/installblobfuse.sh",
+						"filePath":"installblobfuse.sh"
+					}
+				],
+				"environmentSettings":[
+					{
+						"name":"INPUT_FILEGROUP_NAME",
+						"value":"[parameters('inputFilegroupName')]"
+					},
+					{
+						"name":"INPUT_FILEGROUP_SAS",
+						"value":"[parameters('inputFilegroupSas')]"
+					}
+				],
+				"commandLine": "ls",
+				"userIdentity": {
+					"autoUser": {
+						"elevationLevel": "admin",
+						"scope": "pool"
+					}
+				}
+			},
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
@@ -93,7 +119,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "sudo bash +x $AZ_BATCH_JOB_PREP_WORKING_DIR/test-Centos-withconf.sh $AZ_BATCH_JOB_PREP_WORKING_DIR/assets/connection.cfg",
+                    "commandLine": "sudo bash +x $AZ_BATCH_JOB_PREP_WORKING_DIR/installblobfuse.sh [parameters('inputFilegroupName')] [parameters('inputFilegroupSas')]",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",

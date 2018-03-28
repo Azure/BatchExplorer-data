@@ -1,7 +1,7 @@
-
-RC_PATH="/mnt/connection.cfg"
-INPUT_FILEGROUP_NAME="$1"
-INPUT_FILEGROUP_SAS="$2"
+#!/bin/bash
+RC_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/connection.cfg"
+# INPUT_FILEGROUP_NAME="$1"
+# INPUT_FILEGROUP_SAS="$2"
 # Get the account name from the SAS URL
 theAccountName="$(echo $INPUT_FILEGROUP_SAS | cut -d'/' -f3 | cut -d'.' -f1)"
 sudo echo "accountName $theAccountName" > $RC_PATH
@@ -17,8 +17,8 @@ sudo rpm --import ./microsoft.asc
 # Install blobfuse
 sudo yum install blobfuse fuse -y
 # Configuring and Running.
-sudo mkdir /mnt/blobfusetmp
+sudo mkdir $AZ_BATCH_JOB_PREP_WORKING_DIR/blobfusetmp
 # This is temporary naming for testing
-sudo mkdir /mnt/blobfusetest
+sudo mkdir $AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME
 # Below is the config file approach
-blobfuse /mnt/blobfusetest --tmp-path=/mnt/blobfusetmp -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120 --config-file="$RC_PATH"
+blobfuse $AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME --tmp-path=/mnt/blobfusetmp -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120 --config-file="$RC_PATH"
