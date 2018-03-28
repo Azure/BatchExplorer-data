@@ -9,7 +9,7 @@
         },
         "vmCount": {
             "type": "int",
-            "defaultValue": 5,
+            "defaultValue": 1,
             "metadata": {
                 "description": "The number of virtual machines in the Azure Batch pool where the job will run"
             }
