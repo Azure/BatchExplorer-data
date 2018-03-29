@@ -5,7 +5,7 @@ INPUT_FILEGROUP_SAS_DECODE=$(echo -e `echo $INPUT_FILEGROUP_SAS | sed 's/+/ /g;s
 SAS_STRING=$(echo $INPUT_FILEGROUP_SAS_DECODE | cut -d "?" -f 2)
 theAccountName="$(echo $INPUT_FILEGROUP_SAS | cut -d'/' -f3 | cut -d'.' -f1)"
 sudo echo "accountName $theAccountName" > $RC_PATH
-sudo echo "sasToken $SAS_STRING" >> $RC_PATH
+sudo echo "accountKey $INPUT_FILEGROUP_KEY" >> $RC_PATH
 sudo echo "containerName $INPUT_FILEGROUP_NAME" >> $RC_PATH
 # Configure the apt repository for Microsoft products following: 
 # Install repository configuration
