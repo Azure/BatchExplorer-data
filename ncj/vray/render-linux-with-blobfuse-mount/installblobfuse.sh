@@ -1,8 +1,7 @@
 #!/bin/bash
 RC_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/connection.cfg"
 # Get the account name from the SAS URL
-INPUT_FILEGROUP_SAS_DECODE=$(echo -e `echo $INPUT_FILEGROUP_SAS | sed 's/+/ /g;s/%/\\\\x/g;'`)
-SAS_STRING=$(echo $INPUT_FILEGROUP_SAS_DECODE | cut -d "?" -f 2)
+SAS_STRING=$(echo $INPUT_FILEGROUP_SAS | rev | cut -d '?' -f 1 | rev)
 theAccountName="$(echo $INPUT_FILEGROUP_SAS | cut -d'/' -f3 | cut -d'.' -f1)"
 sudo echo "accountName $theAccountName" > $RC_PATH
 sudo echo "sasToken ?$SAS_STRING" >> $RC_PATH

@@ -8,5 +8,10 @@
         "id": "render-linux",
         "name": "Render V-Ray scene on CentOS",
         "description": "Render a standalone V-Ray scene on CentOS"
+    },
+    {
+        "id": "render-linux-with-blobfuse-mount",
+        "name": "Render V-Ray scene on CentOS with Blobfuse",
+        "description": "Render a standalone V-Ray scene on CentOS with Blobfuse"
     } 
 ]
