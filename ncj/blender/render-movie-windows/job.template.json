@@ -26,17 +26,20 @@
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputData"
+                "dependsOn": "inputData",
+                "suffixFilter": ".blend"
             }
         },
         "frameStart": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The first frame to render"
             }
         },
         "frameEnd": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The last frame to render"
             }
@@ -69,7 +72,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0",
+                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b \"[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0",
                     "resourceFiles": [
                         {
                             "source": { 

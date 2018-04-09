@@ -3,5 +3,10 @@
         "id": "render-movie-linux",
         "name": "Render movie on Ubuntu 16.04",
         "description": "Render a blender scene into a movie."
+    },
+    {
+        "id": "render-movie-windows",
+        "name": "Render movie on Windows Server",
+        "description": "Render a blender scene into a movie."
     }
 ]
