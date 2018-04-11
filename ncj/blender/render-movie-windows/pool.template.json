@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-pool-windows",
+            "defaultValue": "blender-windows",
             "metadata": {
                 "description": "Id of the pool"
             }

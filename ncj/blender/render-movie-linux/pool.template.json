@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-pool-ubuntu",
+            "defaultValue": "blender-ubuntu",
             "metadata": {
                 "description": "Id of the pool"
             }
