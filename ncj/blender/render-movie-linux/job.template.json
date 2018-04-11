@@ -27,7 +27,7 @@
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
                 "dependsOn": "inputData",
-                "wildcards": "*.blend,splash*"
+                "wildcards": "*.blend"
             }
         },
         "frameStart": {
