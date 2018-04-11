@@ -30,6 +30,13 @@
                 "wildcards": "*.blend"
             }
         },
+        "optionalParameters": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional parameters to pass to blender, e.g. --scene <name>"
+            }
+        },
         "frameStart": {
             "type": "int",
             "defaultValue": 1,
@@ -72,7 +79,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0",
+                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0 [parameters('optionalParameters')]",
                     "resourceFiles": [
                         {
                             "source": { 
