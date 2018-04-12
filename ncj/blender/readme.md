@@ -48,7 +48,7 @@ Click on the ``Blender`` icon, then depending on if you want to use Windows or L
 
 For this demo, I am going to use the Windows template, so I select the ``Render movie on Windows Server`` option.
 
-#### 2. Select the Action
+#### 3. Select the Action
 
 Now we need to decide what action we are going to take. BatchLabs uses the templates to provide you with a standard form to help you enter the parameters for the job and pool. You will be presented with 3 options:
 
@@ -63,7 +63,7 @@ This is the simplest way to get up and running. You simply select the pool you w
 **Create a pool for later use**\
 Create a new pool with 1 or more nodes to run your job on. Once a pool is created, you don't have to delete it in-between jobs. You can just use BatchLabs to rescale the pool down to 0 nodes and you will no longer pay for any compute node uptime. Next time you want to run a job, just select: ``Pools -> <your-pool-name>`` and click on the scale button to re-scale the pool up again with new compute nodes. If you contact us we can help you with an auto scale formula that will scale up when new jobs are submitted to the pool, and automatically scale down again once the jobs have completed.
 
-#### 2. Create a Pool
+#### 4. Create a Pool
 If you have not yet created a pool to run your job on, we can do that now. Rendering jobs need to be run on the correct type of pool that matches the defined pool template. Only a pool that was created with the correct Blender template will work. Click on the ``Create pool for later use`` button and you will see the following form:
 
 ![Create Pool](../../resources/images/blender/create-pool.png)
@@ -78,7 +78,7 @@ Check the ``Do not redirect`` checkbox and then click on the big green button an
 
 **Note:** the soon to be released version of BatchLabs will no longer display the ``Do not redirect`` checkbox. It now uses a smarter method of deciding if you want to be redirected to the pool details page.
 
-#### 2. Submit your Job
+#### 5. Submit your Job
 
 After successfully submitting the create pool request, if you were not automatically redirected back to the job submission form, click on the ```Run job with existing pool``` button where you will be presented with the following form:
 
@@ -86,13 +86,13 @@ After successfully submitting the create pool request, if you were not automatic
 
 Enter the following information into the submission form:
 
-**2.1 Select the Pool**\
+**5.1 Select the Pool**\
 In the soon to be released version of BatchLabs, if you just created a pool, then it will be automatically selected for you. If not, select your pool from the list. In our case this will be called: ``blender-windows-d3-v2``.
 
-**2.2 Job Name**\
+**52 Job Name**\
 For the ``Job name``, enter something meaningful. **Note that each job within a given Batch account must have a unique name.** You will get an error should you re-use a job ID more than once. A suggestion would be to name the job after the scene you are rendering, in this case we will call the job: ``fishy-cat-01``. I normally add an incrementing number to the job in case I want to tweak anything and run it again. Next time I can name the job ``fishy-cat-02`` and there will be no issues with duplicate job names.
 
-**2.3 Input Data**\
+**5.3 Input Data**\
 Click on the ``Input data`` field and select ``Create a new file group`` or select the name of the file group that contains your input data if you have created one already.
 
 - Enter the name for the file group, in this case: ``fishy-cat``
@@ -110,18 +110,18 @@ Once the files have been uploaded, the form will close and you can select ``fgrp
 
 **Note:** The current version of BatchLabs fails to use the correct file group name and it may not be populated automatically. This has been fixed and will be released shortly.
 
-**2.4 Blend File**\
+**5.4 Blend File**\
 Click on the button to the right of the ``Blend file`` field and browse to the main ``blend`` file for your scene. This will load the files from your input file group.
 
 ![Blend File](../../resources/images/blender/blend-file.png)
 
-**2.5 Options Parameters**\
+**5.5 Options Parameters**\
 Should you wish you can add additional ``Optional Parameters`` that will be passed to Blender via the command line. The list of which can be [found here](https://docs.blender.org/manual/en/dev/advanced/command_line/arguments.html).
 
-**2.6 Frame Start and End**\
+**5.6 Frame Start and End**\
 ``Frame start`` and ``Frame end`` can either define a frame range, or you can just enter a single frame number in each to only render that frame. Each frame will have its own task created within the job. In this case we will only render 1 frame so just leave the default values in place.
 
-**2.7 Outputs**\
+**5.7 Outputs**\
 Select the ``Outputs`` file group. This is a file group that any job outputs will be written to including the logs for the job. I would suggest using a different file group for each of your scenes. You can run the same scene job multiple times using the same file group. This makes it easier to keep track of where your outputs are. Each job will upload files to a folder in the file group named with the ID of the job.
 
 To create a new empty file group, select the ``Outputs`` form field and select ``Create a new file group`` from the drop-down items. Enter the name of the file group, in this case we can call it ``fishy-cat-outputs`` and check the ``Create an empty file group`` checkbox. Then click ``Create and close``. Once the form window closes, select the file group from the list.
@@ -132,12 +132,12 @@ To create a new empty file group, select the ``Outputs`` form field and select `
 
 **Note:** While getting started, I would never recommend using the same file group as you used for your scene assets. Output images and log files are uploaded from each of your tasks, if you had used the same input file group for your outputs, the next time you re-ran the job, these outputs would be downloaded to the compute node with the rest of your input files, whereby possibly affecting task runtime performance. There is a way we can do this should you wish, so please get in touch and we can let you know how to alter the template to allow this to happen.
 
-**2.8 Submit**\
+**5.8 Submit**\
 Once all mandatory fields have been filled in, the submit button will be enabled and you can click on the green button to submit the job. If the ``Do not redirect`` checkbox is visible and checked, you can uncheck this now before submitting. Your form should look like the following:
 
 ![Submit Job](../../resources/images/blender/submit-job-complete.png)
 
-#### 3. Watch the Job Running
+#### 6. Watch the Job Running
 Once successfully submitted, you will be taken to the job details page where you can view the progress of the job.
 
 ![Job Details](../../resources/images/blender/job-details.png)
@@ -158,7 +158,7 @@ Should your task fail, the ``stdout.txt`` and ``stderr.txt`` files will contain 
 
 **Note:** Once the node the task ran on is restarted or removed from the pool, you will no longer be able to see any task files from this view.
 
-#### 4. Persisted Outputs
+#### 7. Persisted Outputs
 
 As you setup an output file group earlier, when you submitted the job, all output files from the task are uploaded to this storage container. You can access this container by clicking on: ``Data -> fgrp-fishy-cat-outputs``.
 
@@ -166,7 +166,7 @@ As you setup an output file group earlier, when you submitted the job, all outpu
 
 And that's about it. Your job has completed and the outputs are persisted to Azure Storage. If you have any queries or questions. Please get in touch at Azure Batch Rendering <rendering [at] microsoft.com>, and we will be happy to help you out.
 
-#### 5. Epilogue
+#### 8. Epilogue
 
 For a further exercise, the fishy cat scene is made up of 100 frames. Go back and submit another job: ``fishy-cat-02`` and give it the frame range of 1 to 40 (or something smaller). Then submit the job again. I am going to render all 100 frames, but don't feel like you need to.
 
