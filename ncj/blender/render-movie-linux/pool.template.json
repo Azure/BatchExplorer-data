@@ -71,13 +71,6 @@
                 "Standard_M64s",
                 "Standard_M64ms"
             ]
-        },
-        "maxTasksPerNode": {
-            "type": "int",
-            "defaultValue": 1,
-            "metadata": {
-                "description": "The number of tasks per node. Less CPU bound jobs can run 1 task per core on the VM."
-            }
         }
     },
     "variables": {
@@ -98,7 +91,6 @@
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('vmCount')]",
         "enableAutoScale": false,
-        "maxTasksPerNode": "[parameters('maxTasksPerNode')]",
         "packageReferences": [
             {
                 "type": "aptPackage",
