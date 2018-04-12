@@ -89,7 +89,7 @@ Enter the following information into the submission form:
 **5.1 Select the Pool**\
 In the soon to be released version of BatchLabs, if you just created a pool, then it will be automatically selected for you. If not, select your pool from the list. In our case this will be called: ``blender-windows-d3-v2``.
 
-**52 Job Name**\
+**5.2 Job Name**\
 For the ``Job name``, enter something meaningful. **Note that each job within a given Batch account must have a unique name.** You will get an error should you re-use a job ID more than once. A suggestion would be to name the job after the scene you are rendering, in this case we will call the job: ``fishy-cat-01``. I normally add an incrementing number to the job in case I want to tweak anything and run it again. Next time I can name the job ``fishy-cat-02`` and there will be no issues with duplicate job names.
 
 **5.3 Input Data**\
@@ -104,7 +104,7 @@ Click on the ``Input data`` field and select ``Create a new file group`` or sele
 
 While the uploads are processing, you can use the ``background task monitor`` to monitor the upload progress.
 
-![Background Task](../../resources/images/batchlabs/bg-task.png)
+![Background Task](../../resources/images/batchlabs/background-task.png)
 
 Once the files have been uploaded, the form will close and you can select ``fgrp-fishy-cat`` from the options list.
 
