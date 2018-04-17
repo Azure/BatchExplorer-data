@@ -1,5 +1,7 @@
 #!/bin/bash
 RC_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/connection.cfg"
+MOUNT_POINT_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME"
+TMP_CACHE_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/blobfusetmp"
 # Get the account name from the SAS URL
 SAS_STRING=$(echo $INPUT_FILEGROUP_SAS | rev | cut -d '?' -f 1 | rev)
 theAccountName="$(echo $INPUT_FILEGROUP_SAS | cut -d'/' -f3 | cut -d'.' -f1)"
@@ -16,8 +18,16 @@ sudo rpm --import ./microsoft.asc
 # Install blobfuse
 sudo yum install blobfuse fuse -y
 # Configuring and Running.
-sudo mkdir $AZ_BATCH_JOB_PREP_WORKING_DIR/blobfusetmp
+if [[ ! -d $TMP_CACHE_PATH ]]; then
+    sudo mkdir $TMP_CACHE_PATH
+else
+    echo "$TMP_CACHE_PATH already exists."
+fi 
 # This is folder naming with the filegroup name.
-sudo mkdir $AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME
+if [[ ! -d $MOUNT_POINT_PATH ]]; then
+    sudo mkdir $MOUNT_POINT_PATH
+else
+    echo "$MOUNT_POINT_PATH already exists."
+fi
 # Below is the config file approach
-blobfuse $AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME --tmp-path=$AZ_BATCH_JOB_PREP_WORKING_DIR/blobfusetmp -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120 --config-file="$RC_PATH"
+blobfuse $MOUNT_POINT_PATH --tmp-path=$MOUNT_POINT_PATH -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120 --config-file="$RC_PATH"

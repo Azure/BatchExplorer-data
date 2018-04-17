@@ -43,16 +43,8 @@
 		"inputFilegroupSas": {
             "type": "string",
             "metadata": {
-                "description": "SAS token for reading the data from the selected file group",
+                "description": "Account SAS URL for reading the data from the selected file group",
                 "advancedType": "file-group-sas",
-                "dependsOn": "inputFilegroup"
-            }
-        },
-		"inputFilegroupKey": {
-            "type": "string",
-            "metadata": {
-                "description": "Enter account key selected file group",
-                "advancedType": "file-group-key",
                 "dependsOn": "inputFilegroup"
             }
         },
@@ -88,7 +80,7 @@
 			"jobPreparationTask": {
 				"resourceFiles":[
 					{
-						"blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux/installblobfuse.sh",
+						"blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
 						"filePath":"installblobfuse.sh"
 					}
 				],
@@ -100,10 +92,6 @@
 					{
 						"name":"INPUT_FILEGROUP_SAS",
 						"value":"[parameters('inputFilegroupSas')]"
-					},
-					{
-						"name":"INPUT_FILEGROUP_KEY",
-						"value":"[parameters('inputFilegroupKey')]"
 					}
 				],
 				"commandLine": "/bin/bash -c $AZ_BATCH_JOB_PREP_WORKING_DIR/installblobfuse.sh",
