@@ -6,11 +6,18 @@
                 "description": "Id of the pool"
             }
         },
-        "numberNodes": {
+        "dedicatedVmCount": {
             "type": "int",
             "defaultValue": 2,
             "metadata": {
-                "description": "The number of nodes in the Azure Batch pool where the job will run"
+                "description": "The number of dedicated nodes in the Azure Batch pool"
+            }
+        },
+        "lowPriorityVmCount": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "The number of low priority nodes in the Azure Batch pool"
             }
         },
         "vmSize": {
@@ -100,7 +107,8 @@
         "displayName": "3ds Max pool running: [parameters('poolName')]",
         "vmSize": "[parameters('vmSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
-        "targetDedicatedNodes": "[parameters('numberNodes')]",
+        "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
+        "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "applicationLicenses": [
             "3dsmax",
             "vray"
