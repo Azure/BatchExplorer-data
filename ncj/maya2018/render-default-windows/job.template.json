@@ -1,18 +1,18 @@
 {
     "templateMetadata": {
-        "description": "Application template for working with V-Ray standalone renderer on CentOS."
+        "description": "Application template for working with Maya default renderer on Windows."
     },
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "vray-pool-centos",
+            "defaultValue": "maya-sw-pool-windows",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "render-vray",
+            "defaultValue": "maya-sw-windows",
             "metadata": {
                 "description": "The unique name of the job."
             }
@@ -27,7 +27,7 @@
         "sceneFile": {
             "type": "string",
             "metadata": {
-                "description": "The V-Ray scene file to be rendered (.vrscene)",
+                "description": "The Maya scene file to be rendered",
                 "advancedType": "file-in-file-group",
                 "dependsOn": "inputData"
             }
@@ -44,6 +44,13 @@
             "defaultValue": 1,
             "metadata": {
                 "description": "Index of the last frame to render"
+            }
+        },
+        "frameStep": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Incremental step in frame sequeunce"
             }
         },
         "outputs": {
@@ -70,7 +77,7 @@
                         "filePath": "assets/"
                     }
                 ],
-                "commandLine": "ls"
+                "commandLine": "dir"
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -78,7 +85,7 @@
                     {
                         "start": "[parameters('frameStart')]",
                         "end": "[parameters('frameEnd')]",
-                        "step": 1
+                        "step": "[parameters('frameStep')]"
                     }
                 ],
                 "repeatTask": {
@@ -89,7 +96,17 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "sudo mkdir -m a=rwx $AZ_BATCH_TASK_WORKING_DIR/images;sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"/X/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_TASK_WORKING_DIR/images/image{0}.png\" -display=0;err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & %MAYA_2018_EXEC% -renderer sw -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"",
+                    "environmentSettings": [
+                        {
+                            "name": "MAYA_SCRIPT_PATH",
+                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%\\scripts"
+                        },
+                        {
+                            "name": "FLEXLM_TIMEOUT",
+                            "value": "5000000"
+                        }
+                    ],
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
@@ -121,6 +138,18 @@
                                 "autoStorage": {
                                     "fileGroup": "[parameters('outputs')]",
                                     "path":"[parameters('jobName')]/images"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        },
+                        {
+                            "filePattern": "thumbs/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/thumbs"
                                 }
                             },
                             "uploadOptions": {

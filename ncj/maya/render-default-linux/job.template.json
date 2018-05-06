@@ -32,6 +32,13 @@
                 "dependsOn": "inputData"
             }
         },
+        "additionalFlags": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Any additional flags to pass to the renderer. Example: -of png"
+            }
+        },
         "frameStart": {
             "type": "int",
             "defaultValue": 1,
@@ -96,7 +103,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;Render -renderer sw -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;render2017.sh -r sw [parameters('additionalFlags')]  -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",

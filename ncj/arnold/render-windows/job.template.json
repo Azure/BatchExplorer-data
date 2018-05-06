@@ -59,7 +59,7 @@
                                 "elevationLevel": "admin"
                             }
                         },
-                        "commandLine": "mkdir images & kick -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -dw -v 6 -of png -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\[parameters('sceneFile')].png\"",
+                        "commandLine": "mkdir images & %ARNOLD_2017_EXEC% -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\[parameters('sceneFile')]\" -dw -v 6 -of png -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\[parameters('sceneFile')].png\"",
                         "resourceFiles": [
                             {
                                 "source": {
