@@ -1,3 +1,0 @@
-
-# Maya Template
-

@@ -17,6 +17,17 @@
                 "description": "The unique name of the job."
             }
         },
+        "mayaRenderer": {
+            "type": "string",
+            "defaultValue": "Maya2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "Maya2017",
+                "Maya2018"
+            ]
+        },
         "inputData": {
             "type": "string",
             "metadata": {
@@ -68,6 +79,10 @@
             }
         }
     },
+    "variables":{
+      "Maya2017":"render2017.sh",
+      "Maya2018":"render2018.sh"
+    },
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
@@ -103,7 +118,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;render2017.sh -renderer vray [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/Y\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /Y;if \"[parameters('mayaRenderer')]\" == \"Maya2017\" ; then export maya_version=render2017.sh; else export maya_version=render2018.sh; fi; $maya_version -r vray [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/Y/[parameters('sceneFile')]\";err=$?;sudo umount \"/Y\";exit $err",                    
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
