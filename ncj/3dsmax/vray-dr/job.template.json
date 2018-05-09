@@ -167,7 +167,7 @@
     },
    "variables":{
       "VRayRT":"cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')]",
-      "VRayAdv":"cmd.exe /c start \"\" \"C:\\Autodesk\\3ds Max 2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\""
+      "VRayAdv":"cmd.exe /c start \"\" \"C:\\Autodesk\\3dsMax2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\""
    },
     "job":{
         "type":"Microsoft.Batch/batchAccounts/jobs",
@@ -202,7 +202,7 @@
                         },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
-                            "coordinationCommandLine":"cmd.exe /c if \"[parameters('vrayRenderer')]\" == \"VRayAdv\" (cmd.exe /c start \"\" \"C:\\Autodesk\\3ds Max 2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\") else (cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')])",
+                            "coordinationCommandLine":"cmd.exe /c if \"[parameters('vrayRenderer')]\" == \"VRayAdv\" (cmd.exe /c start \"\" \"C:\\Autodesk\\3dsMax2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\") else (cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')])",
                             "commonResourceFiles":[
 
                             ]

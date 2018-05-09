@@ -205,12 +205,7 @@ if (ParameterValueSet $renderPresetFile)
 mkdir -Force images > $null
 
 # Render
-$max_exec = "3dsmaxcmdio.exe"
-if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
-{
-    # New image
-    $max_exec = "${env:3DSMAX_2018}\3dsmaxcmdio.exe"
-}
+$max_exec = $env:3DSMAX_2018_EXEC
 
 Write-Host "Executing $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
 
