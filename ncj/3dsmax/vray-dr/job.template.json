@@ -48,7 +48,8 @@
             "metadata": {
                 "description": "The 3ds Max scene file to be rendered",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputFilegroup"
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.max"
             }
         },
         "pathFile": {
@@ -57,7 +58,8 @@
             "metadata": {
                 "description": "Optional 3ds Max path file",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputFilegroup"
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.mxp"
             }
         },
         "preRenderScript": {
@@ -84,7 +86,8 @@
             "metadata": {
                 "description": "Optional render preset file",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputFilegroup"
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.rps"
             }
         },
         "outputName": {
