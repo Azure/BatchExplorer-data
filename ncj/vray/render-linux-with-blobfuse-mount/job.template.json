@@ -17,10 +17,10 @@
                 "description": "The unique name of the job."
             }
         },
-        "inputData": {
+        "inputFilegroupName": {
             "type": "string",
             "metadata": {
-                "description": "The file group where the input data is stored",
+                "description": "The file group where the data is stored",
                 "advancedType": "file-group"
             }
         },
@@ -29,23 +29,13 @@
             "metadata": {
                 "description": "The V-Ray scene file to be rendered (.vrscene)",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputData"
+                "dependsOn": "inputFilegroupName"
             }
         },
-		"inputFilegroupName": {
+		"inputFilegroupAccountSas": {
             "type": "string",
             "metadata": {
-                "description": "Enter file group name",
-                "advancedType": "file-group-name",
-                "dependsOn": "inputFilegroup"
-            }
-        },
-		"inputFilegroupSas": {
-            "type": "string",
-            "metadata": {
-                "description": "Account SAS URL for reading the data from the selected file group",
-                "advancedType": "file-group-sas",
-                "dependsOn": "inputFilegroup"
+                "description": "Account SAS URL for reading the data from the selected file group"
             }
         },
         "frameStart": {
@@ -76,32 +66,32 @@
             "id": "[parameters('jobName')]",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
-            },		
-			"jobPreparationTask": {
-				"resourceFiles":[
-					{
-						"blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
-						"filePath":"installblobfuse.sh"
-					}
-				],
-				"environmentSettings":[
-					{
-						"name":"INPUT_FILEGROUP_NAME",
-						"value":"[parameters('inputFilegroupName')]"
-					},
-					{
-						"name":"INPUT_FILEGROUP_SAS",
-						"value":"[parameters('inputFilegroupSas')]"
-					}
-				],
-				"commandLine": "/bin/bash -c $AZ_BATCH_JOB_PREP_WORKING_DIR/installblobfuse.sh",
-				"userIdentity": {
-					"autoUser": {
-						"elevationLevel": "admin",
-						"scope": "pool"
-					}
-				}
-			},
+            },
+            "jobPreparationTask": {
+                "resourceFiles":[
+                    {
+                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
+                        "filePath":"installblobfuse.sh"
+                    }
+                ],
+                "environmentSettings":[
+                    {
+                        "name":"INPUT_FILEGROUP_NAME",
+                        "value":"fgrp-[parameters('inputFilegroupName')]"
+                    },
+                    {
+                        "name":"INPUT_FILEGROUP_SAS",
+                        "value":"[parameters('inputFilegroupAccountSas')]"
+                    }
+                ],
+                "commandLine": "/bin/bash -c installblobfuse.sh",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "admin",
+                        "scope": "pool"
+                    }
+                }
+            },
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
