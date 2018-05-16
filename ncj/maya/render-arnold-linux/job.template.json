@@ -19,13 +19,13 @@
         },
         "mayaRenderer": {
             "type": "string",
-            "defaultValue": "maya2018",
+            "defaultValue": "Maya2018",
             "metadata": {
                 "description": "The renderer to use"
             },
             "allowedValues":[
-                "maya2017",
-                "maya2018"
+                "Maya2017",
+                "Maya2018"
             ]
         },
         "inputData": {
@@ -114,7 +114,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/Y\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /Y;export maya_version=[parameters('mayaRenderer')].sh;$maya_version -r arnold -ai:lve 1 [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/Y/[parameters('sceneFile')]\";err=$?;sudo umount \"/Y\";exit $err",
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/Y\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /Y;export maya_version=[parameters('mayaRenderer')].sh;export maya_version=${{maya_version,,}};$maya_version -r arnold -ai:lve 1 [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/Y/[parameters('sceneFile')]\";err=$?;sudo umount \"/Y\";exit $err",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
