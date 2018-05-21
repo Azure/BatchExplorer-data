@@ -35,7 +35,9 @@
 		"inputFilegroupAccountSas": {
             "type": "string",
             "metadata": {
-                "description": "Account SAS URL for reading the data from the selected file group"
+                "description": "SAS URL for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputFilegroupName"
             }
         },
         "frameStart": {
