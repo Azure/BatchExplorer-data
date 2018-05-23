@@ -112,7 +112,7 @@ if ($renderer -eq "vray")
 {
     $outputFiles = "$env:AZ_BATCH_TASK_WORKING_DIR\images\____.jpg" -replace "\\", "\\"
 @"
--- Fail on arnold license error
+-- Set output channel path
 r.output_splitfilename = "$outputFiles"
 "@ | Out-File -Append $pre_render_script
 }
