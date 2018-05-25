@@ -1,6 +1,6 @@
 {
     "templateMetadata": {
-        "description": "Create an animation with Ffmpeg"
+        "description": "Create an animation with FFMpeg. Note this job template will work with any of the Windows rendering pools."
     },
     "parameters": {
         "poolId": {
