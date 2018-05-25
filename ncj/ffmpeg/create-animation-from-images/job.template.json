@@ -1,74 +1,96 @@
 {
     "templateMetadata": {
-        "description": "Create an animation with Ffmpeg."
+        "description": "Create an animation with Ffmpeg"
     },
     "parameters": {
         "poolId": {
             "type": "string",
             "metadata": {
-                "description": "The ID of the pool on which to run the job."
+                "description": "The ID of the pool on which to run the job"
             }
         },
         "jobName": {
             "type": "string",
             "defaultValue": "ffmpeg-animation",
             "metadata": {
-                "description": "The job name."
+                "description": "The job name"
             }
         },
-        "inputFilegroup": {
+        "inputData": {
             "type": "string",
             "metadata": {
-                "description": "The file group where the input frames are stored.",
+                "description": "The file group where the input frames are stored",
                 "advancedType": "file-group"
             }
         },
-        "filegroupImageFolder": {
+        "inputDataSas": {
             "type": "string",
-            "defaultValue": "outputs",
             "metadata": {
-                "description": "The relative path in the filegroup where the individual frames reside."
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
             }
         },
-        "filegroupImagePrefix": {
+        "inputDataPrefix": {
             "type": "string",
-            "defaultValue": "image0",
+            "defaultValue": "parent-folder/outputs",
             "metadata": {
-                "description": "The image filename prefix."
+                "description": "The relative path with '/' slashes in the filegroup where the individual frames reside"
+            }
+        },
+        "imageFolder": {
+            "type": "string",
+            "defaultValue": "parent-folder\\\\outputs",
+            "metadata": {
+                "description": "Generally the same as the input data prefix, but with '\\\\' slashes, not '/'. '/' doesn't work with AZ Copy"
+            }
+        },
+        "imagePrefix": {
+            "type": "string",
+            "defaultValue": "image",
+            "metadata": {
+                "description": "The image filename prefix"
             }
         },
         "imagePattern": {
             "type": "string",
             "defaultValue": "image%04d.jpg",
             "metadata": {
-                "description": "The pattern to identify the input images, typically image%04d.jpg if rendered using Batch Labs."
+                "description": "The pattern to identify the input images, typically image%04d.jpg if rendered using Batch Labs"
+            }
+        },
+        "sequenceStart": {
+            "type": "string",
+            "defaultValue": "1",
+            "metadata": {
+                "description": "The number of the first image frame, if first file is image0472.jpg, then enter 472"
             }
         },
         "width": {
             "type": "int",
             "defaultValue": 1600,
             "metadata": {
-                "description": "Frame width."
+                "description": "Frame output width"
             }
         },
         "height": {
             "type": "int",
             "defaultValue": 1200,
             "metadata": {
-                "description": "Frame height."
+                "description": "Frame output height"
             }
         },
         "framesPerSecond": {
             "type": "int",
             "defaultValue": 25,
             "metadata": {
-                "description": "Frame per second."
+                "description": "Frames per second of the video"
             }
         },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
-                "description": "The file group where the output files are uploaded to.",
+                "description": "The file group where task output files are uploaded to",
                 "advancedType": "file-group"
             }
         }
@@ -82,26 +104,32 @@
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
+            "jobPreparationTask":{
+                "userIdentity":{
+                    "autoUser": {
+                        "scope": "pool"
+                    }
+                },
+               "commandLine":"azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /Pattern:[parameters('inputDataPrefix')]/[parameters('imagePrefix')] /S & exit /b 0"
+            },
             "taskFactory": {
                 "type": "taskCollection",
                 "tasks": [
                     {
-                        "id": "ffmpeg",
-                        "commandLine": "ffmpeg -y -r [parameters('framesPerSecond')] -i [parameters('filegroupImageFolder')]/[parameters('imagePattern')] -c:v libx264 -vf fps=[parameters('framesPerSecond')] -pix_fmt yuv420p -s [parameters('width')]x[parameters('height')] [parameters('jobName')].mp4",
-                        "resourceFiles": [
-                            {
-                                "source": {
-                                    "fileGroup": "[parameters('inputFilegroup')]",
-                                    "prefix": "[parameters('filegroupImageFolder')]/[parameters('filegroupImagePrefix')]"
-                                }
+                        "id": "ffmpeg", 
+                        "commandLine": "cmd.exe /c \"ffmpeg -y -r [parameters('framesPerSecond')] -start_number [parameters('sequenceStart')] -i \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\[parameters('imageFolder')]\\[parameters('imagePattern')]\" -c:v libx264 -vf fps=[parameters('framesPerSecond')] -pix_fmt yuv420p -s [parameters('width')]x[parameters('height')] [parameters('jobName')].mp4\"",
+                        "userIdentity": {
+                            "autoUser": {
+                                "elevationLevel": "admin",
+                                "scope": "pool"
                             }
-                        ],
+                        },
                         "outputFiles": [
                             {
                                 "filePattern": "../stdout.txt",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "fileGroup": "[parameters('outputs')]",
                                         "path": "[parameters('jobName')]/logs/ffmpeg.log"
                                     }
                                 },
@@ -113,7 +141,7 @@
                                 "filePattern": "../stderr.txt",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "fileGroup": "[parameters('outputs')]",
                                         "path": "[parameters('jobName')]/logs/ffmpeg_error.log"
                                     }
                                 },
@@ -125,7 +153,7 @@
                                 "filePattern": "[parameters('jobName')].mp4",
                                 "destination": {
                                     "autoStorage": {
-                                        "fileGroup": "[parameters('outputFilegroup')]",
+                                        "fileGroup": "[parameters('outputs')]",
                                         "path": "[parameters('jobName')]/outputs/[parameters('jobName')].mp4"
                                     }
                                 },

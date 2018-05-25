@@ -19,12 +19,8 @@
             "metadata": {
                 "description": "The size of the virtual machines that run the application"
             },
-            "defaultValue": "Standard_D2_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
-                "STANDARD_A1",
-                "STANDARD_A2",
-                "STANDARD_A3",
-                "STANDARD_A4",
                 "STANDARD_D1",
                 "STANDARD_D2",
                 "STANDARD_D3",
