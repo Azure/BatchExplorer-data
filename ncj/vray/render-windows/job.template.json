@@ -89,7 +89,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir images & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & vray -sceneFile=\"X:\\[parameters('sceneFile')]\" -frames={0} -imgfile=\"%AZ_BATCH_TASK_WORKING_DIR%\\images\\image{0}.png\" -display=0",
+                    "commandLine": "mkdir images & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & %VRAY_3.60.4_EXEC% -sceneFile=\"X:\\[parameters('sceneFile')]\" -frames={0} -imgfile=\"%AZ_BATCH_TASK_WORKING_DIR%\\images\\image{0}.png\" -display=0",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
