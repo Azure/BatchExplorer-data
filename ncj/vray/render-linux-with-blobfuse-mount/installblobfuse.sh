@@ -4,6 +4,8 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+set -e
+
 BLOBFUSE_CONFIG_FILE="$AZ_BATCH_JOB_PREP_WORKING_DIR/connection.cfg"
 MOUNT_POINT_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/$INPUT_FILEGROUP_NAME"
 TMP_CACHE_PATH="$AZ_BATCH_JOB_PREP_WORKING_DIR/blobfusetmp"
@@ -24,7 +26,7 @@ curl https://packages.microsoft.com/keys/microsoft.asc > ./microsoft.asc
 rpm --import ./microsoft.asc
 
 # Install blobfuse
-yum install blobfuse fuse -y
+yum install blobfuse fuse -y --nogpgcheck
 
 # Configuring and Running.
 if [[ ! -d $TMP_CACHE_PATH ]]; then

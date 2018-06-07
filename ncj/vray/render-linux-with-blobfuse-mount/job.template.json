@@ -32,7 +32,7 @@
                 "dependsOn": "inputFilegroupName"
             }
         },
-		"inputFilegroupAccountSas": {
+		"inputFilegroupSas": {
             "type": "string",
             "metadata": {
                 "description": "SAS URL for reading the data from the selected file group",
@@ -83,7 +83,7 @@
                     },
                     {
                         "name":"INPUT_FILEGROUP_SAS",
-                        "value":"[parameters('inputFilegroupAccountSas')]"
+                        "value":"[parameters('inputFilegroupSas')]"
                     }
                 ],
                 "commandLine": "/bin/bash -c installblobfuse.sh",
