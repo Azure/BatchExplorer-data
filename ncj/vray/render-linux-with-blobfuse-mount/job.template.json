@@ -32,7 +32,7 @@
                 "dependsOn": "inputFilegroupName"
             }
         },
-		"inputFilegroupSas": {
+        "inputFilegroupSas": {
             "type": "string",
             "metadata": {
                 "description": "SAS URL for reading the data from the selected file group",
