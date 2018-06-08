@@ -44,3 +44,6 @@ fi
 
 # Below is the config file approach
 blobfuse "$MOUNT_POINT_PATH" --tmp-path=$TMP_CACHE_PATH -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120 --config-file="$BLOBFUSE_CONFIG_FILE"
+
+ls "$MOUNT_POINT_PATH"
+sleep 30s

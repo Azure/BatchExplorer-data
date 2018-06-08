@@ -111,7 +111,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"$AZ_BATCH_TASK_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_TASK_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/image{0}.png\" -display=0;err=$?;exit $err",
+                    "commandLine": "source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/image{0}.png\" -display=0;err=$?;exit $err",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
