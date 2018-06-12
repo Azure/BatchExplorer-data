@@ -35,7 +35,7 @@
         "inputFilegroupSas": {
             "type": "string",
             "metadata": {
-                "description": "SAS URL for reading the data from the selected file group",
+                "description": "SAS URL for reading and writing the data from the selected file group",
                 "advancedType": "file-group-write-sas",
                 "dependsOn": "inputFilegroupName"
             }
@@ -72,7 +72,7 @@
             "jobPreparationTask": {
                 "resourceFiles":[
                     {
-                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
+                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
                         "filePath":"installblobfuse.sh"
                     }
                 ],
