@@ -1,0 +1,129 @@
+{
+    "templateMetadata": {
+        "description": "Application template for working with V-Ray standalone renderer on CentOS."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "vray-pool-centos",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "render-vray",
+            "metadata": {
+                "description": "The unique name of the job."
+            }
+        },
+        "inputFilegroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The V-Ray scene file to be rendered (.vrscene)",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroupName"
+            }
+        },
+        "inputFilegroupSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS URL for reading the data from the selected file group",
+                "advancedType": "file-group-write-sas",
+                "dependsOn": "inputFilegroupName"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the last frame to render"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs test will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "jobPreparationTask": {
+                "resourceFiles":[
+                    {
+                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/blobfuseintegration/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
+                        "filePath":"installblobfuse.sh"
+                    }
+                ],
+                "environmentSettings":[
+                    {
+                        "name":"INPUT_FILEGROUP_NAME",
+                        "value":"fgrp-[parameters('inputFilegroupName')]"
+                    },
+                    {
+                        "name":"INPUT_FILEGROUP_SAS",
+                        "value":"[parameters('inputFilegroupSas')]"
+                    }
+                ],
+                "commandLine": "/bin/bash -c installblobfuse.sh",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "admin",
+                        "scope": "pool"
+                    }
+                }
+            },
+            "jobReleaseTask": {
+                "commandLine": "/bin/bash -c \"fusermount -u $AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]\"",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "admin",
+                        "scope": "pool"
+                    }
+                }
+            },
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": 1
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "userIdentity": {
+                        "autoUser": {
+                            "scope": "task",
+                            "elevationLevel": "admin"
+                        }
+                    },
+                    "commandLine": "source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/image{0}.png\" -display=0;err=$?;exit $err"
+                }
+            },
+            "onAllTasksComplete": "terminateJob"
+        }
+    }
+}

@@ -1,0 +1,109 @@
+{
+    "parameters": {
+        "poolName": {
+            "type": "string",
+            "defaultValue": "vray-pool-centos",
+            "metadata": {
+                "description": "Id of the pool"
+            }
+        },
+        "vmCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of virtual machines in the Azure Batch pool where the job will run"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the virtual machines that run the application"
+            },
+            "defaultValue": "Standard_D2_v2",
+            "allowedValues": [
+                "Standard_A8",
+                "Standard_A9",
+                "Standard_A10",
+                "Standard_A11",
+                "Standard_A1_v2",
+                "Standard_A2_v2",
+                "Standard_A4_v2",
+                "Standard_A8_v2",
+                "Standard_A2m_v2",
+                "Standard_A4m_v2",
+                "Standard_A8m_v2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D3",
+                "Standard_D4",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_D11",
+                "Standard_D12",
+                "Standard_D13",
+                "Standard_D14",
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D2_v3",
+                "Standard_D4_v3",
+                "Standard_D8_v3",
+                "Standard_D16_v3",
+                "Standard_E2_v3",
+                "Standard_E4_v3",
+                "Standard_E8_v3",
+                "Standard_E16_v3",
+                "Standard_E32_v3",
+                "Standard_E64_v3",
+                "Standard_F1",
+                "Standard_F2",
+                "Standard_F4",
+                "Standard_F8",
+                "Standard_F16",
+                "Standard_G1",
+                "Standard_G2",
+                "Standard_G3",
+                "Standard_G4",
+                "Standard_G5",
+                "Standard_L4",
+                "Standard_L8",
+                "Standard_L16",
+                "Standard_L32",
+                "Standard_M64s",
+                "Standard_M64ms",
+                "Standard_M128s"
+            ]
+        }
+    },
+    "variables": {
+        "osType": {
+            "imageReference": {
+                "publisher": "batch",
+                "offer": "rendering-centos73",
+                "sku": "rendering",
+                "version": "latest"
+            },
+            "nodeAgentSKUId": "batch.node.centos 7"
+        }
+    },
+    "pool": {
+        "id": "[parameters('poolName')]",
+        "displayName": "V-Ray CentOS rendering pool",
+        "vmSize": "[parameters('vmSize')]",
+        "virtualMachineConfiguration": "[variables('osType')]",
+        "targetDedicatedNodes": "[parameters('vmCount')]",
+        "enableAutoScale": false,
+        "applicationLicenses": [
+            "vray"
+        ]
+    }
+}
