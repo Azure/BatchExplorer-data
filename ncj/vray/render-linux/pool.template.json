@@ -97,7 +97,7 @@
                 "publisher": "batch",
                 "offer": "rendering-centos73",
                 "sku": "rendering",
-                "version": "latest"
+                "version": "1.1.2"
             },
             "nodeAgentSKUId": "batch.node.centos 7"
         }

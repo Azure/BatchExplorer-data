@@ -21,22 +21,40 @@
                 "advancedType": "file-group"
             }
         },
+        "inputDataSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
+            }
+        },
         "blendFile": {
             "type": "string",
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
-                "dependsOn": "inputData"
+                "dependsOn": "inputData",
+                "wildcards": "*.blend"
+            }
+        },
+        "optionalParameters": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional parameters to pass to blender, e.g. --scene <name>"
             }
         },
         "frameStart": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The first frame to render"
             }
         },
         "frameEnd": {
             "type": "int",
+            "defaultValue": 1,
             "metadata": {
                 "description": "The last frame to render"
             }
@@ -52,12 +70,28 @@
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
-            "id": "[parameters('jobName')]-[parameters('frameStart')]-[parameters('frameEnd')]",
+            "id": "[parameters('jobName')]",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
             "displayName": "[parameters('blendFile')]",
             "onAllTasksComplete": "terminateJob",
+            "jobPreparationTask":{
+                "userIdentity":{
+                    "autoUser": {
+                        "scope": "pool"
+                    }
+                },
+               "commandLine":"azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S & exit /b 0"
+            },
+            "jobReleaseTask":{
+               "userIdentity":{
+                   "autoUser": {
+                       "scope": "pool"
+                   }
+               },
+              "commandLine":"DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            },
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
@@ -69,14 +103,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "blender -b \"[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0",
-                    "resourceFiles": [
-                        {
-                            "source": { 
-                                "fileGroup": "[parameters('inputData')]"
-                            }
-                        }
-                    ],
+                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b \"%AZ_BATCH_JOB_PREP_WORKING_DIR%/[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0 [parameters('optionalParameters')]",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",

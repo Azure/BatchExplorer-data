@@ -17,6 +17,17 @@
                 "description": "The unique name of the job."
             }
         },
+        "mayaVersion": {
+            "type": "string",
+            "defaultValue": "Maya2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "Maya2017",
+                "Maya2018"
+            ]
+        },
         "inputData": {
             "type": "string",
             "metadata": {
@@ -61,6 +72,10 @@
             }
         }
     },
+    "variables":{
+      "Maya2017":"%MAYA_2017_EXEC%",
+      "Maya2018":"%MAYA_2018_EXEC%"
+   },
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
@@ -96,7 +111,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & render -renderer sw -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"",
+                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets & cmd.exe /v /c \"(if \"[parameters('mayaVersion')]\" == 'Maya2018' (SET MAYA_EXEC=%MAYA_2018_EXEC%) else (SET MAYA_EXEC=%MAYA_2017_EXEC%)) && !MAYA_EXEC! -renderer sw -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"\"",
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
