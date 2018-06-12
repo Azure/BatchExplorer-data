@@ -36,7 +36,7 @@
             "type": "string",
             "metadata": {
                 "description": "SAS URL for reading the data from the selected file group",
-                "advancedType": "file-group-sas",
+                "advancedType": "file-group-write-sas",
                 "dependsOn": "inputFilegroupName"
             }
         },
@@ -94,6 +94,15 @@
                     }
                 }
             },
+            "jobReleaseTask": {
+                "commandLine": "/bin/bash -c \"fusermount -u $AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]\"",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "admin",
+                        "scope": "pool"
+                    }
+                }
+            },
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
@@ -111,45 +120,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/image{0}.png\" -display=0;err=$?;exit $err",
-                    "outputFiles": [
-                        {
-                            "filePattern": "../stdout.txt",
-                            "destination": {
-                                "autoStorage": {
-                                    "fileGroup": "[parameters('outputs')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
-                                }
-                            },
-                            "uploadOptions": {
-                                "uploadCondition": "taskCompletion"
-                            }
-                        },
-                        {
-                            "filePattern": "../stderr.txt",
-                            "destination": {
-                                "autoStorage": {
-                                    "fileGroup": "[parameters('outputs')]",
-                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
-                                }
-                            },
-                            "uploadOptions": {
-                                "uploadCondition": "taskCompletion"
-                            }
-                        },
-                        {
-                            "filePattern": "images/**/*",
-                            "destination": {
-                                "autoStorage": {
-                                    "fileGroup": "[parameters('outputs')]",
-                                    "path":"[parameters('jobName')]/images"
-                                }
-                            },
-                            "uploadOptions": {
-                                "uploadCondition": "taskSuccess"
-                            }
-                        }
-                    ]
+                    "commandLine": "source /etc/profile.d/chaos.sh;vray2017.sh -sceneFile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/[parameters('sceneFile')]\" -frames={0} -imgfile=\"$AZ_BATCH_JOB_PREP_WORKING_DIR/fgrp-[parameters('inputFilegroupName')]/image{0}.png\" -display=0;err=$?;exit $err"
                 }
             },
             "onAllTasksComplete": "terminateJob"
