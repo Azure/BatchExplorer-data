@@ -24,22 +24,19 @@
         "nodeSize": {
             "type": "string",
             "metadata": {
-                "description": "The size of the virtual machines that run the application. Note GPU options only."
+                "description": "The size of the virtual machines that run the application (GPU options only)"
             },
             "defaultValue": "Standard_NC6",
             "allowedValues": [
                 "Standard_NC6",
                 "Standard_NC12",
                 "Standard_NC24",
-                "Standard_NC24r",
                 "Standard_NC6s_v2",
                 "Standard_NC12s_v2",
                 "Standard_NC24s_v2",
-                "Standard_NC24rs_v2",
                 "Standard_NC6s_v3",
                 "Standard_NC12s_v3",
-                "Standard_NC24s_v3",
-                "Standard_NC24rs_v3"
+                "Standard_NC24s_v3"
             ]
         }
     },
