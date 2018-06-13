@@ -1,12 +1,17 @@
 [
     {
-        "id": "render-movie-linux",
-        "name": "Render movie on Ubuntu 16.04",
-        "description": "Render a blender scene into a movie using Ubuntu 16.04."
+        "id": "render-linux",
+        "name": "Render frames on Ubuntu 16.04",
+        "description": "Render a blender scene using Ubuntu 16.04."
     },
     {
-        "id": "render-movie-windows",
-        "name": "Render movie on Windows Server",
-        "description": "Render a blender scene into a movie using Windows Server."
+        "id": "render-windows",
+        "name": "Render frames on Windows Server",
+        "description": "Render a blender scene using Windows Server."
+    },
+    {
+        "id": "render-windows-cycles-gpu",
+        "name": "Render frames on Windows Server GPU machines",
+        "description": "Render a blender scene using Windows Server GPU machines and the Blender CYCLES rendering engine."
     }
 ]
