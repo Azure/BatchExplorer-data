@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-pool-ubuntu",
+            "defaultValue": "blender-windows",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
@@ -11,7 +11,7 @@
             "type": "string",
             "defaultValue": "blender-render",
             "metadata": {
-                "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs"
             }
         },
          "inputData": {
@@ -19,6 +19,14 @@
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
+            }
+        },
+        "inputDataSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
             }
         },
         "blendFile": {
@@ -74,15 +82,7 @@
                         "scope": "pool"
                     }
                 },
-                "resourceFiles": [
-                {
-                    "source": { 
-                        "fileGroup": "[parameters('inputData')]",
-                        "prefix": ""
-                    },
-                    "filePath": "."
-                }],
-                "commandLine": "echo blender"
+               "commandLine":"azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S & exit /b 0"
             },
             "jobReleaseTask":{
                "userIdentity":{
@@ -103,7 +103,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
-                    "commandLine": "blender -b \"$AZ_BATCH_JOB_PREP_WORKING_DIR/[parameters('blendFile')]\" -o \"[parameters('jobName')]_####\" -f {0} -t 0 [parameters('optionalParameters')]",
+                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b \"%AZ_BATCH_JOB_PREP_WORKING_DIR%/[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0 [parameters('optionalParameters')]",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",

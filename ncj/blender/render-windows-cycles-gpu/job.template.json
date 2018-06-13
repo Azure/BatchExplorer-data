@@ -2,16 +2,16 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-pool-ubuntu",
+            "defaultValue": "blender-windows-gpu",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "blender-render",
+            "defaultValue": "blender-gpu-render",
             "metadata": {
-                "description": "The prefix of the name of the Azure Batch job, also used to prefix rendered outputs"
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs"
             }
         },
          "inputData": {
@@ -40,7 +40,7 @@
         },
         "optionalParameters": {
             "type": "string",
-            "defaultValue": " ",
+            "defaultValue": "",
             "metadata": {
                 "description": "Optional parameters to pass to blender, e.g. --scene <name>"
             }
@@ -102,8 +102,8 @@
                     }
                 ],
                 "repeatTask": {
-                    "displayName": "Frame {0}",
-                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b \"%AZ_BATCH_JOB_PREP_WORKING_DIR%/[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0 [parameters('optionalParameters')]",
+                    "displayName": "Rendered Frame {0}",
+                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b -P \"%AZ_BATCH_JOB_PREP_WORKING_DIR%/blender_cycles_use_gpu.py\" -y \"%AZ_BATCH_JOB_PREP_WORKING_DIR%/[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0 -E CYCLES [parameters('optionalParameters')]",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",

@@ -1,0 +1,83 @@
+{
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "blender-windows-gpu",
+            "metadata": {
+                "description": "Id of the pool"
+            }
+        },
+        "dedicatedVmCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of dedicated nodes in the Azure Batch pool"
+            }
+        },
+        "lowPriorityVmCount": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "The number of low priority nodes in the Azure Batch pool"
+            }
+        },
+        "nodeSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the virtual machines that run the application. Note GPU options only."
+            },
+            "defaultValue": "Standard_NC6",
+            "allowedValues": [
+                "Standard_NC6",
+                "Standard_NC12",
+                "Standard_NC24",
+                "Standard_NC24r",
+                "Standard_NC6s_v2",
+                "Standard_NC12s_v2",
+                "Standard_NC24s_v2",
+                "Standard_NC24rs_v2",
+                "Standard_NC6s_v3",
+                "Standard_NC12s_v3",
+                "Standard_NC24s_v3",
+                "Standard_NC24rs_v3"
+            ]
+        }
+    },
+    "variables": {
+        "osType": {
+            "imageReference": {
+                "publisher": "batch",
+                "offer": "rendering-windows2016",
+                "sku": "rendering",
+                "version": "1.2.3"
+            },
+            "nodeAgentSKUId": "batch.node.windows amd64"
+        }
+    },
+    "pool": {
+        "id": "[parameters('poolId')]",
+        "displayName": "3ds Max pool running: [parameters('poolId')]",
+        "vmSize": "[parameters('nodeSize')]",
+        "virtualMachineConfiguration": "[variables('osType')]",
+        "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
+        "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
+        "enableAutoScale": false,
+        "enableInterNodeCommunication": false,
+        "startTask": {
+            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('nodeSize')]",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
+                    "filePath": "install-azure-nc-drivers.cmd"
+                }
+            ]
+        }
+    }
+}
