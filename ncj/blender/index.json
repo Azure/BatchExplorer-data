@@ -2,16 +2,16 @@
     {
         "id": "render-linux",
         "name": "Render frames on Ubuntu 16.04",
-        "description": "Render a blender scene using Ubuntu 16.04."
+        "description": "Render a Blender scene using Ubuntu 16.04."
     },
     {
         "id": "render-windows",
         "name": "Render frames on Windows Server",
-        "description": "Render a blender scene using Windows Server."
+        "description": "Render a Blender scene using Windows Server."
     },
     {
         "id": "render-windows-cycles-gpu",
         "name": "Render frames on Windows Server GPU machines",
-        "description": "Render a blender scene using Windows Server GPU machines and the Blender CYCLES rendering engine."
+        "description": "Render a Blender scene using Windows Server GPU machines and the Blender CYCLES rendering engine."
     }
 ]
