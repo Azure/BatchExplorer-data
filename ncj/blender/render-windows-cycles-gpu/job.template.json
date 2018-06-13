@@ -109,7 +109,7 @@
                 ],
                 "repeatTask": {
                     "displayName": "Rendered Frame {0}",
-                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b -P \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\blender_cycles_use_gpu.py\" -y \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%/[parameters('jobName')]_####\" -f {0} -t 0 -E CYCLES [parameters('optionalParameters')]",
+                    "commandLine": "\"%BLENDER_2018_EXEC%\" -b -P \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\blender_cycles_use_gpu.py\" -y \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\[parameters('blendFile')]\" -o \"%AZ_BATCH_TASK_WORKING_DIR%\\[parameters('jobName')]_####\" -f {0} -t 0 -E CYCLES [parameters('optionalParameters')]",
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
