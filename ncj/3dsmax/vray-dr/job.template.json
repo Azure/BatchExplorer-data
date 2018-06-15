@@ -164,7 +164,7 @@
             "type": "string",
             "defaultValue": "20204",
             "metadata": {
-                "description": "The file group where outputs will be stored"
+                "description": "The port VRay spawner will listen on."
             }
         }
     },
