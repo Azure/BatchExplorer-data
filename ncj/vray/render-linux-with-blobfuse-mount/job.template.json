@@ -109,7 +109,7 @@
                     "displayName": "Frame {0}",
                     "userIdentity": {
                         "autoUser": {
-                            "scope": "task",
+                            "scope": "pool",
                             "elevationLevel": "admin"
                         }
                     },
