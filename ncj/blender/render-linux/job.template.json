@@ -69,7 +69,7 @@
             "displayName": "[parameters('blendFile')]",
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask":{
-                "userIdentity":{
+                "userIdentity": {
                     "autoUser": {
                         "scope": "pool"
                     }

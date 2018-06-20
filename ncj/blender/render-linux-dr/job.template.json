@@ -1,0 +1,185 @@
+{
+    "templateMetadata":{
+        "description":"Distributed render Blender frames over multiple nodes."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "blender-win-tile-render",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "blender-tile",
+            "metadata": {
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs"
+            }
+        },
+         "inputData": {
+            "type": "string",
+            "defaultValue": "fgrp-tile-test",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "inputDataSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
+            }
+        },
+        "blendFile": {
+            "type": "string",
+            "defaultValue": "bmw27_cpu.blend",
+            "metadata": {
+                "description": "The Blender scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputData",
+                "wildcards": "*.blend"
+            }
+        },
+        "optionalParameters": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional parameters to pass to blender, e.g. --scene <name>"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The last frame to render"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "defaultValue": "fgrp-outputs",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        },
+        "outputSas": {
+            "type": "string",
+            "metadata": {
+                "description": "Writable SAS token for uploading outputs to the container",
+                "advancedType": "file-group-write-sas",
+                "dependsOn": "outputs"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "displayName": "",
+            "usesTaskDependencies": true,
+            "onAllTasksComplete": "terminateJob",
+            "jobPreparationTask":{
+                "userIdentity": {
+                    "autoUser": {
+                        "scope": "pool",
+                        "elevationLevel": "admin"
+                    }
+                },
+                "commandLine": "/bin/bash -c 'echo blender'",
+                "resourceFiles": [
+                    {
+                        "source": { 
+                            "fileGroup": "[parameters('inputData')]",
+                            "prefix": ""
+                        },
+                        "filePath": "."
+                    }
+                ]
+            },
+            "jobReleaseTask":{
+                "userIdentity":{
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "admin"
+                    }
+                },
+                "commandLine":"/bin/bash -c 'DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0'"
+            },
+            "jobManagerTask":{
+                "id": "_manager",
+                "displayName": "job manager task",
+                "allowLowPriorityNode" : true,
+                "runExclusive": true,
+                "environmentSettings": [
+                    { "name": "OUTPUT_FORMAT", "value": "PNG" },
+                    { "name": "BLEND_FILE", "value": "[parameters('blendFile')]" },
+                    { "name": "OPTIONAL_PARAMS", "value": "[parameters('optionalParameters')]" },
+                    { "name": "INPUT_CONTAINER_SAS", "value": "[parameters('inputDataSas')]" },
+                    { "name": "OUTPUT_CONTAINER_SAS", "value": "[parameters('outputSas')]" },
+                    { "name": "X_TILES", "value": "6" },
+                    { "name": "Y_TILES", "value": "6" },
+                    { "name": "FRAME_START", "value": "[parameters('frameStart')]" },
+                    { "name": "FRAME_END", "value": "[parameters('frameEnd')]" }
+                ],
+                "authenticationTokenSettings":{
+                    "access": ["job"]
+                },
+                "userIdentity": {
+                    "autoUser": {
+                        "scope": "pool",
+                        "elevationLevel": "admin"
+                    }
+                },
+                "commandLine": "/bin/bash -c 'env;python $AZ_BATCH_TASK_WORKING_DIR/scripts/python-frame-splitter.py'",
+                "killJobOnCompletion": false,
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputData')]"
+                        },
+                        "filePath": "scripts/"
+                    }
+                ],
+                "outputFiles": [
+                    {
+                        "filePattern": "../stdout.txt",
+                        "destination": {
+                            "autoStorage": {
+                                "fileGroup": "[parameters('outputs')]",
+                                "path": "[parameters('jobName')]/logs/manager/stdout.txt"
+                            }
+                        },
+                        "uploadOptions": {
+                            "uploadCondition": "taskCompletion"
+                        }
+                    },
+                    {
+                        "filePattern": "../stderr.txt",
+                        "destination": {
+                            "autoStorage": {
+                                "fileGroup": "[parameters('outputs')]",
+                                "path": "[parameters('jobName')]/logs/manager/stderr.txt"
+                            }
+                        },
+                        "uploadOptions": {
+                            "uploadCondition": "taskCompletion"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

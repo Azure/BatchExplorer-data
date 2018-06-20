@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-ubuntu",
+            "defaultValue": "blender-blah",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -107,11 +107,16 @@
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
-        "packageReferences": [
-            {
-                "type": "aptPackage",
-                "id": "blender"
+        "startTask": {
+            "commandLine": "/bin/bash -c 'apt-get update;apt-get install -y imagemagick;apt-get install -y blender;apt-get install -y python-pip;pip install azure-batch;'",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "scope": "pool",
+                    "elevationLevel": "admin"
+                }
             }
-        ]
+        }
     }
 }
