@@ -108,7 +108,7 @@
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
         "startTask": {
-            "commandLine": "/bin/bash -c 'apt-get update;apt-get install -y imagemagick;apt-get install -y blender;apt-get install -y python-pip;pip install azure-batch;'",
+            "commandLine": "/bin/bash -c setup-linux-pool.sh",
             "waitForSuccess": true,
             "maxTaskRetryCount": 0,
             "userIdentity": {
@@ -116,7 +116,13 @@
                     "scope": "pool",
                     "elevationLevel": "admin"
                 }
-            }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/setup-linux-pool.sh",
+                    "filePath": "setup-linux-pool.sh"
+                }
+            ]
         }
     }
 }
