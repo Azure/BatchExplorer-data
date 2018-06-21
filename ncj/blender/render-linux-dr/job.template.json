@@ -127,8 +127,8 @@
                 "poolId": "[parameters('poolId')]"
             },
             "displayName": "",
-            "usesTaskDependencies": true,
             "onAllTasksComplete": "terminateJob",
+            "usesTaskDependencies": true,
             "jobPreparationTask":{
                 "userIdentity": {
                     "autoUser": {
@@ -136,16 +136,7 @@
                         "elevationLevel": "admin"
                     }
                 },
-                "commandLine": "/bin/bash -c 'echo blender'",
-                "resourceFiles": [
-                    {
-                        "source": { 
-                            "fileGroup": "[parameters('inputData')]",
-                            "prefix": ""
-                        },
-                        "filePath": "."
-                    }
-                ]
+                "commandLine":"azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" /S"
             },
             "jobReleaseTask":{
                 "userIdentity":{
@@ -154,7 +145,7 @@
                        "elevationLevel": "admin"
                     }
                 },
-                "commandLine":"/bin/bash -c 'DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0'"
+                "commandLine":"/bin/bash -c 'DEL /S /Q \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" & exit /b 0'"
             },
             "jobManagerTask":{
                 "id": "_manager",
