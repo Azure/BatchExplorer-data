@@ -74,7 +74,7 @@ rendererName = r as string
 index = findString rendererName "V_Ray_"
 if index != 1 then (print "VRay renderer not used, please save the scene with a VRay renderer selected.")
 index = findString rendererName "V_Ray_RT_"
-if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log")
+if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true)
 "@ | Out-File -Append $pre_render_script
 }
 
@@ -113,10 +113,15 @@ r.verbosity_level = 4
 
 if ($renderer -eq "vray")
 {
-    $outputFiles = "$env:AZ_BATCH_TASK_WORKING_DIR\images\____.jpg" -replace "\\", "\\"
+    $outputFilesPath = "$env:AZ_BATCH_TASK_WORKING_DIR\images\" -replace "\\", "\\"
 @"
+-- Logging
+r.system_vrayLog_level = 4
+r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log"
+
 -- Set output channel path
-r.output_splitfilename = "$outputFiles"
+if r.output_splitfilename != '' (print "Updating output split filenames."; outputFilename = filenameFromPath r.output_splitfilename; r.output_splitfilename = "$outputFiles\\outputFilename")
+
 "@ | Out-File -Append $pre_render_script
 }
 
