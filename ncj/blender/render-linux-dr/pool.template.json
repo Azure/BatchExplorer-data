@@ -108,7 +108,7 @@
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
         "startTask": {
-            "commandLine": "/bin/bash -c setup-linux-pool.sh",
+            "commandLine": "/bin/bash -c ./setup-linux-pool.sh",
             "waitForSuccess": true,
             "maxTaskRetryCount": 0,
             "userIdentity": {
