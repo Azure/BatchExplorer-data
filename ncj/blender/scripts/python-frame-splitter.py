@@ -236,7 +236,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
     print("working_dir: {}".format(working_dir))
 
     command_line = "convert $AZ_BATCH_TASK_WORKING_DIR/tile_* -flatten frame_{}.{}".format(frame, get_file_extension(output_format))
-    print("executing: {}".format(command_line))
+    print("merge task command line: {}".format(command_line))
     return models.TaskAddParameter(
         id=pad_number(task_id),
         display_name="frame: {} - merge task".format(frame),
@@ -360,7 +360,7 @@ def submit_task_collection(batch_client, job_id, tasks, frame):
     try:
         # split task array into chunks of 100 tasks if the array is larger than
         # 100 items. this is the maximum number of tasks supported by add_collection
-        for chunk in list(chunks(tasks, 100)):
+        for chunk in list(chunks(tasks, 10)):
             print("submitting: {} tasks to the Batch service".format(len(chunk)))
             batch_client.task.add_collection(job_id=job_id, value=chunk)
     except models.BatchErrorException as ex:
