@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "blender-tile",
             "metadata": {
-                "description": "The name of the Azure Batch job, also used to prefix rendered outputs"
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs",
+                "advancedType": "job-id"
             }
         },
          "inputData": {

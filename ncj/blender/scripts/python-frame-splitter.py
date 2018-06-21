@@ -40,6 +40,15 @@ def main():
 
 
 def create_tiles(x_tiles, y_tiles):
+    """
+    Generate the list of tiles based on the number of X and Y tiles 
+    that have been defined.
+
+    :param x_tiles: Number of tiles on the X axis.
+    :type x_tiles: int
+    :param y_tiles: Number of tiles on the Y axis.
+    :type y_tiles: int
+    """
     tiles = []
     total = x_tiles * y_tiles
     counter = 0
@@ -54,6 +63,23 @@ def create_tiles(x_tiles, y_tiles):
 
 
 def create_tasks_for_frame(frame, current_task_id, tiles, batch_client):
+    """
+    Given the collection of tiles and the frame number, create a Azure Batch
+    task for each tile and a merge task to stitch them back together again. 
+    Also takes the current task id so we can keep track of how many tasks we 
+    have created.
+
+    :param frame: Current frame number to render.
+    :type frame: int
+    :param current_task_id: Current task id. For every tile task and merge task
+     created, this counter gets incremented.
+    :type current_task_id: int
+    :param tiles: Collection of tiles that we generated earlier.
+    :type tiles: list[~Tile]
+    :param batch_client: Client for issuing REST requests to the Azure Batch
+     service.
+    :type batch_client: ~BatchServiceClient
+    """
     job_id = os.environ["AZ_BATCH_JOB_ID"]
     depend_start = current_task_id
     tasks = []
@@ -77,6 +103,27 @@ def create_tasks_for_frame(frame, current_task_id, tiles, batch_client):
     
 
 def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
+    """
+    Azure Batch task that renders the given tile. Run Blender from the command 
+    line and pass in the job manager script and the blend file. 
+
+    :param frame: Frame number of the scene that this merge task is 
+     processing.
+    :type frame: int
+    :param task_id: Identifier of the task.
+    :type task_id: str
+    :param job_id: Unique identifier of the job. Job identifiers are unique
+     within a single Azure Batch account.
+    :type job_id: str
+    :param tile_num: Number of the current tile.
+    :type tile_num: int
+    :param current_x: X value of the current tile, used to generate the render
+     border.
+    :type current_x: int
+    :param current_y: Y value of the current tile, used to generate the render
+     border.
+    :type current_y: int
+    """
     blend_file = os.environ["BLEND_FILE"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     optionalParams = os.environ["OPTIONAL_PARAMS"]
@@ -166,7 +213,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
 
     :param frame: Frame number of the scene that this merge task is 
      processing.
-    :type id: int
+    :type frame: int
     :param task_id: Identifier of the task.
     :type task_id: str
     :param job_id: Unique identifier of the job. Job identifiers are unique
@@ -237,15 +284,44 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
 
 
 def pad_number(number, len=6):
+    """
+    Used for padding task id's. Takes a number and adds padding zeros
+    to it. E.g. 4 => 000004 with default of length 6. 
+
+    :param number: Number to pad.
+    :type number: int
+    :param len: Total length of the resulting string.
+    :type len: int
+    """
     return str(number).zfill(len)
 
 
 def get_file_extension(blender_output_format): 
+    """
+    Given the Blender output format string, return the associated file
+    extension. E.g. PNG => png, OPEN_EXR => exr. 
+
+    :param blender_output_format: Blender output format. Values include: BMP,
+     IRIS, PNG, JPEG, JPEG2000, TARGA, TARGA_RAW, CINEON, DPX, OPEN_EXR_MULTILAYER,
+     OPEN_EXR, HDR, TIFF. Though we are only interested in a few of these.
+    :type blender_output_format: string
+    """
     # just png for now
     return blender_output_format.lower()
 
 
 def get_resource_files(x_tiles, y_tiles, frame):
+    """
+    Generate a list of resource files for the merge task. These will be the 
+    output tiles for the frame. 
+
+    :param x_tiles: Number of tiles on the X axis.
+    :type x_tiles: int
+    :param y_tiles: Number of tiles on the Y axis.
+    :type y_tiles: int
+    :param frame: Current frame
+    :type frame: int
+    """
     tile_count = x_tiles * y_tiles
     # hard coded to PNG at the moment
     output_format = os.environ["OUTPUT_FORMAT"]
@@ -263,6 +339,22 @@ def get_resource_files(x_tiles, y_tiles, frame):
     return files
 
 def submit_task_collection(batch_client, job_id, tasks, frame):
+    """
+    Submit the colleciton of tasks to the Batch REST service for the 
+    given frame. Note that a maximum of 100 tasks can be submitted to the 
+    Batch API at any one time.
+
+    :param batch_client: Client for issuing REST requests to the Azure Batch
+     service.
+    :type batch_client: ~BatchServiceClient
+    :param job_id: Identifier of the job that we will be submitting these
+     tasks to.
+    :type job_id: str
+    :param tasks: Collection of tasks to submit to the Batch service.
+    :type tasks: list[~models.TaskAddParameter]
+    :param frame: Current frame
+    :type frame: int
+    """
     print("submitting: {} tasks to job: {}, for frame: {}".format(str(len(tasks)), job_id, frame))
 
     try:
@@ -280,6 +372,16 @@ def submit_task_collection(batch_client, job_id, tasks, frame):
 
 
 def chunks(items, count):
+    """
+    Split a collection of potentially more than 100 items into a list 
+    of lists that contain 100 items. E.g. list[1..150] will return a 
+    list[list[1..100], list[101..150]].
+
+    :param items: Collection of items.
+    :type items: list[~object]
+    :param count: Maximum number of items in any one list.
+    :type count: int
+    """
     # For item i in a range that is a length of items[],
     for i in range(0, len(items), count):
         # Create an index range for l of n items:

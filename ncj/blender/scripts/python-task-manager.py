@@ -34,6 +34,10 @@ def render_tile(current_tile):
     print("setting current frame to: {}".format(current_frame))
     bpy.context.scene.frame_current = current_frame
 
+    # RGB or RGBA
+    color_mode = bpy.context.scene.render.image_settings.color_mode
+    print("color_mode: {}".format(color_mode))
+
     file_format = bpy.context.scene.render.image_settings.file_format
     if file_format in ("OPEN_EXR", "OPEN_EXR_MULTILAYER"):
         file_format = "exr"
