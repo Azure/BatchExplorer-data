@@ -97,6 +97,13 @@
             "metadata": {
                 "description": "Optional start task command"
             }
+        },
+        "subnetResourceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The subnet resource Id in the form, /subscriptions/{Subscription ID}/resourceGroups/{My Resource group}/providers/Microsoft.Network/virtualNetworks/{My VNet}/subnets/{My Subnet}"
+            }
         }
     },
     "variables": {
@@ -139,9 +146,10 @@
                 }
             ]
         },
-        "networkConfiguration":{
-            "endpointConfiguration":{
-                "inboundNATPools":[
+        "networkConfiguration": {
+            "subnetId":"[parameters('subnetResourceId')]",
+            "endpointConfiguration": {
+                "inboundNATPools": [
                     {
                         "name":"DenySSH",
                         "protocol":"tcp",
