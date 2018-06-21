@@ -1,0 +1,177 @@
+{
+    "parameters": {
+        "poolName": {
+            "type": "string",
+            "defaultValue": "VRayDRPool",
+            "metadata": {
+                "description": "Id of the pool"
+            }
+        },
+        "dedicatedVmCount": {
+            "type": "int",
+            "defaultValue": 2,
+            "metadata": {
+                "description": "The number of dedicated nodes in the Azure Batch pool"
+            }
+        },
+        "lowPriorityVmCount": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "The number of low priority nodes in the Azure Batch pool"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the virtual machines that run the application"
+            },
+            "defaultValue": "Standard_D2_v2",
+            "allowedValues": [
+                "Standard_A8",
+                "Standard_A9",
+                "Standard_A10",
+                "Standard_A11",
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_D5_v2",
+                "Standard_D11_v2",
+                "Standard_D12_v2",
+                "Standard_D13_v2",
+                "Standard_D14_v2",
+                "Standard_D15_v2",
+                "Standard_D2_v3",
+                "Standard_D4_v3",
+                "Standard_D8_v3",
+                "Standard_D16_v3",
+                "Standard_D32_v3",
+                "Standard_D64_v3",
+                "Standard_E2_v3",
+                "Standard_E4_v3",
+                "Standard_E8_v3",
+                "Standard_E16_v3",
+                "Standard_E32_v3",
+                "Standard_E64_v3",
+                "Standard_F1",
+                "Standard_F2",
+                "Standard_F4",
+                "Standard_F8",
+                "Standard_F16",
+                "Standard_G1",
+                "Standard_G2",
+                "Standard_G3",
+                "Standard_G4",
+                "Standard_G5",
+                "Standard_H8",
+                "Standard_H16",
+                "Standard_H8m",
+                "Standard_H16m",
+                "Standard_H16r",
+                "Standard_H16mr",
+                "Standard_L4",
+                "Standard_L8",
+                "Standard_L16",
+                "Standard_L32",
+                "Standard_M64s",
+                "Standard_M64ms",
+                "Standard_M128s",
+                "Standard_NC6",
+                "Standard_NC12",
+                "Standard_NC24",
+                "Standard_NC24r",
+                "Standard_NC6s_v2",
+                "Standard_NC12s_v2",
+                "Standard_NC24s_v2",
+                "Standard_NC24rs_v2",
+                "Standard_NC6s_v3",
+                "Standard_NC12s_v3",
+                "Standard_NC24s_v3",
+                "Standard_NC24rs_v3"
+            ]
+        },
+        "startTaskCommand": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional start task command"
+            }
+        }
+    },
+    "variables": {
+        "osType": {
+            "imageReference": {
+                "publisher": "batch",
+                "offer": "rendering-windows2016",
+                "sku": "rendering",
+                "version": "1.2.3"
+            },
+            "nodeAgentSKUId": "batch.node.windows amd64"
+        }
+    },
+    "pool": {
+        "id": "[parameters('poolName')]",
+        "displayName": "3ds Max pool running: [parameters('poolName')]",
+        "vmSize": "[parameters('vmSize')]",
+        "virtualMachineConfiguration": "[variables('osType')]",
+        "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
+        "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
+        "applicationLicenses": [
+            "3dsmax",
+            "vray"
+        ],
+        "enableAutoScale": false,
+        "enableInterNodeCommunication": true,
+        "startTask": {
+            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')] & [parameters('startTaskCommand')]",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
+                    "filePath": "install-azure-nc-drivers.cmd"
+                }
+            ]
+        },
+        "networkConfiguration":{
+            "endpointConfiguration":{
+                "inboundNATPools":[
+                    {
+                        "name":"DenySSH",
+                        "protocol":"tcp",
+                        "backendPort":22,
+                        "frontendPortRangeStart":60000,
+                        "frontendPortRangeEnd":60099,
+                        "networkSecurityGroupRules":[
+                            {
+                                "priority":150,
+                                "access":"deny",
+                                "sourceAddressPrefix":"*"
+                            }
+                        ]
+                    },
+                    {
+                        "name":"DenyRDP",
+                        "protocol":"tcp",
+                        "backendPort":3389,
+                        "frontendPortRangeStart":60100,
+                        "frontendPortRangeEnd":60199,
+                        "networkSecurityGroupRules":[
+                            {
+                                "priority":151,
+                                "access":"deny",
+                                "sourceAddressPrefix":"*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
