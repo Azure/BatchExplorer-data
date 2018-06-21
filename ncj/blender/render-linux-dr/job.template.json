@@ -35,7 +35,7 @@
         },
         "blendFile": {
             "type": "string",
-            "defaultValue": "bmw27_cpu.blend",
+            "defaultValue": "monster.blend",
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
@@ -136,7 +136,7 @@
                         "elevationLevel": "admin"
                     }
                 },
-                "commandLine":"azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" /S"
+                "commandLine":"/bin/bash -c 'azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" --recursive'"
             },
             "jobReleaseTask":{
                 "userIdentity":{
@@ -145,7 +145,7 @@
                        "elevationLevel": "admin"
                     }
                 },
-                "commandLine":"/bin/bash -c 'DEL /S /Q \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" & exit /b 0'"
+                "commandLine":"/bin/bash -c 'echo \"$AZ_BATCH_JOB_PREP_WORKING_DIR\";rm -rfv \"$AZ_BATCH_JOB_PREP_WORKING_DIR/*\"'"
             },
             "jobManagerTask":{
                 "id": "_manager",
@@ -176,10 +176,8 @@
                 "killJobOnCompletion": false,
                 "resourceFiles": [
                     {
-                        "source": {
-                            "fileGroup": "[parameters('inputData')]"
-                        },
-                        "filePath": "scripts/"
+                        "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/python-frame-splitter.py",
+                        "filePath": "scripts/python-frame-splitter.py"
                     }
                 ],
                 "outputFiles": [

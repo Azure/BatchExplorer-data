@@ -12,8 +12,9 @@ class Tile:
         self.current_y = current_y
 
 def main():
-    print("------------------------------------")
+    print("-----------------------------------")
     print("job manager task reporting for duty")
+    print("-----------------------------------")
 
     # get the environment variables for the job manager task
     x_tiles = int(os.environ["X_TILES"])
@@ -69,7 +70,7 @@ def create_tasks_for_frame(frame, current_task_id, tiles, batch_client):
     tasks.append(create_merge_task(frame, current_task_id, job_id, depend_start, depend_end))
     current_task_id += 1
 
-    # todo: [tats] - yield return add task collection
+    # TODO: [tats] - yield return add task collection
     submit_task_collection(batch_client, job_id, tasks, frame)
 
     return current_task_id
@@ -81,7 +82,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     optionalParams = os.environ["OPTIONAL_PARAMS"]
     output_format = os.environ["OUTPUT_FORMAT"]
 
-    command_line = "blender -b \"$AZ_BATCH_JOB_PREP_WORKING_DIR/{}\" -P \"$AZ_BATCH_JOB_PREP_WORKING_DIR/python-task-manager.py\" -y -t 0 -F {} -E CYCLES {}".format(blend_file, output_format, optionalParams)    
+    command_line = "blender -b \"$AZ_BATCH_JOB_PREP_WORKING_DIR/{}\" -P \"$AZ_BATCH_TASK_WORKING_DIR/scripts/python-task-manager.py\" -y -t 0 -F {} -E CYCLES {}".format(blend_file, output_format, optionalParams)    
     return models.TaskAddParameter(
         id=pad_number(task_id),
         display_name="frame: {}, tile: {}".format(frame, tile_num),        
@@ -94,6 +95,12 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
             models.EnvironmentSetting("CURRENT_TILE", str(tile_num)),
             models.EnvironmentSetting("CURRENT_X", str(current_x)),
             models.EnvironmentSetting("CURRENT_Y", str(current_y))
+        ],
+        resource_files=[
+            models.ResourceFile(
+                "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/python-task-manager.py",
+                "scripts/python-task-manager.py"
+            )
         ],
         output_files=[
             models.OutputFile(
@@ -239,8 +246,8 @@ def get_file_extension(blender_output_format):
 
 
 def get_resource_files(x_tiles, y_tiles, frame):
-    # hard coded to PNG at the moment
     tile_count = x_tiles * y_tiles
+    # hard coded to PNG at the moment
     output_format = os.environ["OUTPUT_FORMAT"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     job_id = os.environ["AZ_BATCH_JOB_ID"]
@@ -259,14 +266,24 @@ def submit_task_collection(batch_client, job_id, tasks, frame):
     print("submitting: {} tasks to job: {}, for frame: {}".format(str(len(tasks)), job_id, frame))
 
     try:
-        batch_client.task.add_collection(job_id=job_id, value=tasks)
-
+        # split task array into chunks of 100 tasks if the array is larger than
+        # 100 items. this is the maximum number of tasks supported by add_collection
+        for chunk in list(chunks(tasks, 100)):
+            print("submitting: {} tasks to the Batch service".format(len(chunk)))
+            batch_client.task.add_collection(job_id=job_id, value=chunk)
     except models.BatchErrorException as ex:
         print("got an error adding tasks: {}".format(str(ex)))
         for errorDetail in ex.inner_exception.values:
             print("detail: {}".format(str(errorDetail)))
 
         raise ex
+
+
+def chunks(items, count):
+    # For item i in a range that is a length of items[],
+    for i in range(0, len(list), count):
+        # Create an index range for l of n items:
+        yield items[i:i+count]
 
 
 if __name__ == '__main__':

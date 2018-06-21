@@ -24,7 +24,6 @@ def main():
 
 
 def render_tile(current_tile):
-    # read geometry settings for this tile
     x_tiles = int(os.environ["X_TILES"])
     y_tiles = int(os.environ["Y_TILES"])
     current_x = int(os.environ["CURRENT_X"])
@@ -51,6 +50,7 @@ def render_tile(current_tile):
     print("rendering tile '{}' of '{}' - min_x: {}, max_x: {} || min_y: {}, max_y: {}".format(current_tile, total_tiles, min_x, max_x, min_y, max_y))
     sys.stdout.flush()
 
+    # TODO: try and set RGBA output format
     # use border render and set the coordinates
     bpy.context.scene.render.use_border = True
     #bpy.context.scene.render.use_crop_to_border = True
