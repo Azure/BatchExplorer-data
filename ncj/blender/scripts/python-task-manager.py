@@ -53,10 +53,13 @@ def render_tile(current_tile):
 
     # use border render and set the coordinates
     bpy.context.scene.render.use_border = True
+    #bpy.context.scene.render.use_crop_to_border = True
     bpy.context.scene.render.border_min_x = min_x
     bpy.context.scene.render.border_max_x = max_x
     bpy.context.scene.render.border_min_y = min_y
     bpy.context.scene.render.border_max_y = max_y
+    #bpy.context.scene.render.tile_x = 32
+    #bpy.context.scene.render.tile_y = 32
 
     # kick off the render
     bpy.ops.render.render()
