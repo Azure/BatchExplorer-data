@@ -281,7 +281,7 @@ def submit_task_collection(batch_client, job_id, tasks, frame):
 
 def chunks(items, count):
     # For item i in a range that is a length of items[],
-    for i in range(0, len(list), count):
+    for i in range(0, len(items), count):
         # Create an index range for l of n items:
         yield items[i:i+count]
 

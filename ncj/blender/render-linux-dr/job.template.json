@@ -129,23 +129,23 @@
             "displayName": "",
             "onAllTasksComplete": "terminateJob",
             "usesTaskDependencies": true,
-            "jobPreparationTask":{
+            "jobPreparationTask": {
                 "userIdentity": {
                     "autoUser": {
                         "scope": "pool",
                         "elevationLevel": "admin"
                     }
                 },
-                "commandLine":"/bin/bash -c 'azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" --recursive'"
+                "commandLine": "/bin/bash -c 'azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" --recursive'"
             },
-            "jobReleaseTask":{
-                "userIdentity":{
+            "jobReleaseTask": {
+                "userIdentity": {
                     "autoUser": {
                        "scope": "pool",
                        "elevationLevel": "admin"
                     }
                 },
-                "commandLine":"/bin/bash -c 'echo \"$AZ_BATCH_JOB_PREP_WORKING_DIR\";rm -rfv \"$AZ_BATCH_JOB_PREP_WORKING_DIR/*\"'"
+                "commandLine": "/bin/bash -c \"sudo rm -rfv $AZ_BATCH_JOB_PREP_WORKING_DIR/*\""
             },
             "jobManagerTask":{
                 "id": "_manager",
