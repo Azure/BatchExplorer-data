@@ -132,13 +132,6 @@
                 "description": "Index of the last frame to render"
             }
         },
-        "frameStep": {
-            "type": "int",
-            "defaultValue": 1,
-            "metadata": {
-                "description": "Incremental step in frame sequeunce"
-            }
-        },
         "frameWidth": {
             "type": "int",
             "defaultValue": 1600,

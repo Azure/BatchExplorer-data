@@ -53,13 +53,6 @@
             "metadata": {
                 "description": "Index of the last frame to render"
             }
-        },
-        "outputs": {
-            "type": "string",
-            "metadata": {
-                "description": "The file group where outputs test will be stored",
-                "advancedType": "file-group"
-            }
         }
     },
     "job": {
@@ -116,7 +109,7 @@
                     "displayName": "Frame {0}",
                     "userIdentity": {
                         "autoUser": {
-                            "scope": "task",
+                            "scope": "pool",
                             "elevationLevel": "admin"
                         }
                     },
