@@ -86,8 +86,8 @@ def create_tasks_for_frame(frame, current_task_id, tiles, batch_client):
 
     # create a task for every tile
     for tile in tiles:
-        print("task: {} - tile: {}, current_x: {}, current_y: {}".format(current_task_id, tile.tile, tile.current_x, tile.current_y))
         tasks.append(create_task(frame, current_task_id, job_id, tile.tile + 1, tile.current_x, tile.current_y))
+        print("task: {} - tile: {}, current_x: {}, current_y: {}".format(current_task_id, tile.tile, tile.current_x, tile.current_y))
         current_task_id += 1
 
     # create merge task to join the tiles back together
@@ -129,7 +129,19 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     optionalParams = os.environ["OPTIONAL_PARAMS"]
     output_format = os.environ["OUTPUT_FORMAT"]
 
-    command_line = "blender -b \"$AZ_BATCH_JOB_PREP_WORKING_DIR/{}\" -P \"$AZ_BATCH_TASK_WORKING_DIR/scripts/python-task-manager.py\" -y -t 0 -F {} -E CYCLES {}".format(blend_file, output_format, optionalParams)    
+    # generate the blender command line
+    command_line = "blender -b \"{}/{}\" -P \"{}/python-task-manager.py\" -y -t 0 -F {} -E CYCLES {}".format(
+        os_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
+        blend_file,
+        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        output_format,
+        optionalParams
+    )
+
+    # only print this once
+    if task_id == 1:
+        print("tile task command line: {}".format(command_line))
+    
     return models.TaskAddParameter(
         id=pad_number(task_id),
         display_name="frame: {}, tile: {}".format(frame, tile_num),        
@@ -137,6 +149,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
         environment_settings=[
             models.EnvironmentSetting("X_TILES", os.environ["X_TILES"]),
             models.EnvironmentSetting("Y_TILES", os.environ["Y_TILES"]),
+            models.EnvironmentSetting("CROP_TO_BORDER", os.environ["CROP_TO_BORDER"]),
             models.EnvironmentSetting("BLEND_FILE", os.environ["BLEND_FILE"]),
             models.EnvironmentSetting("CURRENT_FRAME", str(frame)),
             models.EnvironmentSetting("CURRENT_TILE", str(tile_num)),
@@ -235,7 +248,15 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
     output_format = os.environ["OUTPUT_FORMAT"]
     print("working_dir: {}".format(working_dir))
 
-    command_line = "convert $AZ_BATCH_TASK_WORKING_DIR/tile_* -flatten frame_{}.{}".format(frame, get_file_extension(output_format))
+    # crop to border means we need to use montage to tile the images. false means 
+    # we can use convert -flatten to layer the images with transparent backgrounds
+    # convert is faster but needs RGBA
+    crop = os.environ["CROP_TO_BORDER"].lower()
+    if crop == "true":
+        command_line = montage_command(frame, x_tiles, y_tiles, output_format)
+    else:
+        command_line = convert_flatten_command(frame, output_format)
+    
     print("merge task command line: {}".format(command_line))
     return models.TaskAddParameter(
         id=pad_number(task_id),
@@ -283,6 +304,65 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
         ])
 
 
+def os_env(env_var_name): 
+    """
+    Gets the operating specific environment variable format string.
+
+    :param env_var_name: Environment variable name.
+    :type env_var_name: str
+    """
+    current_os = os.environ["TEMPLATE_OS"]
+    if current_os.lower() == "linux":
+        return "${}".format(env_var_name)
+    else:
+        return "%{}%".format(env_var_name)
+
+
+def convert_flatten_command(frame, output_format):
+    """
+    Command for executing the ImageMagick 'convert' command.
+    This command layers the output image tiles on top of one another 
+    and then flattens the image. Faster than the montage command, but 
+    doesn't work when the ouput channel is not set to have a 
+    transparent background.
+
+    :param frame: Current frame number.
+    :type frame: int
+    :param output_format: Blender output format (PNG, OPEN_EXR, etc).
+    :type output_format: str
+    """
+    return "cd {};convert tile_* -flatten frame_{}.{}".format(
+        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        frame,
+        get_file_extension(output_format)
+    )
+
+
+def montage_command(frame, x_tiles, y_tiles, output_format):
+    """
+    Command for executing the ImageMagick 'montage' command.
+    This command tiles the images back together into an X by Y grid.
+    Slower than the convert command above, but needed when the ouput 
+    channel is not set to have a transparent background.
+
+    :param frame: Current frame number.
+    :type frame: int
+    :param x_tiles: Number of tiles on the X axis.
+    :type x_tiles: int
+    :param y_tiles: Number of tiles on the Y axis.
+    :type y_tiles: int
+    """
+    tiles = get_tile_names(x_tiles * y_tiles)
+    return "cd {};montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}".format(
+        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        " ".join(tiles),
+        x_tiles,
+        y_tiles,
+        frame,
+        get_file_extension(output_format)
+    )
+
+
 def pad_number(number, len=6):
     """
     Used for padding task id's. Takes a number and adds padding zeros
@@ -323,20 +403,34 @@ def get_resource_files(x_tiles, y_tiles, frame):
     :type frame: int
     """
     tile_count = x_tiles * y_tiles
-    # hard coded to PNG at the moment
-    output_format = os.environ["OUTPUT_FORMAT"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     job_id = os.environ["AZ_BATCH_JOB_ID"]
     sas_parts = output_sas.split("?")
     files = []
 
-    for num in range(1, tile_count + 1):
-        # TODO: Change me to dynamic file extension
-        filename = "tile_{}.png".format(str(num).zfill(3))
-        path_to_file = "{}/outputs/frame-{}/{}".format(job_id, frame, filename)
-        files.append(models.ResourceFile("{}/{}?{}".format(sas_parts[0], path_to_file, sas_parts[1]), filename))
+    for tile_name in get_tile_names(tile_count):
+        path_to_file = "{}/outputs/frame-{}/{}".format(job_id, frame, tile_name)
+        files.append(models.ResourceFile("{}/{}?{}".format(sas_parts[0], path_to_file, sas_parts[1]), tile_name))
 
     return files
+
+
+def get_tile_names(tile_count): 
+    """
+    Returns an array of output tile names given the count we expect. 
+    A 2 x 2 grid will have 4 images: tile_0001 ... tile_0004.
+
+    :param tile_count: Number of tiles we expect the frame to have.
+     `os.environ["X_TILES"]` multiplied by `os.environ["Y_TILES"]`.
+    :type tile_count: int
+    """
+    tiles = []
+    extension = get_file_extension(os.environ["OUTPUT_FORMAT"])
+    for num in range(1, tile_count + 1):
+        tiles.append("tile_{}.{}".format(str(num).zfill(3), extension))
+    
+    return tiles
+
 
 def submit_task_collection(batch_client, job_id, tasks, frame):
     """
@@ -360,15 +454,27 @@ def submit_task_collection(batch_client, job_id, tasks, frame):
     try:
         # split task array into chunks of 100 tasks if the array is larger than
         # 100 items. this is the maximum number of tasks supported by add_collection
-        for chunk in list(chunks(tasks, 10)):
+        failed = 0
+        for chunk in list(chunks(tasks, 100)):
             print("submitting: {} tasks to the Batch service".format(len(chunk)))
-            batch_client.task.add_collection(job_id=job_id, value=chunk)
-    except models.BatchErrorException as ex:
-        print("got an error adding tasks: {}".format(str(ex)))
-        for errorDetail in ex.inner_exception.values:
+            result = batch_client.task.add_collection(job_id=job_id, value=chunk)
+
+            # check there were no failures in the response as add_collection always succeeds
+            for taskAddResult in result.value:
+                if taskAddResult.status != models.TaskAddStatus.success:
+                    failed += 1
+                    print("failed to add task: {}, status: {}, error: {}".format(taskAddResult.task_id, taskAddResult.status, str(taskAddResult.error)))
+                    for errorDetail in taskAddResult.error.values:
+                        print("detail: {}".format(str(errorDetail)))
+
+        if failed != 0:    
+            raise Exception("Failed to add all tasks to the Batch service. Check the stdout log file for details.")
+    except models.BatchErrorException as bex:
+        print("got an error adding tasks: {}".format(str(bex)))
+        for errorDetail in bex.inner_exception.values:
             print("detail: {}".format(str(errorDetail)))
 
-        raise ex
+        raise bex
 
 
 def chunks(items, count):

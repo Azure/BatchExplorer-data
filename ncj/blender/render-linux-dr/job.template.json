@@ -64,8 +64,7 @@
                 "2",
                 "4",
                 "6",
-                "8",
-                "10"
+                "8"
             ]
         },
         "yTiles": {
@@ -78,8 +77,18 @@
                 "2",
                 "4",
                 "6",
-                "8",
-                "10"
+                "8"
+            ]
+        },
+        "cropToBorder": {
+            "type": "string",
+            "metadata": {
+                "description": "When rendering the tile the output image will be cropped to the size of the tile"
+            },
+            "defaultValue": "True",
+            "allowedValues": [
+                "True",
+                "False"
             ]
         },
         "optionalParameters": {
@@ -154,6 +163,8 @@
                 "allowLowPriorityNode" : true,
                 "runExclusive": true,
                 "environmentSettings": [
+                    { "name": "TEMPLATE_OS", "value": "Linux" },
+                    { "name": "CROP_TO_BORDER", "value": "[parameters('cropToBorder')]" },
                     { "name": "OUTPUT_FORMAT", "value": "[parameters('outputFormat')]" },
                     { "name": "BLEND_FILE", "value": "[parameters('blendFile')]" },
                     { "name": "OPTIONAL_PARAMS", "value": "[parameters('optionalParameters')]" },

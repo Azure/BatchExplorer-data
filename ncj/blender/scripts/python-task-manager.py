@@ -54,16 +54,22 @@ def render_tile(current_tile):
     print("rendering tile '{}' of '{}' - min_x: {}, max_x: {} || min_y: {}, max_y: {}".format(current_tile, total_tiles, min_x, max_x, min_y, max_y))
     sys.stdout.flush()
 
-    # TODO: try and set RGBA output format
     # use border render and set the coordinates
     bpy.context.scene.render.use_border = True
-    #bpy.context.scene.render.use_crop_to_border = True
+
+    # check if we want to crop-to-border. crop-to-border set to false means the tile is the 
+    # same size as the final output image, but only the tile border is rendered. True means that the 
+    # tile is only the size of the tile itself with no background. Depending on this setting is how
+    # we merge the tiles back together again.
+    crop = os.environ["CROP_TO_BORDER"].lower()
+    bpy.context.scene.render.use_crop_to_border = True if crop == "true" else False
+    print("use_crop_to_border: {}".format(crop))
+
+    # set border values for the render box
     bpy.context.scene.render.border_min_x = min_x
     bpy.context.scene.render.border_max_x = max_x
     bpy.context.scene.render.border_min_y = min_y
     bpy.context.scene.render.border_max_y = max_y
-    #bpy.context.scene.render.tile_x = 32
-    #bpy.context.scene.render.tile_y = 32
 
     # kick off the render
     bpy.ops.render.render()
