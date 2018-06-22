@@ -5,7 +5,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-win-tile-render",
+            "defaultValue": "blender-ubuntu-dr",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
@@ -20,7 +20,6 @@
         },
          "inputData": {
             "type": "string",
-            "defaultValue": "fgrp-tile-test",
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
@@ -36,7 +35,6 @@
         },
         "blendFile": {
             "type": "string",
-            "defaultValue": "monster.blend",
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
