@@ -30,6 +30,7 @@ def render_tile(current_tile):
     current_y = int(os.environ["CURRENT_Y"])
     print("x_tiles: {}, y_tiles: {}, current_x: {}, current_y: {}, tile: {}".format(x_tiles, y_tiles, current_x, current_y, current_tile))
 
+    # Set current frame
     current_frame = int(os.environ["CURRENT_FRAME"])
     print("setting current frame to: {}".format(current_frame))
     bpy.context.scene.frame_current = current_frame
@@ -38,12 +39,21 @@ def render_tile(current_tile):
     color_mode = bpy.context.scene.render.image_settings.color_mode
     print("color_mode: {}".format(color_mode))
 
+    # Output format
+    output_format = os.environ["OUTPUT_FORMAT"]
+    print("current file format: {}".format(bpy.context.scene.render.image_settings.file_format))
+    bpy.context.scene.render.image_settings.file_format = output_format
     file_format = bpy.context.scene.render.image_settings.file_format
     if file_format in ("OPEN_EXR", "OPEN_EXR_MULTILAYER"):
         file_format = "exr"
 
-    print("file format: {}".format(file_format))
+    print("file format prior to render: {}".format(file_format))
 
+    # Render engine, maybe add this to job teamplate
+    # Options - BLENDER_RENDER, BLENDER_GAME, CYCLES
+    print("render engine: {}".format(bpy.context.scene.render.engine))
+
+    # Compute the tiles border
     total_tiles = x_tiles * y_tiles
     min_x = current_x / x_tiles
     max_x = (current_x + 1) / x_tiles

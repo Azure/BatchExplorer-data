@@ -127,14 +127,12 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     blend_file = os.environ["BLEND_FILE"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     optionalParams = os.environ["OPTIONAL_PARAMS"]
-    output_format = os.environ["OUTPUT_FORMAT"]
 
     # generate the blender command line
-    command_line = "blender -b \"{}/{}\" -P \"{}/python-task-manager.py\" -y -t 0 -F {} -E CYCLES {}".format(
+    command_line = "blender -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}".format(
         os_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
         blend_file,
         os_env("AZ_BATCH_TASK_WORKING_DIR"),
-        output_format,
         optionalParams
     )
 
@@ -150,6 +148,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
             models.EnvironmentSetting("X_TILES", os.environ["X_TILES"]),
             models.EnvironmentSetting("Y_TILES", os.environ["Y_TILES"]),
             models.EnvironmentSetting("CROP_TO_BORDER", os.environ["CROP_TO_BORDER"]),
+            models.EnvironmentSetting("OUTPUT_FORMAT", os.environ["OUTPUT_FORMAT"]),
             models.EnvironmentSetting("BLEND_FILE", os.environ["BLEND_FILE"]),
             models.EnvironmentSetting("CURRENT_FRAME", str(frame)),
             models.EnvironmentSetting("CURRENT_TILE", str(tile_num)),

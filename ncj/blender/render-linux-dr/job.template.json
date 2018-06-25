@@ -112,7 +112,6 @@
         },
         "outputs": {
             "type": "string",
-            "defaultValue": "fgrp-outputs",
             "metadata": {
                 "description": "The file group where outputs will be stored",
                 "advancedType": "file-group"
