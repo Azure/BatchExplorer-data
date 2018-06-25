@@ -144,6 +144,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
         id=pad_number(task_id),
         display_name="frame: {}, tile: {}".format(frame, tile_num),        
         command_line="/bin/bash -c '{}'".format(command_line),
+        constraints=models.TaskConstraints(max_task_retry_count = 2)
         environment_settings=[
             models.EnvironmentSetting("X_TILES", os.environ["X_TILES"]),
             models.EnvironmentSetting("Y_TILES", os.environ["Y_TILES"]),
@@ -261,6 +262,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
         id=pad_number(task_id),
         display_name="frame: {} - merge task".format(frame),
         command_line="/bin/bash -c '{}'".format(command_line),
+        constraints=models.TaskConstraints(max_task_retry_count = 2)
         environment_settings=[
             models.EnvironmentSetting("X_TILES", str(x_tiles)),
             models.EnvironmentSetting("Y_TILES", str(y_tiles))
