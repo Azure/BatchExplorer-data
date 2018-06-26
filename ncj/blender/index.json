@@ -5,6 +5,11 @@
         "description": "Render a Blender scene using Ubuntu 16.04."
     },
     {
+        "id": "render-linux-dr",
+        "name": "Split frames into tiles and render on Ubuntu 16.04",
+        "description": "Distributed rendering for Blender. Render tiles on multiple nodes with the CYCLES rendering engine."
+    },
+    {
         "id": "render-windows",
         "name": "Render frames on Windows Server",
         "description": "Render a Blender scene using Windows Server."
