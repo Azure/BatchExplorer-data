@@ -55,7 +55,7 @@
                             }
                         },
                         "constraints":{
-                            "max_task_retry_count":-1
+                            "maxTaskRetryCount":-1
                         },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
