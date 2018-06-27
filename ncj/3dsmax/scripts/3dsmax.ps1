@@ -79,9 +79,11 @@ if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRe
 }
 
 # Create pre-render script
+$renderoutput = "$env:AZ_BATCH_TASK_WORKING_DIR\render.log"
 $pre_render_script = "prerender.ms"
 @"
 -- Pre render script
+renderMessageManager.LogFilename = "$renderoutput"
 r = renderers.current
 "@ | Out-File $pre_render_script
 
