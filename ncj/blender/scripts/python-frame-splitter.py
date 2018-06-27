@@ -168,7 +168,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/tile-{}.stdout.log".format(job_id, frame, pad_number(tile_num, 3))
+                        path="{}/logs/frame-{}/tile-{}.stdout.log".format(job_id, pad_number(frame, 4), pad_number(tile_num, 3))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -178,7 +178,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/tile-{}.stderr.log".format(job_id, frame, pad_number(tile_num, 3))
+                        path="{}/logs/frame-{}/tile-{}.stderr.log".format(job_id, pad_number(frame, 4), pad_number(tile_num, 3))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -188,7 +188,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/tile-{}.file_upload_stderr.log".format(job_id, frame, pad_number(tile_num, 3))
+                        path="{}/logs/frame-{}/tile-{}.file_upload_stderr.log".format(job_id, pad_number(frame, 4), pad_number(tile_num, 3))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -198,7 +198,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/tile-{}.file_upload_stdout.log".format(job_id, frame, pad_number(tile_num, 3))
+                        path="{}/logs/frame-{}/tile-{}.file_upload_stdout.log".format(job_id, pad_number(frame, 4), pad_number(tile_num, 3))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -208,7 +208,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/outputs/frame-{}".format(job_id, frame)
+                        path="{}/outputs/frame-{}".format(job_id, pad_number(frame, 4))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_success)
@@ -277,7 +277,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/merge.stdout.log".format(job_id, frame)
+                        path="{}/logs/frame-{}/merge.stdout.log".format(job_id, pad_number(frame, 4))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -287,7 +287,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
                 destination=models.OutputFileDestination(
                     container=models.OutputFileBlobContainerDestination(
                         container_url=output_sas,
-                        path="{}/logs/frame-{}/merge.stderr.log".format(job_id, frame)
+                        path="{}/logs/frame-{}/merge.stderr.log".format(job_id, pad_number(frame, 4))
                     )
                 ),
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_completion)
@@ -334,7 +334,7 @@ def convert_flatten_command(frame, output_format):
     """
     return "cd {};convert tile_* -flatten frame_{}.{}".format(
         os_env("AZ_BATCH_TASK_WORKING_DIR"),
-        frame,
+        pad_number(frame, 4),
         get_file_extension(output_format)
     )
 
@@ -359,7 +359,7 @@ def montage_command(frame, x_tiles, y_tiles, output_format):
         " ".join(tiles),
         x_tiles,
         y_tiles,
-        frame,
+        pad_number(frame, 4),
         get_file_extension(output_format)
     )
 
