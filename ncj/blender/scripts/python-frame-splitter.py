@@ -410,7 +410,7 @@ def get_resource_files(x_tiles, y_tiles, frame):
     files = []
 
     for tile_name in get_tile_names(tile_count):
-        path_to_file = "{}/outputs/frame-{}/{}".format(job_id, frame, tile_name)
+        path_to_file = "{}/outputs/frame-{}/{}".format(job_id, pad_number(frame, 4), tile_name)
         files.append(models.ResourceFile("{}/{}?{}".format(sas_parts[0], path_to_file, sas_parts[1]), tile_name))
 
     return files
