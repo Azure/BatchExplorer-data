@@ -115,14 +115,14 @@ r.verbosity_level = 4
 
 if ($renderer -eq "vray")
 {
-    $outputFilesPath = "$env:AZ_BATCH_TASK_WORKING_DIR\images\" -replace "\\", "\\"
+    $outputFilesPath = "$env:AZ_BATCH_TASK_WORKING_DIR\images\" -replace "\\", "\"
 @"
 -- Logging
 r.system_vrayLog_level = 4
 r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log"
 
 -- Set output channel path
-if r.output_splitfilename != '' (print "Updating output split filenames."; outputFilename = filenameFromPath r.output_splitfilename; r.output_splitfilename = "$outputFiles\\outputFilename")
+if r.output_splitfilename != '' then (print "Updating output split filenames."; outputFilename = filenameFromPath r.output_splitfilename; r.output_splitfilename = "$outputFilesPath\outputFilename")
 
 "@ | Out-File -Append $pre_render_script
 }
