@@ -115,7 +115,7 @@ r.verbosity_level = 4
 
 if ($renderer -eq "vray")
 {
-    $outputFilesPath = "$env:AZ_BATCH_TASK_WORKING_DIR\images\" -replace "\\", "\"
+    $outputFilesPath = "$env:AZ_BATCH_TASK_WORKING_DIR\images\"
 @"
 -- Logging
 r.system_vrayLog_level = 4
