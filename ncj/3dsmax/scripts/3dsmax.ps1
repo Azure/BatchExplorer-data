@@ -90,6 +90,8 @@ if ($dr)
     SetupDistributedRendering
 }
 
+Write-Host "Using renderer $renderer"
+
 if (ParameterValueSet $irradianceMap -and $renderer -eq "vray")
 {
     $irMap = "$workingDirectory\$irradianceMap"
@@ -105,6 +107,7 @@ if ($renderer -eq "arnold")
 @"
 -- Fail on arnold license error
 r.abort_on_license_fail = true
+r.verbosity_level = 4
 "@ | Out-File -Append $pre_render_script
 }
 
