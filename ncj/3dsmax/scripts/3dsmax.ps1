@@ -122,7 +122,7 @@ r.system_vrayLog_level = 4
 r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log"
 
 -- Set output channel path
-if r.output_splitfilename != '' then (print "Updating output split filenames."; outputFilename = filenameFromPath r.output_splitfilename; r.output_splitfilename = "$outputFilesPath\" + outputFilename)
+if r.output_splitfilename != '' then (print "Updating output split filenames."; outputFilename = filenameFromPath r.output_splitfilename; outputFilePath = "$outputFilesPath\" + outputFilename; r.output_splitfilename = outputFilePath;)
 
 "@ | Out-File -Append $pre_render_script
 }
