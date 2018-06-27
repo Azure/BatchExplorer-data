@@ -2,6 +2,8 @@ import bpy
 import os
 import sys
 
+PAD_LEN_TILE = 3
+
 def main():
     try:
         print("-------------------------------")
@@ -86,7 +88,7 @@ def render_tile(current_tile):
     
     # todo: get extension from scene
     directory = os.environ["AZ_BATCH_TASK_WORKING_DIR"]
-    save_path = "{}/tile_{}.{}".format(directory, str(current_tile).zfill(3), file_format.lower())
+    save_path = "{}/tile_{}.{}".format(directory, str(current_tile).zfill(PAD_LEN_TILE), file_format.lower())
 
     print("Saving to: {}".format(save_path)) 
     sys.stdout.flush()
