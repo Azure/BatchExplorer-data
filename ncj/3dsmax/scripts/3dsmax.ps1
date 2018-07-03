@@ -106,6 +106,7 @@ if ($renderer -eq "arnold")
 {
 @"
 -- Fail on arnold license error
+r.prepass_enabled = false
 r.abort_on_license_fail = true
 r.verbosity_level = 4
 "@ | Out-File -Append $pre_render_script
