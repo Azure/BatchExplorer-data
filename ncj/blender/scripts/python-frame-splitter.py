@@ -133,11 +133,11 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     optionalParams = os.environ["OPTIONAL_PARAMS"]
 
     # generate the blender command line
-    command_line = "{} -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}".format(
+    command_line = "\"{}\" -b \"{}\\{}\" -P \"{}\\scripts\\python-task-manager.py\" -y -t 0 {}".format(
         blender_exe(),
-        os_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
+        os_specific_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
         blend_file,
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        os_specific_env("AZ_BATCH_TASK_WORKING_DIR"),
         optionalParams
     )
 
@@ -315,10 +315,10 @@ def blender_exe():
     Gets the operating system specific blender exe.
     """
     current_os = os.environ["TEMPLATE_OS"]
-    return "blender" if current_os.lower() == "linux" else "\"%BLENDER_2018_EXEC%\""
+    return "blender" if current_os.lower() == "linux" else "%BLENDER_2018_EXEC%"
 
 
-def os_env(env_var_name): 
+def os_specific_env(env_var_name): 
     """
     Gets the operating system specific environment variable format string.
 
@@ -340,16 +340,8 @@ def os_specific_command_line(command_line):
     :type command_line: str
     """
     current_os = os.environ["TEMPLATE_OS"]
-    command = "/bin/bash -c '{}'" if current_os.lower() == "linux" else "cmd.exe /c '{}'"
+    command = "/bin/bash -c '{}'" if current_os.lower() == "linux" else "cmd.exe /c \"{}\""
     return command.format(command_line)
-
-
-def magick_command(command): 
-    """
-    Gets the operating system specific image magick command.
-    """
-    current_os = os.environ["TEMPLATE_OS"]
-    return command if current_os.lower() == "linux" else "magick {}".format(command)
 
 
 def convert_command(frame, output_format):
@@ -365,9 +357,15 @@ def convert_command(frame, output_format):
     :param output_format: Blender output format (PNG, OPEN_EXR, etc).
     :type output_format: str
     """
-    return "cd {};{} tile_* -flatten frame_{}.{}".format(
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
-        magick_command("convert"),
+    command = ""
+    current_os = os.environ["TEMPLATE_OS"]
+
+    if current_os.lower() == "linux":
+        command = "cd $AZ_BATCH_TASK_WORKING_DIR;convert tile_* -flatten frame_{}.{}"
+    else:
+        command = "cd /d %AZ_BATCH_TASK_WORKING_DIR% & magick convert tile_* -flatten frame_{}.{}"
+    
+    return command.format(
         pad_number(frame, PAD_LEN_FRAME),
         get_file_extension(output_format)
     )
@@ -387,10 +385,16 @@ def montage_command(frame, x_tiles, y_tiles, output_format):
     :param y_tiles: Number of tiles on the Y axis.
     :type y_tiles: int
     """
+    command = ""
     tiles = get_tile_names(x_tiles * y_tiles)
-    return "cd {};{} {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}".format(
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
-        magick_command("montage"),
+    current_os = os.environ["TEMPLATE_OS"]
+
+    if current_os.lower() == "linux":
+        command = "cd $AZ_BATCH_TASK_WORKING_DIR;montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}"
+    else:
+        command = "cd /d %AZ_BATCH_TASK_WORKING_DIR% & magick montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}"
+    
+    return command.format(
         " ".join(tiles),
         x_tiles,
         y_tiles,
