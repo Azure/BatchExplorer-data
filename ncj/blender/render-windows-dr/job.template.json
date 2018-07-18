@@ -184,7 +184,7 @@
                         "elevationLevel": "nonAdmin"
                     }
                 },
-                "commandLine": "cmd.exe /c \"python %AZ_BATCH_TASK_WORKING_DIR%/scripts/python-frame-splitter.py\"",
+                "commandLine": "cmd.exe /c \"python %AZ_BATCH_TASK_WORKING_DIR%\\scripts\\python-frame-splitter.py\"",
                 "killJobOnCompletion": false,
                 "resourceFiles": [
                     {

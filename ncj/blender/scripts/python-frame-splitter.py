@@ -131,15 +131,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     blend_file = os.environ["BLEND_FILE"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     optionalParams = os.environ["OPTIONAL_PARAMS"]
-
-    # generate the blender command line
-    command_line = "\"{}\" -b \"{}\\{}\" -P \"{}\\scripts\\python-task-manager.py\" -y -t 0 {}".format(
-        blender_exe(),
-        os_specific_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
-        blend_file,
-        os_specific_env("AZ_BATCH_TASK_WORKING_DIR"),
-        optionalParams
-    )
+    command_line = blender_command(blend_file, optionalParams)
 
     # only print this once
     if task_id == 1:
@@ -310,12 +302,21 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
         ])
 
 
-def blender_exe(): 
+def blender_command(blend_file, optionalParams): 
     """
     Gets the operating system specific blender exe.
     """
-    current_os = os.environ["TEMPLATE_OS"]
-    return "blender" if current_os.lower() == "linux" else "%BLENDER_2018_EXEC%"
+    if os.environ["TEMPLATE_OS"].lower() == "linux":
+        command = "blender -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}"
+    else:
+        command = "\"%BLENDER_2018_EXEC%\" -b \"{}\\{}\" -P \"{}\\scripts\\python-task-manager.py\" -y -t 0 {}"
+
+    return command.format(
+        os_specific_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
+        blend_file,
+        os_specific_env("AZ_BATCH_TASK_WORKING_DIR"),
+        optionalParams
+    )
 
 
 def os_specific_env(env_var_name): 
