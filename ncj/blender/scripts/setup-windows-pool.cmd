@@ -1,6 +1,6 @@
 
 echo # installing choco ...
-choco install python yes to all 
+choco install python -y 
 refreshenv
 echo # installing azure-batch sdk for python ...
 pip install azure-batch
