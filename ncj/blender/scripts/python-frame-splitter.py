@@ -133,7 +133,8 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     optionalParams = os.environ["OPTIONAL_PARAMS"]
 
     # generate the blender command line
-    command_line = "blender -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}".format(
+    command_line = "{} -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}".format(
+        blender_exe(),
         os_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
         blend_file,
         os_env("AZ_BATCH_TASK_WORKING_DIR"),
@@ -307,6 +308,17 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
                 upload_options=models.OutputFileUploadOptions(models.OutputFileUploadCondition.task_success)
             ) 
         ])
+
+
+def blender_exe(): 
+    """
+    Gets the operating specific blender exe.
+    """
+    current_os = os.environ["TEMPLATE_OS"]
+    if current_os.lower() == "linux":
+        return "blender"
+    else:
+        return "\"%BLENDER_2018_EXEC%\""
 
 
 def os_env(env_var_name): 
