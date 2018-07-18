@@ -26,7 +26,7 @@
             "metadata": {
                 "description": "The size of the nodes that run the tasks in the pool"
             },
-            "defaultValue": "Standard_D3_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
                 "Standard_A8",
                 "Standard_A9",

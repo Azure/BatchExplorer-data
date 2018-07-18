@@ -12,7 +12,7 @@
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "blender-tile-windows",
+            "defaultValue": "blender-tile",
             "metadata": {
                 "description": "The name of the Azure Batch job, also used to prefix rendered outputs",
                 "advancedType": "job-id"
@@ -20,7 +20,6 @@
         },
          "inputData": {
             "type": "string",
-            "defaultValue": "fgrp-blender-monster",
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
@@ -36,7 +35,6 @@
         },
         "blendFile": {
             "type": "string",
-            "defaultValue": "monster.blend",
             "metadata": {
                 "description": "The Blender scene file to be rendered",
                 "advancedType": "file-in-file-group",
@@ -51,7 +49,8 @@
             },
             "defaultValue": "PNG",
             "allowedValues": [
-                "PNG"
+                "PNG",
+                "EXR"
             ]
         },
         "xTiles": {
@@ -59,7 +58,7 @@
             "metadata": {
                 "description": "The number of tiles on the X axis to split the frame into"
             },
-            "defaultValue": "2",
+            "defaultValue": "6",
             "allowedValues": [
                 "2",
                 "4",
@@ -72,7 +71,7 @@
             "metadata": {
                 "description": "The number of tiles on the Y axis to split the frame into"
             },
-            "defaultValue": "2",
+            "defaultValue": "6",
             "allowedValues": [
                 "2",
                 "4",
@@ -114,7 +113,6 @@
         },
         "outputs": {
             "type": "string",
-            "defaultValue": "fgrp-outputs",
             "metadata": {
                 "description": "The file group where outputs will be stored",
                 "advancedType": "file-group"
