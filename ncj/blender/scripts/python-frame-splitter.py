@@ -264,9 +264,7 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
             models.EnvironmentSetting("X_TILES", str(x_tiles)),
             models.EnvironmentSetting("Y_TILES", str(y_tiles))
         ],
-        depends_on=models.TaskDependencies(task_id_ranges=[
-            models.TaskIdRange(depend_start, depend_end)
-        ]),
+        depends_on=models.TaskDependencies(task_ids=get_dependent_tasks(depend_start, depend_end)),
         resource_files=get_resource_files(x_tiles, y_tiles, frame),
         output_files=[
             models.OutputFile(
@@ -471,6 +469,23 @@ def get_tile_names(tile_count):
         tiles.append("tile_{}.{}".format(str(num).zfill(3), extension))
     
     return tiles
+
+
+def get_dependent_tasks(depend_start, depend_end): 
+    """
+    Returns an array of task IDs for the dependency list. 
+    E.g. [000001, 000002, 000003, 000004, ...]
+
+    :param depend_start: range start task ID.
+    :type depend_start: int
+    :param depend_end: range end task ID.
+    :type depend_end: int
+    """
+    taskIds = []
+    for task_id in range(depend_start, depend_end + 1):
+        taskIds.append(pad_number(task_id, PAD_LEN_ID))
+    
+    return taskIds
 
 
 def submit_task_collection(batch_client, job_id, tasks, frame):
