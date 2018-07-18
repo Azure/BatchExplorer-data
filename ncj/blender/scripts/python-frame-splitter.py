@@ -144,11 +144,11 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     # only print this once
     if task_id == 1:
         print("tile task command line: {}".format(command_line))
-    
+
     return models.TaskAddParameter(
         id=pad_number(task_id, PAD_LEN_ID),
-        display_name="frame: {}, tile: {}".format(frame, tile_num),        
-        command_line="/bin/bash -c '{}'".format(command_line),
+        display_name="frame: {}, tile: {}".format(frame, tile_num),
+        command_line=os_specific_command_line(command_line),
         constraints=models.TaskConstraints(max_task_retry_count = 2),
         environment_settings=[
             models.EnvironmentSetting("X_TILES", os.environ["X_TILES"]),
@@ -260,13 +260,13 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
     if crop == "true":
         command_line = montage_command(frame, x_tiles, y_tiles, output_format)
     else:
-        command_line = convert_flatten_command(frame, output_format)
+        command_line = convert_command(frame, output_format)
     
     print("merge task command line: {}".format(command_line))
     return models.TaskAddParameter(
         id=pad_number(task_id, PAD_LEN_ID),
         display_name="frame: {} - merge task".format(frame),
-        command_line="/bin/bash -c '{}'".format(command_line),
+        command_line=os_specific_command_line(command_line),
         constraints=models.TaskConstraints(max_task_retry_count = 2),
         environment_settings=[
             models.EnvironmentSetting("X_TILES", str(x_tiles)),
@@ -312,18 +312,15 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
 
 def blender_exe(): 
     """
-    Gets the operating specific blender exe.
+    Gets the operating system specific blender exe.
     """
     current_os = os.environ["TEMPLATE_OS"]
-    if current_os.lower() == "linux":
-        return "blender"
-    else:
-        return "\"%BLENDER_2018_EXEC%\""
+    return "blender" if current_os.lower() == "linux" else "\"%BLENDER_2018_EXEC%\""
 
 
 def os_env(env_var_name): 
     """
-    Gets the operating specific environment variable format string.
+    Gets the operating system specific environment variable format string.
 
     :param env_var_name: Environment variable name.
     :type env_var_name: str
@@ -335,7 +332,27 @@ def os_env(env_var_name):
         return "%{}%".format(env_var_name)
 
 
-def convert_flatten_command(frame, output_format):
+def os_specific_command_line(command_line): 
+    """
+    Gets the operating system specific command string.
+
+    :param command_line: command line to execute.
+    :type command_line: str
+    """
+    current_os = os.environ["TEMPLATE_OS"]
+    command = "/bin/bash -c '{}'" if current_os.lower() == "linux" else "cmd.exe /c '{}'"
+    return command.format(command_line)
+
+
+def magick_command(command): 
+    """
+    Gets the operating system specific image magick command.
+    """
+    current_os = os.environ["TEMPLATE_OS"]
+    return command if current_os.lower() == "linux" else "magick {}".format(command)
+
+
+def convert_command(frame, output_format):
     """
     Command for executing the ImageMagick 'convert' command.
     This command layers the output image tiles on top of one another 
@@ -348,8 +365,9 @@ def convert_flatten_command(frame, output_format):
     :param output_format: Blender output format (PNG, OPEN_EXR, etc).
     :type output_format: str
     """
-    return "cd {};convert tile_* -flatten frame_{}.{}".format(
+    return "cd {};{} tile_* -flatten frame_{}.{}".format(
         os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        magick_command("convert"),
         pad_number(frame, PAD_LEN_FRAME),
         get_file_extension(output_format)
     )
@@ -370,8 +388,9 @@ def montage_command(frame, x_tiles, y_tiles, output_format):
     :type y_tiles: int
     """
     tiles = get_tile_names(x_tiles * y_tiles)
-    return "cd {};montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}".format(
+    return "cd {};{} {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}".format(
         os_env("AZ_BATCH_TASK_WORKING_DIR"),
+        magick_command("montage"),
         " ".join(tiles),
         x_tiles,
         y_tiles,
