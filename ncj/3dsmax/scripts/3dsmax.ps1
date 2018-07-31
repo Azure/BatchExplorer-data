@@ -15,7 +15,8 @@ param (
     [string]$camera = $null,
     [string]$additionalArgs = $null,
     [int]$vrayPort = 20204,
-    [string]$renderPresetFile = $null
+    [string]$renderPresetFile = $null,
+    [string]$maxVersion = $null
 )
 
 $OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
@@ -90,6 +91,8 @@ if ($dr)
     SetupDistributedRendering
 }
 
+Write-Host "Using renderer $renderer"
+
 if (ParameterValueSet $irradianceMap -and $renderer -eq "vray")
 {
     $irMap = "$workingDirectory\$irradianceMap"
@@ -105,6 +108,7 @@ if ($renderer -eq "arnold")
 @"
 -- Fail on arnold license error
 r.abort_on_license_fail = true
+r.verbosity_level = 4
 "@ | Out-File -Append $pre_render_script
 }
 
@@ -206,17 +210,34 @@ mkdir -Force images > $null
 
 # Render
 $max_exec = "3dsmaxcmdio.exe"
-if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
+If ($maxVersion -eq "3ds Max 2018")
 {
-    # New image
-    $max_exec = "${env:3DSMAX_2018}3dsmaxcmdio.exe"
-}
+    if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
+    {
+        # New image
+        $max_exec = "${env:3DSMAX_2018}3dsmaxcmdio.exe"
+    }
 
-if($env:3DSMAX_2018_EXEC -MATCH "cmdio")
+    if($env:3DSMAX_2018_EXEC -MATCH "cmdio")
+    {
+        $max_exec = $env:3DSMAX_2018_EXEC
+    }
+}
+ElseIf ($maxVersion -eq "3ds Max 2019")
 {
-    $max_exec = $env:3DSMAX_2018_EXEC
+        $max_exec = $env:3DSMAX_2019_EXEC
+        if(![System.IO.File]::Exists($max_exec))
+        {
+            Write-Host "3ds Max 2019 doesn't exist on this rendering image, please use a newer version of the rendering image."
+            exit 1
+        }
 }
-
+Else 
+{
+    Write-Host "No version of 3ds Max was selected."
+    exit 1
+}
+    
 Write-Host "Executing $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
 
 cmd.exe /c $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1

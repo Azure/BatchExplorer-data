@@ -8,5 +8,10 @@
         "id": "vray-dr",
         "name": "VRay Distributed Render",
         "description": "This job will render frames across multiple nodes using VRay Distributed Rendering."
+    },
+    {
+        "id": "vray-dr-pool",
+        "name": "VRay Distributed Pool",
+        "description": "This will create a VRay DR Pool that can be used from 3ds Max."
     }
 ]
