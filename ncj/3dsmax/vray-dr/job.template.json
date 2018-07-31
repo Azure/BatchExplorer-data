@@ -7,7 +7,8 @@
             "type": "string",
             "defaultValue": "3dsmax-vray-dr",
             "metadata": {
-                "description": "The job name"
+                "description": "The job name",
+                "advancedType": "job-id"
             }
         },
         "poolId": {

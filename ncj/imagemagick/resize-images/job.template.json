@@ -13,7 +13,8 @@
              "type":"string",
              "defaultValue":"image-magick-resize",
              "metadata":{
-                 "description":"The job name"
+                 "description":"The job name",
+                 "advancedType": "job-id"
              }
          },
          "inputFilegroup":{
