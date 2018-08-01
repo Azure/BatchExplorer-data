@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-ubuntu",
+            "defaultValue": "blender-ubuntu-dr",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -26,7 +26,7 @@
             "metadata": {
                 "description": "The size of the nodes that run the tasks in the pool"
             },
-            "defaultValue": "Standard_D3_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
                 "Standard_A8",
                 "Standard_A9",
@@ -107,11 +107,22 @@
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
-        "packageReferences": [
-            {
-                "type": "aptPackage",
-                "id": "blender"
-            }
-        ]
+        "startTask": {
+            "commandLine": "/bin/bash -c ./setup-linux-pool.sh",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "scope": "pool",
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/setup-linux-pool.sh",
+                    "filePath": "setup-linux-pool.sh"
+                }
+            ]
+        }
     }
 }

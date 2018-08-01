@@ -2,7 +2,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "blender-ubuntu",
+            "defaultValue": "blender-windows-dr",
             "metadata": {
                 "description": "Id of the pool"
             }
@@ -26,7 +26,7 @@
             "metadata": {
                 "description": "The size of the nodes that run the tasks in the pool"
             },
-            "defaultValue": "Standard_D3_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
                 "Standard_A8",
                 "Standard_A9",
@@ -92,13 +92,14 @@
     "variables": {
         "osType": {
             "imageReference": {
-                "publisher": "Canonical",
-                "offer": "UbuntuServer",
-                "sku": "16.04.0-LTS",
-                "version": "latest"
+                "publisher": "batch",
+                "offer": "rendering-windows2016",
+                "sku": "rendering",
+                "version": "1.2.3"
             },
-            "nodeAgentSKUId": "batch.node.ubuntu 16.04"
-        }
+            "nodeAgentSKUId": "batch.node.windows amd64"
+        },
+        "setupScript": "setup-windows-pool.cmd"
     },
     "pool": {
         "id": "[parameters('poolId')]",
@@ -107,11 +108,22 @@
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
-        "packageReferences": [
-            {
-                "type": "aptPackage",
-                "id": "blender"
-            }
-        ]
+        "startTask": {
+            "commandLine": "cmd.exe /c [variables('setupScript')]",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "scope": "pool",
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/[variables('setupScript')]",
+                    "filePath": "[variables('setupScript')]"
+                }
+            ]
+        }
     }
 }

@@ -1,0 +1,76 @@
+{
+    "templateMetadata":{
+        "description":"VRay DR Pool Rendering"
+    },
+    "parameters":{
+        "jobName": {
+            "type": "string",
+            "defaultValue": "3dsmax-vray-dr-pool",
+            "metadata": {
+                "description": "The job name",
+                "advancedType": "job-id"
+            }
+        },
+        "poolId": {
+            "type": "string",
+            "defaultValue": "ignored",
+            "metadata": {
+                "description": "The pool id"
+            }
+        },
+        "nodeCount":{
+            "type":"int",
+            "defaultValue":2,
+            "metadata":{
+                "description":"Max nodes to use for render, must be equal to or less than pool node count."
+            }
+        },
+        "vrayPort": {
+            "type": "string",
+            "defaultValue": "20204",
+            "metadata": {
+                "description": "The port VRay spawner will listen on."
+            }
+        }
+    },
+    "job":{
+        "type":"Microsoft.Batch/batchAccounts/jobs",
+        "properties":{
+            "id":"[parameters('jobName')]",
+            "displayName":"[parameters('jobName')]",
+            "onAllTasksComplete":"terminateJob",
+            "poolInfo":{
+                "poolId":"[parameters('poolId')]"
+            },
+            "taskFactory":{
+                "type":"taskCollection",
+                "tasks":[
+                    {
+                        "id":"VRaySpawner",
+                        "displayName":"VRaySpawner",
+                        "commandLine":"ls",
+                        "userIdentity": {
+                            "autoUser": {
+                                "elevationLevel": "admin",
+                                "scope": "pool"
+                            }
+                        },
+                        "constraints":{
+                            "maxTaskRetryCount":-1
+                        },
+                        "multiInstanceSettings":{
+                            "numberOfInstances":"[parameters('nodeCount')]",
+                            "coordinationCommandLine":"cd .. & vray-adv-dr.cmd [parameters('vrayPort')]",
+                            "commonResourceFiles":[
+                                {
+                                    "blobSource":"https://raw.githubusercontent.com/Azure/azure-hpc/master/Rendering/VRayPoolManager/Scripts/vray-adv-dr.cmd",
+                                    "filePath":"vray-adv-dr.cmd"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

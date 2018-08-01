@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "maya-sw-windows",
             "metadata": {
-                "description": "The unique name of the job."
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
             }
         },
         "mayaVersion": {
