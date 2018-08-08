@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "render-arnold",
             "metadata": {
-                "description": "The unique name of the job."
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
             }
         },
         "inputData": {

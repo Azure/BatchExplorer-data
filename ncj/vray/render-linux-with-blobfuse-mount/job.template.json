@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "render-vray",
             "metadata": {
-                "description": "The unique name of the job."
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
             }
         },
         "inputFilegroupName": {
