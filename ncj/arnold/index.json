@@ -3,5 +3,10 @@
         "id": "render-windows",
         "name": "Render an Arnold frame on Windows",
         "description": "Render a single frame with Arnold standalone renderer on Windows"
+    },
+    {
+        "id": "render-windows-frames",
+        "name": "Render multiple Arnold frames on Windows",
+        "description": "Render multiple frames on the Arnold standalone renderer. Each frame must be represented by a single (.ass) file in a directory."
     }
 ]

@@ -1,26 +1,26 @@
 {
-    "parameters":{
-        "poolName":{
-            "type":"string",
+    "parameters": {
+        "poolName": {
+            "type": "string",
             "defaultValue": "image-magick-pool",
-            "metadata":{
-                "description":"The ID of Azure Batch pool"
+            "metadata": {
+                "description": "The ID of Azure Batch pool"
             }
         },
-        "vmCount":{
-            "type":"int",
-            "defaultValue":1,
-            "metadata":{
-                "description":"The number of virtual machines in the Azure Batch pool where the job will run"
+        "vmCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of virtual machines in the Azure Batch pool where the job will run"
             }
         },
-        "vmSize":{
-            "type":"string",
-            "defaultValue":"STANDARD_D1",
-            "metadata":{
-                "description":"The size of the virtual machines that run the application"
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "STANDARD_D1",
+            "metadata": {
+                "description": "The size of the virtual machines that run the application"
             },
-            "allowedValues":[
+            "allowedValues": [
                 "STANDARD_A1",
                 "STANDARD_A2",
                 "STANDARD_A3",
@@ -32,23 +32,23 @@
             ]
         }
     },
-    "variables":{
-        "osType":{
-            "imageReference":{
+    "variables": {
+        "osType": {
+            "imageReference": {
                 "publisher": "Canonical",
                 "offer": "UbuntuServer",
                 "sku": "16.04.0-LTS",
                 "version": "latest"
             },
-            "nodeAgentSKUId":"batch.node.ubuntu 16.04"
+            "nodeAgentSKUId": "batch.node.ubuntu 16.04"
         }
     },
-    "pool":{
-        "id":"[parameters('poolName')]",
-        "displayName":"ImageMagick pool",
-        "vmSize":"[parameters('vmSize')]",
-        "virtualMachineConfiguration":"[variables('osType')]",
-        "targetDedicatedNodes":"[parameters('vmCount')]",
-        "enableAutoScale":false
+    "pool": {
+        "id": "[parameters('poolName')]",
+        "displayName": "ImageMagick pool",
+        "vmSize": "[parameters('vmSize')]",
+        "virtualMachineConfiguration": "[variables('osType')]",
+        "targetDedicatedNodes": "[parameters('vmCount')]",
+        "enableAutoScale": false
     }
 }
