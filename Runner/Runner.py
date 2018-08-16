@@ -17,6 +17,8 @@ import sys
 import time
 import json
 import string
+import asyncio
+import JobTypes
 try:
     input = raw_input
 except NameError:
@@ -49,7 +51,7 @@ _POOL_ID = 'PythonQuickstartPool'
 _POOL_NODE_COUNT = 2
 _POOL_VM_SIZE = 'STANDARD_D2_v2'
 _time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
-_JOB_ID = "_time"
+_JOB_ID = "14-17"
 _STANDARD_OUT_FILE_NAME = 'stdout.txt'
 
 
@@ -369,7 +371,7 @@ def create_arnold_job(batch_service_client, job_id, pool_id, template_file, scen
 
 
 
-def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
+async def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
     """
     Returns when all tasks in the specified job reach the Completed state.
 
@@ -382,11 +384,9 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
     """
     timeout_expiration = datetime.datetime.now() + timeout
 
-    print("Monitoring all tasks for 'Completed' state, timeout in {}..."
-          .format(timeout), end='')
+    #print("Monitoring all tasks for 'Completed' state, timeout in {}...".format(timeout), end='')
 
     while datetime.datetime.now() < timeout_expiration:
-        print('.', end='')
         sys.stdout.flush()
         tasks = batch_service_client.task.list(job_id)
 
@@ -396,12 +396,19 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
             print()
             return True
         else:
-            time.sleep(1)
+            print("job:{} is still running".format(job_id))
+            await asyncio.sleep(1)
 
     print()
     raise RuntimeError("ERROR: Tasks did not reach 'Completed' state within "
                        "timeout period of " + str(timeout))
-
+async def factorial(name, number):
+    f = 1
+    for i in range(2, number+1):
+        print("Task %s: Compute factorial(%s)..." % (name, i))
+        await asyncio.sleep(1)
+        f *= i
+    print("Task %s: factorial(%s) = %s" % (name, number, f))
 
 def check_task_output(batch_service_client, job_id, expected_output):
     """Prints the stdout.txt file for each task in the job.
@@ -411,7 +418,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
     :param str job_id: The id of the job with task output files to print.
     """
     
-    print('Printing task output...')
+    #print('Printing task output...')
 
     tasks = batch_service_client.task.list(job_id)
 
@@ -421,7 +428,8 @@ def check_task_output(batch_service_client, job_id, expected_output):
             if expected_output in f.name:
                 return True
 
-    return [False, ValueError("cannot find file {} in job {}".format(expected_output, job_id))]
+    return False, ValueError("cannot find file {} in job {}".format(expected_output, job_id))
+
 
 def _read_stream_as_string(stream, encoding):
     """Read stream as string
@@ -442,9 +450,9 @@ def _read_stream_as_string(stream, encoding):
         output.close()
     raise RuntimeError('could not write data to stream or decode bytes')
 
-def validate_job(batch_service_client, job_id, expected_output):
-    wait_for_tasks_to_complete(batch_service_client, job_id, datetime.timedelta(minutes=30))
-    return check_task_output(batch_service_client, job_id, expected_output)
+async def validate_job(batch_service_client, job_id, expected_output):
+    await wait_for_tasks_to_complete(batch_service_client, job_id, datetime.timedelta(minutes=30))
+    return job_id, check_task_output(batch_service_client, job_id, expected_output)
 
 
 if __name__ == '__main__':
@@ -566,26 +574,36 @@ if __name__ == '__main__':
         #create_vray_job(batch_client, _JOB_ID + "linux-with-blobfuse-mount", "linux-with-blobfuse-mount", "../ncj/vray/render-linux-with-blobfuse-mount/job.template.json", "vray.vrscene")
         #create_arnold_job(batch_client, _JOB_ID + "linux-render-windows", "arnold-windows", "../ncj/arnold/render-windows/job.template.json", "arnold.ass")
 
-        print(validate_job(batch_client, _JOB_ID + "-maya2017-default-windows","maya.exr.0001"))
-        print(validate_job(batch_client, _JOB_ID + "-maya2018-default-windows","maya.exr.0001"))
-        print(validate_job(batch_client, _JOB_ID + "-maya2017-arnold-windows","maya.exr.0001"))
-        print(validate_job(batch_client, _JOB_ID + "-maya2017-arnold-windows","maya.exr.0001"))
-        print(validate_job(batch_client, _JOB_ID + "-maya2017-vray-windows","maya.exr.0001"))
-        print(validate_job(batch_client, _JOB_ID + "-maya2017-vray-windows","maya.exr.0001"))
-        # Add the tasks to the job. 
-        #add_tasks(batch_client, _JOB_ID, input_files)
 
-        # Pause execution until tasks reach Completed state.
-        #wait_for_tasks_to_complete(batch_client, _JOB_ID, datetime.timedelta(minutes=30))
+        # Add the tasks to the job. 
+        #loop = asyncio.get_event_loop()
+        #results = loop.run_until_complete(asyncio.gather(
+            #validate_job(batch_client, _JOB_ID + "-maya2017-arnold-windows","maya.exr.0002"),
+            #validate_job(batch_client, _JOB_ID + "-maya2018-arnold-windows","maya.exr.0001"),
+            #validate_job(batch_client, _JOB_ID + "-maya2017-vray-windows","maya-vray.0001.png"),
+            #validate_job(batch_client, _JOB_ID + "-maya2017-vray-windows","maya-vray.0001.png"),
+        #))
+        #loop.close()
+
+        #for r in results:   
+            #if r[1] is not True:
+             #   print("job Failed {}".format(r[1]))
+            #else: 
+             #   print("Job successfully completed {})".format(r[0]))
+        
+                #create_job(batch_client, _JOB_ID + "-maya2017-default-windows", "default-windows", "../ncj/maya/render-default-windows/job.template.json", "%MAYA_2017_EXEC%", "maya.mb")
+
+        job1 = JobTypes.Job( _JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb")
+        job1.create_pool(batch_client, "../ncj/maya/render-default-windows/pool.template.json")
+        job1.Run(batch_client, "%MAYA_2017_EXEC%")
+
 
         #print("pool was created")
 
-
         #print("  Success! All tasks reached the 'Completed' state within the "
-         # "specified timeout period.")
+            # "specified timeout period.")
 
         # Print the stdout.txt and stderr.txt files for each task to the console
-        ###check_task_output(batch_client, _JOB_ID)
 
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
