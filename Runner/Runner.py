@@ -30,11 +30,8 @@ import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 import azext.batch as batch 
 
-
-
 sys.path.append('.')
 sys.path.append('..')
-
 
 # Update the Batch and Storage account credential strings below with the values
 # unique to your accounts. These are used when constructing connection strings
@@ -51,7 +48,7 @@ _POOL_ID = 'PythonQuickstartPool'
 _POOL_NODE_COUNT = 2
 _POOL_VM_SIZE = 'STANDARD_D2_v2'
 _time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
-_JOB_ID = "14-17"
+_JOB_ID = _time
 _STANDARD_OUT_FILE_NAME = 'stdout.txt'
 
 
@@ -163,253 +160,6 @@ def get_container_sas_token(block_blob_client,
 
     return container_sas_token
 
-def poolparameter_from_json(json_data): 
-    """Create an ExtendedPoolParameter object from a JSON specification. 
-    :param dict json_data: The JSON specification of an AddPoolParameter or an 
-    ExtendedPoolParameter or a PoolTemplate. 
-    """ 
-    result = 'PoolTemplate' if json_data.get('properties') else 'ExtendedPoolParameter' 
-    try: 
-        if result == 'PoolTemplate': 
-            pool = models.PoolTemplate.from_dict(json_data) 
-        else: 
-            pool = models.ExtendedPoolParameter.from_dict(json_data) 
-        if pool is None: 
-            raise ValueError("JSON data is not in correct format.") 
-        return pool 
-    except Exception as exp: 
-        raise ValueError("Unable to deserialize to {}: {}".format(result, exp)) 
-
-
-def set_template_name(template, pool_id):
-    try:
-        template["parameters"]["poolName"]["defaultValue"] = pool_id    
-    except KeyError:
-        pass
-    try:
-        template["parameters"]["poolId"]["defaultValue"] = pool_id
-    except KeyError:
-        pass
-
-
-def create_pool(batch_service_client, pool_id, template_file, extra_license=""):
-    """
-    Creates a pool of compute nodes with the specified OS settings.
-    """
-    print('Creating pool [{}]...'.format(pool_id))
-    
-    template = ""
-    with open(template_file) as f: 
-        template = json.load(f)
-    
-    set_template_name(template, pool_id)
-    
-    if(extra_license!=""):
-        template["pool"]["applicationLicenses"] = extra_license
-
-    all_pools = [p.id for p in batch_service_client.pool.list()]
-    if(pool_id not in all_pools):
-        pool_json = batch_service_client.pool.expand_template(template)
-        pool = batch_service_client.pool.poolparameter_from_json(pool_json)
-        batch_service_client.pool.add(pool)
-    else:
-        print('pool [{}] already exists'.format(pool_id))
-
-def submit_job(batch_service_client, template):
-    """
-    Submit job
-    """
-    job_json = batch_service_client.job.expand_template(template)
-    job = batch_service_client.job.jobparameter_from_json(job_json)
-    batch_service_client.job.add(job)
-
-
-def update_template_OutFiles(template_node_outfiles, job_id):
-    """
-    Adds the prefix ID of the job_id to file group and path. 
-    """
-    for i in range(0, len(template_node_outfiles)):
-        autoStorage = template_node_outfiles[i]["destination"]["autoStorage"]
-        autoStorage["fileGroup"] = "rendering-output"
-        autoStorage["path"] = autoStorage["path"].replace("[parameters('jobName')]", job_id)  
-
-def create_job(batch_service_client, job_id, pool_id, template_file, render_version, scene_file, isLinux=False):
-    """
-    Creates a job with the specified ID, associated with the specified pool.
-    """
-    print('Creating job [{}]...'.format(job_id)," job will run on [{}]".format(pool_id))
-
-    job = batch.models.JobAddParameter(job_id, batch.models.PoolInformation(pool_id=pool_id))
-
-    with open(template_file) as f: 
-        template = json.load(f)
-    
-    template["parameters"]["poolId"]["defaultValue"] = pool_id
-    template["parameters"]["jobName"]["defaultValue"] = job_id
-    template["parameters"]["inputData"]["defaultValue"] = "rendering"
-    commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
-
-    if("additionalFlags" in template):
-        template["parameters"]["additionalFlags"]["defaultValue"] = "-of png"
-
-    if(isLinux):
-        newCommandLine = commandLine.replace("[parameters('mayaVersion')]", render_version).replace("[parameters('sceneFile')]", scene_file)
-    else:
-        newCommandLine = commandLine.replace("[variables('MayaVersions')[parameters('mayaVersion')].environmentValue]", render_version).replace("[parameters('sceneFile')]", scene_file)
-
-    template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-        
-    update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], job_id)
-    
-    submit_job(batch_service_client, template)
-
-
-def create_3ds_Max_job(batch_service_client, job_id, pool_id, template_file, max_version, renderer, scene_file, vray_renderer=""):
-    """
-    Creates a job with the specified ID, associated with the specified pool.
-    """
-    print('Creating job [{}]...'.format(job_id)," job will run on [{}]".format(pool_id))
-
-    job = batch.models.JobAddParameter(job_id, batch.models.PoolInformation(pool_id=pool_id))
-    with open(template_file) as f: 
-        template = json.load(f)
-    
-    print(template)    
-
-
-    template["parameters"]["poolId"]["defaultValue"] = pool_id
-    template["parameters"]["jobName"]["defaultValue"] = job_id
-    template["parameters"]["inputFilegroupSas"]["defaultValue"] = "https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-08-13T03%3A37%3A42Z&se=2018-08-20T03%3A52%3A42Z&sp=rl&sv=2018-03-28&sr=c&sig=lpYc5NuYSmJ%2BYGcJyaedSXFe9kZXBuDWMCkAxHnXXBQ%3D"
-    template["parameters"]["sceneFile"]["defaultValue"] = scene_file
-    template["parameters"]["outputFilegroup"]["defaultValue"] = "rendering-output"
-    
-    commandLine = ""
-    # Use the VRayRT or VRayADV
-    if vray_renderer:
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], job_id)
-        commandLine = template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"]
-        newCommandLine = commandLine.replace("[parameters('maxVersion')]", max_version).replace("[parameters('renderer')]", renderer).replace("[parameters('sceneFile')]", scene_file)
-        template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"] = newCommandLine
-        template["job"]["properties"]["properties"] = job_id
-        template["job"]["properties"]["poolInfo"]["pool_id"] = pool_id
-        coordinationCommandLine = template["job"]["properties"]["taskFactory"]["tasks"][0]["multiInstanceSettings"]["coordinationCommandLine"]
-        newCoordinationCommandLine = coordinationCommandLine.replace("[parameters('vrayRenderer')]", vray_renderer).replace("[parameters('maxVersion')]", max_version)
-        template["job"]["properties"]["taskFactory"]["tasks"][0]["multiInstanceSettings"]["coordinationCommandLine"] = newCoordinationCommandLine
-    
-    else: #Use the arnold renderer 
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], job_id)
-        commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
-        newCommandLine = commandLine.replace("[parameters('maxVersion')]", max_version).replace("[parameters('renderer')]", renderer).replace("[parameters('sceneFile')]", scene_file)
-        template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-    
-    print(template)    
-    submit_job(batch_service_client, template)
-
-
-def create_blender_job(batch_service_client, job_id, pool_id, template_file, scene_file):
-    print('Creating job [{}]...'.format(job_id)," job will run on [{}]".format(pool_id))
-
-    job = batch.models.JobAddParameter(job_id, batch.models.PoolInformation(pool_id=pool_id))
-    with open(template_file) as f: 
-        template = json.load(f)
-    
-    template["parameters"]["poolId"]["defaultValue"] = pool_id
-    template["parameters"]["jobName"]["defaultValue"] = job_id
-    template["parameters"]["inputData"]["defaultValue"] = "rendering"
-    template["parameters"]["blendFile"]["defaultValue"] = scene_file
-    template["parameters"]["inputDataSas"]["defaultValue"] = "https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-08-13T03%3A37%3A42Z&se=2018-08-20T03%3A52%3A42Z&sp=rl&sv=2018-03-28&sr=c&sig=lpYc5NuYSmJ%2BYGcJyaedSXFe9kZXBuDWMCkAxHnXXBQ%3D"
-        
-    commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
-    newCommandLine = commandLine.replace("[parameters('jobName')]", job_id).replace("[parameters('blendFile')]", scene_file)
-    template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-
-    update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], job_id)
-    
-    submit_job(batch_service_client, template)
-
-def create_vray_job(batch_service_client, job_id, pool_id, template_file, scene_file):
-    print('Creating job [{}]...'.format(job_id)," job will run on [{}]".format(pool_id))
-    print()
-
-    job = batch.models.JobAddParameter(job_id, batch.models.PoolInformation(pool_id=pool_id))
-    with open(template_file) as f: 
-        template = json.load(f)
-
-    template["parameters"]["poolId"]["defaultValue"] = pool_id
-    template["parameters"]["jobName"]["defaultValue"] = job_id
-    template["parameters"]["inputData"]["defaultValue"] = "rendering"
-    template["parameters"]["sceneFile"]["defaultValue"] = scene_file
-
-    commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
-    newCommandLine = commandLine.replace("[parameters('sceneFile')]", scene_file)
-    template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-
-    print(template)
-    update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], job_id)    
-    submit_job(batch_service_client, template)
-
-def create_arnold_job(batch_service_client, job_id, pool_id, template_file, scene_file):
-    print('Creating job [{}]...'.format(job_id)," job will run on [{}]".format(pool_id))
-    print()
-
-    job = batch.models.JobAddParameter(job_id, batch.models.PoolInformation(pool_id=pool_id))
-    with open(template_file) as f: 
-        template = json.load(f)
-
-    template["parameters"]["poolId"]["defaultValue"] = pool_id
-    template["parameters"]["jobName"]["defaultValue"] = job_id
-    template["parameters"]["inputData"]["defaultValue"] = "rendering"
-    template["parameters"]["sceneFile"]["defaultValue"] = scene_file
-
-    update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], job_id)
-    commandLine = template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"]
-    newCommandLine = commandLine.replace("[parameters('sceneFile')]", scene_file)
-    template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"] = newCommandLine
-
-    print(template)
-    submit_job(batch_service_client, template)
-
-
-
-async def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
-    """
-    Returns when all tasks in the specified job reach the Completed state.
-
-    :param batch_service_client: A Batch service client.
-    :type batch_service_client: `azure.batch.BatchServiceClient`
-    :param str job_id: The id of the job whose tasks should be to monitored.
-    :param timedelta timeout: The duration to wait for task completion. If all
-    tasks in the specified job do not reach Completed state within this time
-    period, an exception will be raised.
-    """
-    timeout_expiration = datetime.datetime.now() + timeout
-
-    #print("Monitoring all tasks for 'Completed' state, timeout in {}...".format(timeout), end='')
-
-    while datetime.datetime.now() < timeout_expiration:
-        sys.stdout.flush()
-        tasks = batch_service_client.task.list(job_id)
-
-        incomplete_tasks = [task for task in tasks if
-                            task.state != batchmodels.TaskState.completed]
-        if not incomplete_tasks:
-            print()
-            return True
-        else:
-            print("job:{} is still running".format(job_id))
-            await asyncio.sleep(1)
-
-    print()
-    raise RuntimeError("ERROR: Tasks did not reach 'Completed' state within "
-                       "timeout period of " + str(timeout))
-async def factorial(name, number):
-    f = 1
-    for i in range(2, number+1):
-        print("Task %s: Compute factorial(%s)..." % (name, i))
-        await asyncio.sleep(1)
-        f *= i
-    print("Task %s: factorial(%s) = %s" % (name, number, f))
-
 def check_task_output(batch_service_client, job_id, expected_output):
     """Prints the stdout.txt file for each task in the job.
 
@@ -430,6 +180,34 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
     return False, ValueError("cannot find file {} in job {}".format(expected_output, job_id))
 
+def submit_jobs(jobs):    
+    loop = asyncio.new_event_loop()
+    valid_jobs = [j.Run(batch_client) for j in jobs]        
+    done, pending = loop.run_until_complete(asyncio.wait(valid_jobs))               
+    for future in done:
+        value = future.result()
+    loop.close()
+
+
+def validate_jobs(jobs):
+    
+    loop = asyncio.get_event_loop()
+    valid_jobs = [j.Validate(batch_client) for j in jobs]        
+    done, pending = loop.run_until_complete(asyncio.wait(valid_jobs))               
+
+    for future in done:
+        value = future.result()
+    loop.close()
+
+def delete_jobs(jobs):
+
+    loop = asyncio.get_event_loop()
+    valid_jobs = [j.Delete(batch_client) for j in jobs]        
+    done, pending = loop.run_until_complete(asyncio.wait(valid_jobs))               
+    for future in done:
+        value = future.result()
+    loop.close()
+
 
 def _read_stream_as_string(stream, encoding):
     """Read stream as string
@@ -449,11 +227,6 @@ def _read_stream_as_string(stream, encoding):
     finally:
         output.close()
     raise RuntimeError('could not write data to stream or decode bytes')
-
-async def validate_job(batch_service_client, job_id, expected_output):
-    await wait_for_tasks_to_complete(batch_service_client, job_id, datetime.timedelta(minutes=30))
-    return job_id, check_task_output(batch_service_client, job_id, expected_output)
-
 
 if __name__ == '__main__':
 
@@ -538,41 +311,107 @@ if __name__ == '__main__':
         #imagemagick 
         #create_pool(batch_client, "imagemagick-linux", "../ncj/vray/render-windows/pool.template.json")
         ##Create the job that will run the tasks.
+    
+        jobs = []
+        #------------------
+        #---Maya-windows---
+        #------------------
+        jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
+        jobs[0].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001")
 
-        #create_job(batch_client, _JOB_ID + "-maya2017-default-windows", "default-windows", "../ncj/maya/render-default-windows/job.template.json", "%MAYA_2017_EXEC%", "maya.mb")
-        #create_job(batch_client, _JOB_ID + "-maya2018-default-windows", "default-windows", "../ncj/maya/render-default-windows/job.template.json", "%MAYA_2018_EXEC%", "maya.mb")        
-        #create_job(batch_client, _JOB_ID + "-maya2017-arnold-windows", "arnold-windows", "../ncj/maya/render-arnold-windows/job.template.json", "%MAYA_2017_EXEC%", "maya.mb")
-        #create_job(batch_client, _JOB_ID + "-maya2018-arnold-windows", "arnold-windows", "../ncj/maya/render-arnold-windows/job.template.json", "%MAYA_2018_EXEC%", "maya.mb")        
-        #create_job(batch_client, _JOB_ID + "-maya2017-vray-windows", "vray-windows", "../ncj/maya/render-vray-windows/job.template.json", "%MAYA_2017_EXEC%", "maya-vray.mb")
-        #create_job(batch_client, _JOB_ID + "-maya2018-vray-windows", "vray-windows", "../ncj/maya/render-vray-windows/job.template.json", "%MAYA_2018_EXEC%", "VRayAdv-vray.mb")     
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
+        #jobs[1].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2018_EXEC%", "maya.exr.0001")
 
-        #create_job(batch_client, _JOB_ID + "maya-2017-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json","maya2017", "maya.mb", True)
-        #create_job(batch_client, _JOB_ID + "maya-2018-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json", "maya2018", "maya.mb")
-        #create_job(batch_client, _JOB_ID + "maya-2017-arnold-linux", "arnold-linux", "../ncj/maya/render-arnold-linux/job.template.json","maya2017", "maya.mb", True)
-        #create_job(batch_client, _JOB_ID + "maya-2018-arnold-linux", "arnold-linux", "../ncj/maya/render-arnold-linux/job.template.json", "maya2018", "maya.mb")
-        #create_job(batch_client, _JOB_ID + "maya-2017-vray-linux", "vray-linux", "../ncj/maya/render-vray-linux/job.template.json","maya2017", "maya.mb", True)
-        #create_job(batch_client, _JOB_ID + "maya-2018-vray-linux", "vray-linux", "../ncj/maya/render-vray-linux/job.template.json", "maya2018", "maya.mb")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-arnold-windows","arnold-windows","../ncj/maya/render-arnold-windows/job.template.json","maya.mb"))
+        #jobs[2].set_rendering_fields("../ncj/maya/render-arnold-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001")
 
-        #create_blender_job(batch_client, _JOB_ID + "blender-linux", "blender-linux", "../ncj/blender/render-linux/job.template.json", "shapes.blend")
-        #create_blender_job(batch_client, _JOB_ID + "blender-windows", "blender-windows", "../ncj/blender/render-windows/job.template.json", "shapes.blend")
-        #create_blender_job(batch_client, _JOB_ID + "blender-linux-dr", "blender-linux-dr", "../ncj/blender/render-linux-dr/job.template.json", "shapes.blend")
-        #create_blender_job(batch_client, _JOB_ID + "blender-render-windows-dr", "blender-windows-cycles-gpu", "../ncj/blender/render-windows-dr/job.template.json", "shapes.blend")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-arnold-windows","arnold-windows","../ncj/maya/render-arnold-windows/job.template.json","maya.mb"))
+        #jobs[3].set_rendering_fields("../ncj/maya/render-arnold-windows/pool.template.json", "%MAYA_2018_EXEC%", "maya.exr.0001")
 
-        #3ds Max
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows-1", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018","arnold", "3dsmax-arnold.max")
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2018-vray", "3dsMax-vray-windows-1", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018","vray", "3dsmax-vray.max")
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2019-arnold", "3dsMax-standard-windows-1", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019","arnold", "3dsmax-arnold.max")     
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2019-vray", "3dsMax-vray-windows-1", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019","vray", "3dsmax-vray.max")     
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2019-vray", "3dsMax-vray-windows-1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019","vray", "3dsmax-vray.max")     
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2018-vray-VRayRT", "3dsMax-vray-windows-dr1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "vray", "3dsmax-vray.max", "VRayRT")  
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2018-vray-VRayAdv", "3dsMax-vray-windows-dr2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "vray", "3dsmax-vray.max", "VRayAdv")
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2019-vray-VRayRT", "3dsMax-vray-windows-dr1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "vray", "3dsmax-vray.max", "VRayRT")          
-        #create_3ds_Max_job(batch_client,  _JOB_ID + "-3dsMax2019-vray-VRayAdv", "3dsMax-vray-windows-dr2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "vray", "3dsmax-vray.max", "VRayAdv")  
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-vray-windows","vray-windows","../ncj/maya/render-arnold-windows/job.template.json","maya.mb"))
+        #jobs[4].set_rendering_fields("../ncj/maya/render-vray-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001", ["maya","vray"])
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-vray-windows","vray-windows","../ncj/maya/render-arnold-windows/job.template.json","maya.mb"))
+        #jobs[5].set_rendering_fields("../ncj/maya/render-vray-windows/pool.template.json", "%MAYA_2018_EXEC%", "maya.exr.0001", ["maya","vray"])
+        
+        #------------------
+        #---Maya-linux-----
+        #------------------
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json", "maya.mb", True))
+        #jobs[6].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2017", "maya.exr.0001")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-linux","default-linux","../ncj/maya/render-default-linux/job.template.json","maya.mb", True))
+        #jobs[7].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2018", "maya.exr.0001")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","maya.mb", True))
+        #jobs[8].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2017", "maya.exr.0001")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","maya.mb", True))
+        #jobs[9].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2018", "maya.exr.0001")
+        
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","maya.mb", True))
+        #jobs[10].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2017", "maya.0001.png")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","maya.mb", True))
+        #jobs[11].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2018", "maya.0001.png",  ["maya","vray"])
+
+        #---------------
+        #---3ds-max-----
+        #---------------     
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-arnold.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg","arnold", ["3dsmax", "arnold"])
+
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019", "3dsmax-arnold.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "arnold", ["3dsmax", "arnold"])
+
+        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray", "3dsMax-standard-windows-vray", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
+        jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"])
+
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray", "3dsMax-standard-windows-vray", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"])
+
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray-VRayRT", "3dsMax-standard-windows-vray-1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayRT")        
+
+        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray-VRayAdv", "3dsMax-standard-windows-vray-2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
+        jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayAdv")        
+
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray-VRayRT", "3dsMax-standard-windows-vray-1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayRT")        
+
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray-VRayAdv", "3dsMax-standard-windows-vray-2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayAdv")        
+
+        #-------------
+        #---Blender---
+        #-------------
+        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-linux","../ncj/blender/render-linux/job.template.json", "shapes.blend", True))
+        #jobs[-1].set_rendering_fields("../ncj/blender/render-linux/pool.template.json", "", _time+"-blender-linux_0001.png")        
+
+        #jobs.append(JobTypes.BlenderTileJob(_JOB_ID + "-blender-windows-dr","blender-linux-dr-1","../ncj/blender/render-linux-dr/job.template.json", "shapes.blend"))
+        #jobs[-1].set_rendering_fields("../ncj/blender/render-linux-dr/pool.template.json", "", _time+"-blender-windows_0001.png")        
+
+        jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows","../ncj/blender/render-windows/job.template.json", "shapes.blend"))
+        jobs[-1].set_rendering_fields("../ncj/blender/render-windows/pool.template.json", "", _time+"-blender-windows_0001.png")        
+
+        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows-dr","../ncj/blender/render-windows-dr/job.template.json", "shapes.blend"))
+        #jobs[-1].set_rendering_fields("../ncj/blender/render-windows-dr/pool.template.json", "", _time+"-blender-windows-dr_0001.png")        
+
+
+
+
 
         #Vray jobs
-        #create_vray_job(batch_client, _JOB_ID + "vray-linux", "vray-render-linux", "../ncj/vray/render-linux/job.template.json", "vray.vrscene")
+        #doesn't work yet
+        #create_blender_job(batch_client, _JOB_ID + "blender-render-windows-dr", "blender-windows-cycles-gpu", "../ncj/blender/render-windows-dr/job.template.json", "shapes.blend")
+
         #create_vray_job(batch_client, _JOB_ID + "linux-with-blobfuse-mount", "linux-with-blobfuse-mount", "../ncj/vray/render-linux-with-blobfuse-mount/job.template.json", "vray.vrscene")
-        #create_arnold_job(batch_client, _JOB_ID + "linux-render-windows", "arnold-windows", "../ncj/arnold/render-windows/job.template.json", "arnold.ass")
+
+        #jobs.append(JobTypes.ArnoldJob(_JOB_ID + "-arnold", "arnold-standalone", "../ncj/arnold/render-windows/job.template.json", "arnold.ass"))
+        #jobs[0].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "arnold.ass.tif", "")
+
+        #jobs.append(JobTypes.VrayJob(_JOB_ID + "-vray", "vray-standalone-1", "../ncj/vray/render-linux/job.template.json", "vray.vrscene"))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "image0001.jpg", "")
 
 
         # Add the tasks to the job. 
@@ -585,26 +424,19 @@ if __name__ == '__main__':
         #))
         #loop.close()
 
-        #for r in results:   
-            #if r[1] is not True:
-             #   print("job Failed {}".format(r[1]))
-            #else: 
-             #   print("Job successfully completed {})".format(r[0]))
+
+        print("Submitting {} pools ".format(len(jobs)))
+        for j in jobs:
+            j.create_pool(batch_client)
+
+
+        print("Submitting {} jobs ".format(len(jobs)))
+        submit_jobs(jobs)
+        print("checking to see if all {} jobs are valid ".format(len(jobs)))
+        validate_jobs(jobs)
+        print("Cleaning up the pools and jobs")
+        delete_jobs(jobs)
         
-                #create_job(batch_client, _JOB_ID + "-maya2017-default-windows", "default-windows", "../ncj/maya/render-default-windows/job.template.json", "%MAYA_2017_EXEC%", "maya.mb")
-
-        job1 = JobTypes.Job( _JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb")
-        job1.create_pool(batch_client, "../ncj/maya/render-default-windows/pool.template.json")
-        job1.Run(batch_client, "%MAYA_2017_EXEC%")
-
-
-        #print("pool was created")
-
-        #print("  Success! All tasks reached the 'Completed' state within the "
-            # "specified timeout period.")
-
-        # Print the stdout.txt and stderr.txt files for each task to the console
-
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
         print_batch_exception(err)
