@@ -8,5 +8,10 @@
         "id": "render-windows-frames",
         "name": "Render multiple Arnold frames on Windows",
         "description": "Render multiple frames on the Arnold standalone renderer. Each frame must be represented by a single (.ass) file in a directory."
+    },
+    {
+        "id": "render-linux-frames",
+        "name": "Render multiple Arnold frames on Ubuntu",
+        "description": "Render multiple frames on the Arnold standalone renderer. Each frame must be represented by a single (.ass) file in a directory."
     }
 ]
