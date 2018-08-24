@@ -11,7 +11,7 @@
     },
     {
         "id": "render-linux-frames",
-        "name": "Render multiple Arnold frames on Ubuntu",
+        "name": "Render multiple Arnold frames on CentOS",
         "description": "Render multiple frames on the Arnold standalone renderer. Each frame must be represented by a single (.ass) file in a directory."
     }
 ]
