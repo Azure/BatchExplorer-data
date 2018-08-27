@@ -28,6 +28,11 @@ def set_template_name(template, pool_id):
     except KeyError:
         pass
 
+def set_job_defaults(template, pool_id, job_id):
+    template["parameters"]["poolId"]["defaultValue"] = pool_id
+    template["parameters"]["jobName"]["defaultValue"] = job_id
+    template["parameters"]["inputData"]["defaultValue"] = "rendering"
+
 def update_template_OutFiles(template_node_outfiles, job_id):
     """
     Adds the prefix ID of the job_id to file group and path. 
@@ -126,9 +131,6 @@ class Job(object):
         with open(self.template_file) as f: 
             template = json.load(f)
         
-        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
-        template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"
         commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
 
         if("additionalFlags" in template):
@@ -140,9 +142,9 @@ class Job(object):
             newCommandLine = commandLine.replace("[variables('MayaVersions')[parameters('mayaVersion')].environmentValue]", self.render_version).replace("[parameters('sceneFile')]", self.scene_file)
 
         template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-            
+        
+        set_job_defaults(template, self.job_id, self.pool_id)            
         update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
-
         submit_job(batch_service_client, template)
 
     def create_pool(self, batch_service_client):
@@ -186,7 +188,6 @@ class Job(object):
             print_batch_exception(err)
             raise
 
-
 class BlenderJob(Job):
     """docstring for BlenderJob"""
     def __init__(self, job_id, pool_id, template_file, scene_file, isLinux=False):
@@ -201,9 +202,6 @@ class BlenderJob(Job):
         with open(self.template_file) as f: 
             template = json.load(f)
     
-        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
-        template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"
         template["parameters"]["blendFile"]["defaultValue"] = self.scene_file
 
         if not self.isLinux:
@@ -213,22 +211,10 @@ class BlenderJob(Job):
         newCommandLine = commandLine.replace("[parameters('jobName')]", self.job_id).replace("[parameters('blendFile')]", self.scene_file)
         template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
 
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
-                
+        set_job_defaults(template, self.job_id, self.pool_id)
+        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)                
         submit_job(batch_service_client, template)        
 
-class VrayJob(Job):
-    """docstring for VrayJob"""
-    def __init__(self, job_id, pool_id, template_file, scene_file):
-        super(VrayJob, self).__init__()
-        self.job_id = job_id
-        self.pool_id = pool_id
-        self.template_file = template_file
-        self.scene_file = scene_file
-        
-    async def Run(self, batch_service_client):
-        submit_job(batch_service_client, self.template_file)
-            
 class Max3ds(Job):
     """docstring for Max3ds"""
     def __init__(self, job_id, pool_id, template_file, max_version, scene_file):
@@ -297,15 +283,13 @@ class ArnoldJob(Job):
         with open(self.template_file) as f: 
             template = json.load(f)
 
-        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
-        template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"
         template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
 
         commandLine = template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"]
         newCommandLine = commandLine.replace("[parameters('sceneFile')]", self.scene_file)
         template["job"]["properties"]["taskFactory"]["tasks"][0]["commandLine"] = newCommandLine
-
+        
+        set_job_defaults(template, self.job_id, self.pool_id)
         update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], self.job_id)
         submit_job(batch_service_client, template)
 
@@ -324,15 +308,13 @@ class VrayJob(Job):
         with open(self.template_file) as f: 
             template = json.load(f)
 
-        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
-        template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"
         template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
 
         commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
         newCommandLine = commandLine.replace("[parameters('sceneFile')]", self.scene_file)
         template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-
+        
+        set_job_defaults(template, self.job_id, self.pool_id)
         update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)    
         submit_job(batch_service_client, template)
 
@@ -349,20 +331,67 @@ class BlenderTileJob(Job):
         with open(self.template_file) as f: 
             template = json.load(f)
     
-        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
-        template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"
         template["parameters"]["blendFile"]["defaultValue"] = self.scene_file
-
-#        if not self.isLinux:
         template["parameters"]["inputDataSas"]["defaultValue"] = "https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-08-13T03%3A37%3A42Z&se=2018-08-20T03%3A52%3A42Z&sp=rl&sv=2018-03-28&sr=c&sig=lpYc5NuYSmJ%2BYGcJyaedSXFe9kZXBuDWMCkAxHnXXBQ%3D"
         template["parameters"]["outputSas"]["defaultValue"] = "https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-08-13T03%3A37%3A42Z&se=2018-08-20T03%3A52%3A42Z&sp=rl&sv=2018-03-28&sr=c&sig=lpYc5NuYSmJ%2BYGcJyaedSXFe9kZXBuDWMCkAxHnXXBQ%3D"
 
         #commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
         #newCommandLine = commandLine.replace("[parameters('jobName')]", self.job_id).replace("[parameters('blendFile')]", self.scene_file)
         #template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
+        
+        set_job_defaults(template, self.job_id, self.pool_id)
+        update_template_OutFiles(template["job"]["properties"]["jobManagerTask"]["outputFiles"], self.job_id)                
+        submit_job(batch_service_client, template)        
 
-        update_template_OutFiles(template["job"]["properties"]["jobManagerTask"]["outputFiles"], self.job_id)
-                
+class VrayStandAloneJob(Job):
+    """used for running V-Ray and arnold stand-alone renderer """
+    def __init__(self, job_id, pool_id, template_file, scene_file):
+        Job.__init__(self, job_id, pool_id, template_file, scene_file)
+        self.job_id = job_id
+        self.pool_id = pool_id
+        self.template_file = template_file
+        self.scene_file = scene_file
+        
+    async def Run(self, batch_service_client):        
+        print('Creating job [{}]...'.format(self.job_id)," job will run on [{}]".format(self.pool_id))
+
+        with open(self.template_file) as f: 
+            template = json.load(f)
+
+        template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
+
+        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
+        template["parameters"]["jobName"]["defaultValue"] = self.job_id
+        template["parameters"]["inputData"]["defaultValue"] = "rendering"    
+
+        commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
+        newCommandLine = commandLine.replace("[parameters('sceneFile')]", self.scene_file)
+        template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
+        
+
+        
+        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)    
+
         submit_job(batch_service_client, template)        
     
+class ArnoldStandAloneJob(Job):
+    """docstring for VrayJob"""
+    def __init__(self, job_id, pool_id, template_file, scene_file):
+        Job.__init__(self, job_id, pool_id, template_file, scene_file)
+        self.job_id = job_id
+        self.pool_id = pool_id
+        self.template_file = template_file
+        self.scene_file = scene_file
+        
+    async def Run(self, batch_service_client):
+        with open(self.template_file) as f: 
+            template = json.load(f)
+        
+        template["parameters"]["jobName"]["defaultValue"] = self.job_id
+        template["parameters"]["inputData"]["defaultValue"] = "rendering"   
+        template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
+        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
+
+        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], self.job_id)
+        print(template)
+        submit_job(batch_service_client, template)

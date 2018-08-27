@@ -160,26 +160,6 @@ def get_container_sas_token(block_blob_client,
 
     return container_sas_token
 
-def check_task_output(batch_service_client, job_id, expected_output):
-    """Prints the stdout.txt file for each task in the job.
-
-    :param batch_client: The batch client to use.
-    :type batch_client: `batchserviceclient.BatchServiceClient`
-    :param str job_id: The id of the job with task output files to print.
-    """
-    
-    #print('Printing task output...')
-
-    tasks = batch_service_client.task.list(job_id)
-
-    for task in tasks:    
-        all_files = batch_service_client.file.list_from_task(job_id, task.id, recursive=True)
-        for f in all_files:
-            if expected_output in f.name:
-                return True
-
-    return False, ValueError("cannot find file {} in job {}".format(expected_output, job_id))
-
 def submit_jobs(jobs):    
     loop = asyncio.new_event_loop()
     valid_jobs = [j.Run(batch_client) for j in jobs]        
@@ -316,8 +296,8 @@ if __name__ == '__main__':
         #------------------
         #---Maya-windows---
         #------------------
-        jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
-        jobs[0].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
+        #jobs[0].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001")
 
         #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
         #jobs[1].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2018_EXEC%", "maya.exr.0001")
@@ -358,14 +338,14 @@ if __name__ == '__main__':
         #---------------
         #---3ds-max-----
         #---------------     
-        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-arnold.max"))
-        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg","arnold", ["3dsmax", "arnold"])
+#        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-arnold.max"))
+ #       jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg","arnold", ["3dsmax", "arnold"])
 
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019", "3dsmax-arnold.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "arnold", ["3dsmax", "arnold"])
 
-        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray", "3dsMax-standard-windows-vray", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
-        jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"])
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray", "3dsMax-standard-windows-vray", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"])
 
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray", "3dsMax-standard-windows-vray", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"])
@@ -373,8 +353,8 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray-VRayRT", "3dsMax-standard-windows-vray-1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayRT")        
 
-        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray-VRayAdv", "3dsMax-standard-windows-vray-2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
-        jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayAdv")        
+        #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-vray-VRayAdv", "3dsMax-standard-windows-vray-2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2018", "3dsmax-vray.max"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayAdv")        
 
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray-VRayRT", "3dsMax-standard-windows-vray-1", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayRT")        
@@ -391,15 +371,11 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.BlenderTileJob(_JOB_ID + "-blender-windows-dr","blender-linux-dr-1","../ncj/blender/render-linux-dr/job.template.json", "shapes.blend"))
         #jobs[-1].set_rendering_fields("../ncj/blender/render-linux-dr/pool.template.json", "", _time+"-blender-windows_0001.png")        
 
-        jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows","../ncj/blender/render-windows/job.template.json", "shapes.blend"))
-        jobs[-1].set_rendering_fields("../ncj/blender/render-windows/pool.template.json", "", _time+"-blender-windows_0001.png")        
+        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows","../ncj/blender/render-windows/job.template.json", "shapes.blend"))
+        #jobs[-1].set_rendering_fields("../ncj/blender/render-windows/pool.template.json", "", _time+"-blender-windows_0001.png")        
 
         #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows-dr","../ncj/blender/render-windows-dr/job.template.json", "shapes.blend"))
         #jobs[-1].set_rendering_fields("../ncj/blender/render-windows-dr/pool.template.json", "", _time+"-blender-windows-dr_0001.png")        
-
-
-
-
 
         #Vray jobs
         #doesn't work yet
@@ -410,9 +386,11 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.ArnoldJob(_JOB_ID + "-arnold", "arnold-standalone", "../ncj/arnold/render-windows/job.template.json", "arnold.ass"))
         #jobs[0].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "arnold.ass.tif", "")
 
-        #jobs.append(JobTypes.VrayJob(_JOB_ID + "-vray", "vray-standalone-1", "../ncj/vray/render-linux/job.template.json", "vray.vrscene"))
-        #jobs[-1].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "image0001.jpg", "")
+        #jobs.append(JobTypes.VrayStandAloneJob(_JOB_ID + "-vray-standalone", "vray-standalone-pool", "../ncj/vray/render-windows/job.template.json", "vray.vrscene"))
+        #jobs[-1].set_rendering_fields("../ncj/vray/render-windows/pool.template.json", "image1.png", "")
 
+        jobs.append(JobTypes.ArnoldStandAloneJob(_JOB_ID + "-arnold-standalone", "arnold-standalone-pool", "../ncj/arnold/render-windows/job.template.json", "arnold.ass"))
+        jobs[-1].set_rendering_fields("../ncj/arnold/render-windows/pool.template.json", "arnold.ass.tif","arnold", ["arnold"])
 
         # Add the tasks to the job. 
         #loop = asyncio.get_event_loop()
@@ -424,7 +402,6 @@ if __name__ == '__main__':
         #))
         #loop.close()
 
-
         print("Submitting {} pools ".format(len(jobs)))
         for j in jobs:
             j.create_pool(batch_client)
@@ -433,9 +410,9 @@ if __name__ == '__main__':
         print("Submitting {} jobs ".format(len(jobs)))
         submit_jobs(jobs)
         print("checking to see if all {} jobs are valid ".format(len(jobs)))
-        validate_jobs(jobs)
+        #validate_jobs(jobs)
         print("Cleaning up the pools and jobs")
-        delete_jobs(jobs)
+        #delete_jobs(jobs)
         
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
