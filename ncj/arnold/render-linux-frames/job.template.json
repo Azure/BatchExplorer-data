@@ -1,37 +1,42 @@
 {
     "templateMetadata": {
-        "description": "Sample application template for working with ImageMagick."
+        "description": "Application template for working with Arnold standalone renderer on Linux."
     },
     "parameters": {
         "poolId": {
             "type": "string",
+            "defaultValue": "arnold-linux",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "image-magick-resize",
+            "defaultValue": "render-arnold",
             "metadata": {
-                "description": "The job name",
+                "description": "The unique name of the job.",
                 "advancedType": "job-id"
             }
         },
-        "inputFilegroup": {
+        "inputData": {
             "type": "string",
             "metadata": {
-                "description": "The file group where the input images are stored. Any non-image files will fail to convert.",
+                "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
             }
         },
-        "resize": {
-            "type": "int",
-            "defaultValue": 50,
+        "outputFormat": {
+            "type": "string",
             "metadata": {
-                "description": "Image resize percent"
-            }
+                "description": "The output format of the rendered image"
+            },
+            "defaultValue": "png",
+            "allowedValues": [
+                "jpg",
+                "png"
+            ]
         },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -43,23 +48,31 @@
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
             "id": "[parameters('jobName')]",
-            "displayName": "ImageMagick demo job",
             "onAllTasksComplete": "terminateJob",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
+            "jobPreparationTask": {
+                "commandLine": "env;export"
+            },
             "taskFactory": {
                 "type": "taskPerFile",
                 "source": {
-                    "fileGroup": "[parameters('inputFilegroup')]"
+                    "fileGroup": "[parameters('inputData')]"
                 },
                 "repeatTask": {
-                    "displayName": "Convert image {fileName}",
-                    "commandLine": "set & mkdir images & convert {fileName} -resize [parameters('resize')]% \"images/{fileName}\"",
+                    "displayName": "frame {fileNameWithoutExtension}",
+                    "commandLine": "sudo mkdir -m a=rwx \"$AZ_BATCH_TASK_WORKING_DIR/images\";/opt/solidangle/mtoa/2018/bin/kick -i \"$AZ_BATCH_TASK_WORKING_DIR/assets/{fileName}\" -dw -v 6 -of [parameters('outputFormat')] -o \"$AZ_BATCH_TASK_WORKING_DIR/images/{fileNameWithoutExtension}.[parameters('outputFormat')]\"",
+                    "userIdentity": {
+                        "autoUser": {
+                            "scope": "task",
+                            "elevationLevel": "admin"
+                        }
+                    },
                     "resourceFiles": [
                         {
                             "blobSource": "{url}",
-                            "filePath": "{fileName}"
+                            "filePath": "assets/{fileName}"
                         }
                     ],
                     "outputFiles": [
@@ -67,8 +80,8 @@
                             "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/{fileName}.log"
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stdout.log"
                                 }
                             },
                             "uploadOptions": {
@@ -79,8 +92,8 @@
                             "filePattern": "../stderr.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
-                                    "path": "[parameters('jobName')]/logs/{fileName}_error.log"
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stderr.log"
                                 }
                             },
                             "uploadOptions": {
@@ -91,19 +104,13 @@
                             "filePattern": "images/**/*",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/outputs"
                                 }
                             },
                             "uploadOptions": {
                                 "uploadCondition": "taskSuccess"
                             }
-                        }
-                    ],
-                    "packageReferences": [
-                        {
-                            "type": "aptPackage",
-                            "id": "imagemagick"
                         }
                     ]
                 }
