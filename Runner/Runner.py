@@ -389,8 +389,14 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.VrayStandAloneJob(_JOB_ID + "-vray-standalone", "vray-standalone-pool", "../ncj/vray/render-windows/job.template.json", "vray.vrscene"))
         #jobs[-1].set_rendering_fields("../ncj/vray/render-windows/pool.template.json", "image1.png", "")
 
-        jobs.append(JobTypes.ArnoldStandAloneJob(_JOB_ID + "-arnold-standalone", "arnold-standalone-pool", "../ncj/arnold/render-windows/job.template.json", "arnold.ass"))
-        jobs[-1].set_rendering_fields("../ncj/arnold/render-windows/pool.template.json", "arnold.ass.tif","arnold", ["arnold"])
+        #jobs.append(JobTypes.ArnoldStandAloneJob(_JOB_ID + "-arnold-standalone", "arnold-standalone", "../ncj/arnold/render-windows/job.template.json", "arnold.ass"))
+        #jobs[-1].set_rendering_fields("../ncj/arnold/render-windows/pool.template.json", "arnold.ass.tif","arnold", ["arnold"])
+
+        #jobs.append(JobTypes.ArnoldStandAloneJob(_JOB_ID + "-arnold-standalone-frame", "arnold-standalone-frame", "../ncj/arnold/render-windows-frames/job.template.json", "arnold.ass"))
+        #jobs[-1].set_rendering_fields("../ncj/arnold/render-windows-frames/pool.template.json", "arnold.ass.tif","arnold", ["arnold"])
+
+        jobs.append(JobTypes.ImageMagickJob(_JOB_ID + "-imagemagick", "imagemagick-pool", "../ncj/imagemagick/resize-images/job.template.json", "arnold.ass"))
+        jobs[-1].set_rendering_fields("../ncj/imagemagick/resize-images/pool.template.json", "arnold.ass.tif","arnold")
 
         # Add the tasks to the job. 
         #loop = asyncio.get_event_loop()

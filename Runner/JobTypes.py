@@ -11,9 +11,6 @@ import traceback
 import asyncio
 
 def submit_job(batch_service_client, template):
-    """
-    Submit job
-    """
     job_json = batch_service_client.job.expand_template(template)
     job = batch_service_client.job.jobparameter_from_json(job_json)
     batch_service_client.job.add(job)
@@ -368,9 +365,7 @@ class VrayStandAloneJob(Job):
         newCommandLine = commandLine.replace("[parameters('sceneFile')]", self.scene_file)
         template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
         
-
-        
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)    
+        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
 
         submit_job(batch_service_client, template)        
     
@@ -388,10 +383,44 @@ class ArnoldStandAloneJob(Job):
             template = json.load(f)
         
         template["parameters"]["jobName"]["defaultValue"] = self.job_id
-        template["parameters"]["inputData"]["defaultValue"] = "rendering"   
-        template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
         template["parameters"]["poolId"]["defaultValue"] = self.pool_id
+        template["parameters"]["inputData"]["defaultValue"] = "rendering"   
 
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], self.job_id)
-        print(template)
+        try:
+            template["parameters"]["sceneFile"]["defaultValue"] = self.scene_file
+        except KeyError:
+            pass
+        try:
+            update_template_OutFiles(template["job"]["properties"]["taskFactory"]["tasks"][0]["outputFiles"], self.job_id)
+        except KeyError:
+            pass
+        try:
+            update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
+        except KeyError:
+            pass
+
+        submit_job(batch_service_client, template)
+
+class ImageMagickJob(Job):
+    """used for running V-Ray and arnold stand-alone renderer """
+    def __init__(self, job_id, pool_id, template_file, scene_file):
+        Job.__init__(self, job_id, pool_id, template_file, scene_file)
+        self.job_id = job_id
+        self.pool_id = pool_id
+        self.template_file = template_file
+        self.scene_file = scene_file
+        
+    async def Run(self, batch_service_client):        
+        print('Creating job [{}]...'.format(self.job_id)," job will run on [{}]".format(self.pool_id))
+        
+        with open(self.template_file) as f: 
+            template = json.load(f)       
+
+        template["parameters"]["jobName"]["defaultValue"] = self.job_id
+        template["parameters"]["poolId"]["defaultValue"] = self.pool_id
+        template["parameters"]["inputFilegroup"]["defaultValue"] = "rendering"
+
+        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
+
+
         submit_job(batch_service_client, template)
