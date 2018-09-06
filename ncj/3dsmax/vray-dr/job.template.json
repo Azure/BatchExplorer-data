@@ -20,13 +20,13 @@
         },
         "maxVersion": {
             "type": "string",
-            "defaultValue": "3ds Max 2019",
+            "defaultValue": "2019",
             "metadata": {
                 "description": "The renderer to use"
             },
             "allowedValues":[
-                "3ds Max 2018",
-                "3ds Max 2019"
+                "2018",
+                "2019"
             ]
         },
         "vrayRenderer": {
@@ -216,7 +216,7 @@
                         },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
-                            "coordinationCommandLine":"cmd /c %AZ_BATCH_JOB_PREP_WORKING_DIR%/PrepareVrayServices.bat --MaxVersion [parameters('maxVersion')] --VrayRenderer [parameters('vrayRenderer')] --VrayPort [parameters('vrayPort')])",
+                            "coordinationCommandLine":"cmd /c %AZ_BATCH_JOB_PREP_WORKING_DIR%/PrepareVrayServices.bat [parameters('maxVersion')] [parameters('vrayRenderer')] [parameters('vrayPort')])",
                             "commonResourceFiles":[
                             ]
                         },

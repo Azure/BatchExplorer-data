@@ -210,7 +210,7 @@ mkdir -Force images > $null
 
 # Render
 $max_exec = "3dsmaxcmdio.exe"
-If ($maxVersion -eq "3ds Max 2018")
+If ($maxVersion -eq "2018")
 {
     if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
     {
@@ -223,10 +223,10 @@ If ($maxVersion -eq "3ds Max 2018")
         $max_exec = $env:3DSMAX_2018_EXEC
     }
 }
-ElseIf ($maxVersion -eq "3ds Max 2019")
+ElseIf ($maxVersion -eq "2019")
 {
         $max_exec = $env:3DSMAX_2019_EXEC
-        if(![System.IO.File]::Exists($max_exec))
+        if(-Not (Test-Path "$env:3DSMAX_2019"))
         {
             Write-Host "3ds Max 2019 doesn't exist on this rendering image, please use a newer version of the rendering image."
             exit 1
@@ -234,8 +234,8 @@ ElseIf ($maxVersion -eq "3ds Max 2019")
 }
 Else 
 {
-    Write-Host "No version of 3ds Max was selected."
-    exit 1
+    Write-Host "No version of 3ds Max was selected. 3ds Max 2019 was selected by default."
+    $max_exec = $env:3DSMAX_2019_EXEC
 }
     
 Write-Host "Executing $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
