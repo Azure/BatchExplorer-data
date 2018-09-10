@@ -20,13 +20,13 @@
         },
         "maxVersion": {
             "type": "string",
-            "defaultValue": "3ds Max 2019",
+            "defaultValue": "2019",
             "metadata": {
                 "description": "The renderer to use"
             },
             "allowedValues":[
-                "3ds Max 2018",
-                "3ds Max 2019"
+                "2018",
+                "2019"
             ]
         },
         "renderer": {
