@@ -51,6 +51,11 @@ _time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().mi
 _JOB_ID = _time
 _STANDARD_OUT_FILE_NAME = 'stdout.txt'
 
+ServicePrincipalCredentials_client_id = "a1139b6c-543e-48bf-9bce-83954d3d18d1"
+ServicePrincipalCredentials_secret = '6e2f85e60d8e80f67d9b3e14f0fc28fea9cd37b9406485'
+ServicePrincipalCredentials_tenant = '72f988bf-86f1-41af-91ab-2d7cd011db47'
+ServicePrincipalCredentials_resource = "https://batch.core.windows.net/"
+
 
 def query_yes_no(question, default="yes"):
     """
@@ -246,10 +251,10 @@ if __name__ == '__main__':
     # service in addition to Storage
 
     credentials = ServicePrincipalCredentials(
-        client_id = 'a1139b6c-543e-48bf-9bce-83954d3d18d1',
-        secret = '6e2f85e60d8e80f67d9b3e14f0fc28fea9cd37b9406485',
-        tenant = '72f988bf-86f1-41af-91ab-2d7cd011db47',
-        resource='https://batch.core.windows.net/')
+        client_id = ServicePrincipalCredentials_client_id,
+        secret = ServicePrincipalCredentials_secret,
+        tenant = ServicePrincipalCredentials_tenant,
+        resource = ServicePrincipalCredentials_resource)
 
     batch_client = batch.BatchExtensionsClient(
         credentials=credentials,
@@ -260,43 +265,20 @@ if __name__ == '__main__':
 
     try:
         # Create the pool that will contain the compute nodes that will execute the        
-
-        #create_pool(batch_client, "default-linux", "../ncj/maya/render-default-linux/pool.template.json")
-        #create_pool(batch_client, "vray-linux", "../ncj/maya/render-vray-linux/pool.template.json",["maya","vray"])
-        #create_pool(batch_client, "arnold-windows", "../ncj/maya/render-arnold-windows/pool.template.json")
-        #create_pool(batch_client, "vray-windows", "../ncj/maya/render-vray-windows/pool.template.json",["maya","vray"])
-        #create_pool(batch_client, "default-windows", "../ncj/maya/render-default-windows/pool.template.json")
-        
-        #3dsmax 
-        #create_pool(batch_client, "3dsMax-standard-windows-1", "../ncj/3dsmax/standard/pool.template.json")
-        #create_pool(batch_client, "3dsMax-vray-windows-1", "../ncj/3dsmax/standard/pool.template.json", ["3dsmax","vray"])
-        #create_pool(batch_client, "3dsMax-vray-windows-dr1", "../ncj/3dsmax/vray-dr/pool.template.json", ["3dsmax","vray"])
-        #create_pool(batch_client, "3dsMax-vray-windows-dr2", "../ncj/3dsmax/vray-dr/pool.template.json", ["3dsmax","vray"])
-
-        #blender
-        #create_pool(batch_client, "blender-linux", "../ncj/blender/render-linux/pool.template.json")
-        #create_pool(batch_client, "blender-linux-dr", "../ncj/blender/render-linux-dr/pool.template.json")
-        #create_pool(batch_client, "blender-windows", "../ncj/blender/render-windows/pool.template.json")
-        #create_pool(batch_client, "blender-windows-cycles-gpu", "../ncj/blender/render-windows-cycles-gpu/pool.template.json")
-        #create_pool(batch_client, "blender-render-windows-dr", "../ncj/blender/render-windows-dr/pool.template.json")
-
-        #arnold
-        #create_pool(batch_client, "arnold-windows", "../ncj/arnold/render-windows/pool.template.json")
-        
-        #vrays 
-        #create_pool(batch_client, "vray-render-linux", "../ncj/vray/render-linux/pool.template.json")
-        #create_pool(batch_client, "linux-with-blobfuse-mount", "../ncj/vray/render-linux-with-blobfuse-mount/pool.template.json")
-        #create_pool(batch_client, "vray-render-windows", "../ncj/vray/render-windows/pool.template.json")
-        
-        #imagemagick 
-        #create_pool(batch_client, "imagemagick-linux", "../ncj/vray/render-windows/pool.template.json")
-        ##Create the job that will run the tasks.
-    
+        TestConfigurationFile = "Tests/TestConfiguration.json"
+        with open(TestConfigurationFile) as f: 
+            template = json.load(f)
         jobs = []
+        
+        for i in range(len(template["tests"])-2, len(template["tests"])):  
+        #for i in range(0, 1):  
+            test = template["tests"][i]
+            jobs.append(JobTypes.Job((_JOB_ID+"-"+test["name"]), test["poolname"], test["template"], test["poolTemplate"], test["parameters"], test["sceneFile"], test["expectedOutput"]))
+
         #------------------
         #---Maya-windows---
         #------------------
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-windows", "default-windows","../ncj/maya/render-default-windows/job.template.json","Tests/maya/render-default-windows/job.parameters.json", "maya.mb"))
         #jobs[0].set_rendering_fields("../ncj/maya/render-default-windows/pool.template.json", "%MAYA_2017_EXEC%", "maya.exr.0001")
 
         #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-windows","default-windows","../ncj/maya/render-default-windows/job.template.json","maya.mb"))
@@ -317,29 +299,35 @@ if __name__ == '__main__':
         #------------------
         #---Maya-linux-----
         #------------------
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json", "maya.mb", True))
-        #jobs[6].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2017", "maya.exr.0001")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json","Tests/maya/render-default-linux/job.parameters2017.json", "maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2017", "maya.exr.0001")
 
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-linux","default-linux","../ncj/maya/render-default-linux/job.template.json","maya.mb", True))
-        #jobs[7].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2018", "maya.exr.0001")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-default-linux", "default-linux", "../ncj/maya/render-default-linux/job.template.json","Tests/maya/render-default-linux/job.parameters2018.json", "maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2017", "maya.exr.0001")
 
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","maya.mb", True))
-        #jobs[8].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2017", "maya.exr.0001")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-arnold-linux","arnold-linux","../ncj/maya/render-default-linux/job.template.json","Tests/maya/render-arnold-linux/job.parameters2017.json", "maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-default-linux/pool.template.json", "maya2018", "maya.exr.0001")
 
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","maya.mb", True))
-        #jobs[9].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2018", "maya.exr.0001")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","Tests/maya/render-arnold-linux/job.parameters2018.json", "maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2017", "maya.exr.0001")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-arnold-linux","arnold-linux","../ncj/maya/render-arnold-linux/job.template.json","Tests/maya/render-arnold-linux/job.parameters2018.json", "maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2018", "maya.exr.0001")
+
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","Tests/maya/render-vray-linux/job.parameters2017.json","maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-arnold-linux/pool.template.json", "maya2018", "maya.exr.0001", ["maya","vray"])
         
-        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","maya.mb", True))
-        #jobs[10].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2017", "maya.0001.png")
+        #jobs.append(JobTypes.Job(_JOB_ID + "-maya2017-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","Tests/maya/render-vray-linux/job.parameters2018.json","maya.mb", True))
+        #jobs[-1].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2017", "maya.0001.png", ["maya","vray"])
 
         #jobs.append(JobTypes.Job(_JOB_ID + "-maya2018-vray-linux","vray-linux","../ncj/maya/render-vray-linux/job.template.json","maya.mb", True))
-        #jobs[11].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2018", "maya.0001.png",  ["maya","vray"])
+        #jobs[11].set_rendering_fields("../ncj/maya/render-vray-linux/pool.template.json", "maya2018", "maya.0001.png", 
 
         #---------------
         #---3ds-max-----
         #---------------     
-#        jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2018", "3dsmax-arnold.max"))
- #       jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg","arnold", ["3dsmax", "arnold"])
+        #jobs.append(JobTypes.Job(_JOB_ID + "-3dsMax2018-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json","Tests/3dsmax/standard/job.parameters.json", "3ds Max 2018"))
+        #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg","arnold", ["3dsmax", "arnold"])
 
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-arnold", "3dsMax-standard-windows", "../ncj/3dsmax/standard/job.template.json", "3ds Max 2019", "3dsmax-arnold.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/standard/pool.template.json", "image0001.jpg", "arnold", ["3dsmax", "arnold"])
@@ -365,7 +353,7 @@ if __name__ == '__main__':
         #-------------
         #---Blender---
         #-------------
-        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-linux","../ncj/blender/render-linux/job.template.json", "shapes.blend", True))
+        #jobs.append(JobTypes.Job(_JOB_ID + "-blender-windows","blender-linux","../ncj/blender/render-linux/job.template.json","Tests/blender/render-linux/job.parameters.json", "shapes.blend", True))
         #jobs[-1].set_rendering_fields("../ncj/blender/render-linux/pool.template.json", "", _time+"-blender-linux_0001.png")        
 
         #jobs.append(JobTypes.BlenderTileJob(_JOB_ID + "-blender-windows-dr","blender-linux-dr-1","../ncj/blender/render-linux-dr/job.template.json", "shapes.blend"))
@@ -395,8 +383,8 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.ArnoldStandAloneJob(_JOB_ID + "-arnold-standalone-frame", "arnold-standalone-frame", "../ncj/arnold/render-windows-frames/job.template.json", "arnold.ass"))
         #jobs[-1].set_rendering_fields("../ncj/arnold/render-windows-frames/pool.template.json", "arnold.ass.tif","arnold", ["arnold"])
 
-        jobs.append(JobTypes.ImageMagickJob(_JOB_ID + "-imagemagick", "imagemagick-pool", "../ncj/imagemagick/resize-images/job.template.json", "arnold.ass"))
-        jobs[-1].set_rendering_fields("../ncj/imagemagick/resize-images/pool.template.json", "arnold.ass.tif","arnold")
+        #jobs.append(JobTypes.ImageMagickJob(_JOB_ID + "-imagemagick", "imagemagick-pool", "../ncj/imagemagick/resize-images/job.template.json", "arnold.ass"))
+        #jobs[-1].set_rendering_fields("../ncj/imagemagick/resize-images/pool.template.json", "arnold.ass.tif","arnold")
 
         # Add the tasks to the job. 
         #loop = asyncio.get_event_loop()

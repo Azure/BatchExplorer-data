@@ -10,8 +10,8 @@ import sys
 import traceback
 import asyncio
 
-def submit_job(batch_service_client, template):
-    job_json = batch_service_client.job.expand_template(template)
+def submit_job(batch_service_client, template, parameters):
+    job_json = batch_service_client.job.expand_template(template, parameters)
     job = batch_service_client.job.jobparameter_from_json(job_json)
     batch_service_client.job.add(job)
 
@@ -24,6 +24,26 @@ def set_template_name(template, pool_id):
         template["parameters"]["poolId"]["defaultValue"] = pool_id
     except KeyError:
         pass
+
+def set_parameter_name(template, job_id):
+    try:
+        template["jobName"]["value"] = job_id    
+    except KeyError:
+        pass
+    try:
+        template["jobId"]["value"] = job_id
+    except KeyError:
+        pass        
+
+def set_job_template_name(template, job_id):
+    try:
+        template["parameters"]["jobName"]["defaultValue"] = job_id    
+    except KeyError:
+        pass
+    try:
+        template["parameters"]["jobId"]["defaultValue"] = job_id
+    except KeyError:
+        pass        
 
 def set_job_defaults(template, pool_id, job_id):
     template["parameters"]["poolId"]["defaultValue"] = pool_id
@@ -111,38 +131,34 @@ def print_batch_exception(batch_exception):
 class Job(object):
     """docstring for Job"""
     pool_id = ""
-    def __init__(self, job_id, pool_id, template_file, scene_file, isLinux=False):
+    def __init__(self, job_id, pool_id, template_file, pool_template_file, parameters_file,  scene_file, isLinux=False):
         super(Job, self).__init__()
         self.job_id = job_id
         self.pool_id = pool_id
         self.template_file = template_file
+        self.parameters_file = parameters_file
         self.scene_file = scene_file
         self.isLinux = isLinux
+        self.pool_template_file = pool_template_file
     
     def __str__(self):
         return "job_id: {} pool_id:{} scene_file:{} ".format(self.job_id, self.pool_id, self.scene_file)
 
     async def Run(self, batch_service_client):
         print('Creating job [{}]...'.format(self.job_id)," job will run on [{}]".format(self.pool_id))
-
+        
+        template = ""
         with open(self.template_file) as f: 
             template = json.load(f)
+    
+        parameters = ""
+        with open(self.parameters_file) as f: 
+            parameters = json.load(f)
+    
+        set_parameter_name(parameters, self.job_id)
         
-        commandLine = template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"]
+        submit_job(batch_service_client, template, parameters)
 
-        if("additionalFlags" in template):
-            template["parameters"]["additionalFlags"]["defaultValue"] = "-of png"
-
-        if(self.isLinux):
-            newCommandLine = commandLine.replace("[parameters('mayaVersion')]", self.render_version).replace("[parameters('sceneFile')]", self.scene_file)
-        else:
-            newCommandLine = commandLine.replace("[variables('MayaVersions')[parameters('mayaVersion')].environmentValue]", self.render_version).replace("[parameters('sceneFile')]", self.scene_file)
-
-        template["job"]["properties"]["taskFactory"]["repeatTask"]["commandLine"] = newCommandLine
-        
-        set_job_defaults(template, self.job_id, self.pool_id)            
-        update_template_OutFiles(template["job"]["properties"]["taskFactory"]["repeatTask"]["outputFiles"], self.job_id)
-        submit_job(batch_service_client, template)
 
     def create_pool(self, batch_service_client):
         print('Creating pool [{}]...'.format(self.pool_id))
@@ -152,8 +168,8 @@ class Job(object):
     
         set_template_name(template, self.pool_id)
         
-        if(self.extra_license!=""):
-            template["pool"]["applicationLicenses"] = self.extra_license
+        #if self.extra_license is not None:
+            #template["pool"]["applicationLicenses"] = self.extra_license
 
         all_pools = [p.id for p in batch_service_client.pool.list()]
 
@@ -236,8 +252,6 @@ class Max3ds(Job):
         with open(self.template_file) as f: 
             template = json.load(f)
         
-        print("job",self.renderer)    
-
         template["parameters"]["poolId"]["defaultValue"] = self.pool_id
         template["parameters"]["jobName"]["defaultValue"] = self.job_id
         template["parameters"]["inputFilegroupSas"]["defaultValue"] = "https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-08-13T03%3A37%3A42Z&se=2018-08-20T03%3A52%3A42Z&sp=rl&sv=2018-03-28&sr=c&sig=lpYc5NuYSmJ%2BYGcJyaedSXFe9kZXBuDWMCkAxHnXXBQ%3D"

@@ -1,0 +1,157 @@
+{
+  "tests": [
+    {
+        "name": "maya2017-default-windows",
+        "poolname" : "default-windows",
+        "template": "../ncj/maya/render-default-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-default-windows/pool.template.json",
+        "parameters": "Tests/maya/render-default-windows/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-default-windows",
+        "poolname" : "default-windows",
+        "template": "../ncj/maya/render-default-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-default-windows/pool.template.json",
+        "parameters": "Tests/maya/render-default-windows/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2017-default-linux",
+        "poolname" : "default-linux",
+        "template": "../ncj/maya/render-default-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
+        "parameters": "Tests/maya/render-default-linux/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-default-linux",
+        "poolname" : "default-linux",
+        "template": "../ncj/maya/render-default-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
+        "parameters": "Tests/maya/render-default-linux/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2017-arnold-windows",
+        "poolname" : "arnold-windows",
+        "template": "../ncj/maya/render-arnold-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-arnold-windows/pool.template.json",
+        "parameters": "Tests/maya/render-arnold-windows/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-arnold-windows",
+        "poolname" : "arnold-windows",
+        "template": "../ncj/maya/render-arnold-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-arnold-windows/pool.template.json",
+        "parameters": "Tests/maya/render-arnold-windows/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2017-arnold-linux",
+        "poolname" : "arnold-linux",
+        "template": "../ncj/maya/render-arnold-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-arnold-linux/pool.template.json",
+        "parameters": "Tests/maya/render-arnold-linux/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-arnold-linux",
+        "poolname" : "arnold-linux",
+        "template": "../ncj/maya/render-arnold-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-arnold-linux/pool.template.json",
+        "parameters": "Tests/maya/render-arnold-linux/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+        {
+        "name": "maya2017-vray-windows",
+        "poolname" : "vray-windows",
+        "template": "../ncj/maya/render-vray-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-windows/pool.template.json",
+        "parameters": "Tests/maya/render-vray-windows/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-vray-windows",
+        "poolname" : "vray-windows",
+        "template": "../ncj/maya/render-vray-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-windows/pool.template.json",
+        "parameters": "Tests/maya/render-vray-windows/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2017-vray-linux",
+        "poolname" : "vray-linux",
+        "template": "../ncj/maya/render-vray-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
+        "parameters": "Tests/maya/render-vray-linux/job.parameters2017.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+    {
+        "name": "maya2018-vray-linux",
+        "poolname" : "vray-linux",
+        "template": "../ncj/maya/render-vray-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
+        "parameters": "Tests/maya/render-vray-linux/job.parameters2018.json",
+        "sceneFile": "maya.mb",
+        "expectedOutput":"maya.exr.0001"
+    },
+        {
+        "name": "blender-linux",
+        "poolname" : "blender-linux",
+        "template": "../ncj/blender/render-linux/job.template.json",
+        "poolTemplate": "../ncj/blender/render-linux/pool.template.json",
+        "parameters": "Tests/blender/render-linux/job.parameters.json",
+        "sceneFile": "shapes.blend",
+        "expectedOutput":"blender-linux_0001.png"
+    },
+    {
+        "name": "blender-windows",
+        "poolname" : "blender-windows",
+        "template": "../ncj/blender/render-windows/job.template.json",
+        "poolTemplate": "../ncj/blender/render-windows/pool.template.json",
+        "parameters": "Tests/blender/render-windows/job.parameters.json",
+        "sceneFile": "shapes.blend",
+        "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "blender-linux-dr",
+        "poolname" : "blender-linux-dr",
+        "template": "../ncj/blender/render-linux-dr/job.template.json",
+        "poolTemplate": "../ncj/blender/render-linux-dr/pool.template.json",
+        "parameters": "Tests/blender/render-linux-dr/job.parameters.json",
+        "sceneFile": "shapes.blend",
+        "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "3dsmax-default-2018",
+        "poolname" : "3dsmax-default",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters2018.json",
+        "sceneFile": "3dsmax.max",
+        "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "3dsmax-default-2019",
+        "poolname" : "3dsmax-default",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters2019.json",
+        "sceneFile": "3dsmax.max",
+        "expectedOutput":"blender-windows_0001.png"
+    }
+  ]
+} 

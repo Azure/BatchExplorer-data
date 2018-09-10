@@ -1,0 +1,32 @@
+{
+   "jobName":{
+      "value":"maya-windows-2018"
+   },
+   "poolId":{
+      "value":"vray-windows"
+   },
+   "mayaVersion":{
+      "value":"Maya2018"
+   },
+   "inputFilegroup":{
+      "value":"myfilegroup"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputFilegroupSas":{
+      "value":"https://myfilegroup"
+   },
+   "sceneFile":{
+      "value":"maya-vray.mb"
+   },
+   "additionalflags":{
+      "value":"-of png"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   },
+   "outputFilegroup":{
+      "value":"myfilegroup"
+   }
+}
