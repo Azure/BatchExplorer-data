@@ -8,7 +8,7 @@ apt-get install -y blender
 echo '# Installing python-pip ...'
 apt-get install -y python-pip
 echo '# Installing azure-batch ...'
-pip install azure-batch
+pip install azure-batch==4.1.1
 echo '# Installing packages-microsoft-prod.deb ...'
 wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
