@@ -25,17 +25,6 @@
                 "advancedType": "file-group"
             }
         },
-        "outputFormat": {
-            "type": "string",
-            "metadata": {
-                "description": "The output format of the rendered image"
-            },
-            "defaultValue": "png",
-            "allowedValues": [
-                "jpg",
-                "png"
-            ]
-        },
         "outputs": {
             "type": "string",
             "metadata": {
@@ -62,7 +51,7 @@
                 },
                 "repeatTask": {
                     "displayName": "frame {fileNameWithoutExtension}",
-                    "commandLine": "mkdir images & %ARNOLD_2017_EXEC% -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\{fileName}\" -dw -v 6 -of [parameters('outputFormat')] -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\{fileNameWithoutExtension}.[parameters('outputFormat')]\"",
+                    "commandLine": "mkdir images & %ARNOLD_2018_EXEC% -l \"C:\\server\\mayaArnold\\2018\\shaders\" -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\{fileName}\" -dw -v 6 -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\{fileNameWithoutExtension}.jpeg\"",
                     "resourceFiles": [
                         {
                             "blobSource": "{url}",
