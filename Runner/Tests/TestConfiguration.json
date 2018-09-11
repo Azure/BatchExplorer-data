@@ -152,6 +152,24 @@
         "parameters": "Tests/3dsmax/standard/job.parameters2019.json",
         "sceneFile": "3dsmax.max",
         "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "vray-render-linux",
+        "poolname" : "render-linux",
+        "template": "../ncj/vray/render-linux/job.template.json",
+        "poolTemplate": "../ncj/vray/render-linux/pool.template.json",
+        "parameters": "Tests/vray/render-linux/job.parameters.json",
+        "sceneFile": "3dsmax.max",
+        "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "vray-render-windows",
+        "poolname" : "render-windows",
+        "template": "../ncj/vray/render-windows/job.template.json",
+        "poolTemplate": "../ncj/vray/render-windows/pool.template.json",
+        "parameters": "Tests/vray/render-windows/job.parameters.json",
+        "sceneFile": "3dsmax.max",
+        "expectedOutput":"blender-windows_0001.png"
     }
   ]
 } 
