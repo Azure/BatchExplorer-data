@@ -86,7 +86,7 @@
                "commandLine":"azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S & exit /b 0",
                "resourceFiles": [
                 {
-                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/blender_cycles_use_gpu.py",
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/blender_cycles_use_gpu.py",
                     "filePath": "blender_cycles_use_gpu.py"
                 }
             ]

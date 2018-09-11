@@ -205,7 +205,7 @@
                         },
                         "resourceFiles":[
                             {
-                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                                 "filePath":"3dsmax.ps1"
                             }
                         ],

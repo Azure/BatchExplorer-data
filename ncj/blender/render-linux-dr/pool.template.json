@@ -119,7 +119,7 @@
             },
             "resourceFiles": [
                 {
-                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/setup-linux-pool.sh",
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/setup-linux-pool.sh",
                     "filePath": "setup-linux-pool.sh"
                 }
             ]
