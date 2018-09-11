@@ -1,7 +1,7 @@
 @echo off
 
-set VRAY_RENDERER=%1
-set MAX_VERSION=%2
+set MAX_VERSION=%1
+set VRAY_RENDERER=%2
 set VRAY_PORT=%3
 
 IF %VRAY_RENDERER%=="VRayAdv" (
