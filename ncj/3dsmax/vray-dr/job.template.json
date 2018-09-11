@@ -196,7 +196,7 @@
                 },
                 "resourceFiles":[
                 {
-                    "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                    "blobSource":"https://batchrender.blob.core.windows.net/batch-rendering-apps/PrepareVrayServices.bat?sr=b&sv=2015-02-21&st=2018-09-10T00%3A47%3A53Z&se=2018-10-19T00%3A47%3A53Z&sp=rwd&sig=54eIGDkQAwohHxupS4AD9bX66%2FJvQiI0JBaldlRC100%3D",
                     "filePath":"PrepareVrayServices.bat"
                 }
             ]       
@@ -222,11 +222,11 @@
                         },
                         "resourceFiles":[
                             {
-                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                                "blobSource":"https://batchrender.blob.core.windows.net/batch-rendering-apps/3dsmax.ps1?sr=b&sv=2015-02-21&st=2018-09-02T01%3A04%3A07Z&se=2018-10-19T01%3A04%3A07Z&sp=rwd&sig=D9faz1F14LJ6vDDyc%2Fsm4ZubR3kIq7L26WfIvsYgppo%3D",
                                 "filePath":"3dsmax.ps1"
                             }, 
                             {
-                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                                "blobSource":"https://batchrender.blob.core.windows.net/batch-rendering-apps/PrepareVrayServices.bat?sr=b&sv=2015-02-21&st=2018-09-10T00%3A47%3A53Z&se=2018-10-19T00%3A47%3A53Z&sp=rwd&sig=54eIGDkQAwohHxupS4AD9bX66%2FJvQiI0JBaldlRC100%3D",
                                 "filePath":"PrepareVrayServices.bat"
                             }
                         ],
