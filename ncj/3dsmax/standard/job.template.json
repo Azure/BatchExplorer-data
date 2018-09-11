@@ -197,7 +197,7 @@
                     "commandLine": "powershell.exe 3dsmax.ps1 -maxVersion \\\"[parameters('maxVersion')]\\\" -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\"[parameters('additionalArgs')]\\\" -irradianceMap \\\"[parameters('irradianceMapFile')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
                     "resourceFiles":[
                         {
-                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                             "filePath":"3dsmax.ps1"
                         }
                     ],

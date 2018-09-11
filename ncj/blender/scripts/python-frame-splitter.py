@@ -155,7 +155,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
         ],
         resource_files=[
             models.ResourceFile(
-                "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/python-task-manager.py",
+                "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/python-task-manager.py",
                 "scripts/python-task-manager.py"
             )
         ],

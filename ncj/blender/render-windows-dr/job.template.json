@@ -186,7 +186,7 @@
                 "killJobOnCompletion": false,
                 "resourceFiles": [
                     {
-                        "blobSource": "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/python-frame-splitter.py",
+                        "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/python-frame-splitter.py",
                         "filePath": "scripts/python-frame-splitter.py"
                     }
                 ],
