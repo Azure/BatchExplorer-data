@@ -270,7 +270,7 @@ if __name__ == '__main__':
             template = json.load(f)
         jobs = []
         
-        for i in range(len(template["tests"])-2, len(template["tests"])):  
+        for i in range(len(template["tests"])-3, len(template["tests"])):  
         #for i in range(0, 1):  
             test = template["tests"][i]
             jobs.append(JobTypes.Job((_JOB_ID+"-"+test["name"]), test["poolname"], test["template"], test["poolTemplate"], test["parameters"], test["sceneFile"], test["expectedOutput"]))
@@ -350,20 +350,6 @@ if __name__ == '__main__':
         #jobs.append(JobTypes.Max3ds(_JOB_ID + "-3dsMax2019-vray-VRayAdv", "3dsMax-standard-windows-vray-2", "../ncj/3dsmax/vray-dr/job.template.json", "3ds Max 2019", "3dsmax-vray.max"))
         #jobs[-1].set_rendering_fields("../ncj/3dsmax/vray-dr/pool.template.json", "image0001.jpg", "vray", ["3dsmax", "vray"], "VRayAdv")        
 
-        #-------------
-        #---Blender---
-        #-------------
-        #jobs.append(JobTypes.Job(_JOB_ID + "-blender-windows","blender-linux","../ncj/blender/render-linux/job.template.json","Tests/blender/render-linux/job.parameters.json", "shapes.blend", True))
-        #jobs[-1].set_rendering_fields("../ncj/blender/render-linux/pool.template.json", "", _time+"-blender-linux_0001.png")        
-
-        #jobs.append(JobTypes.BlenderTileJob(_JOB_ID + "-blender-windows-dr","blender-linux-dr-1","../ncj/blender/render-linux-dr/job.template.json", "shapes.blend"))
-        #jobs[-1].set_rendering_fields("../ncj/blender/render-linux-dr/pool.template.json", "", _time+"-blender-windows_0001.png")        
-
-        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows","../ncj/blender/render-windows/job.template.json", "shapes.blend"))
-        #jobs[-1].set_rendering_fields("../ncj/blender/render-windows/pool.template.json", "", _time+"-blender-windows_0001.png")        
-
-        #jobs.append(JobTypes.BlenderJob(_JOB_ID + "-blender-windows","blender-windows-dr","../ncj/blender/render-windows-dr/job.template.json", "shapes.blend"))
-        #jobs[-1].set_rendering_fields("../ncj/blender/render-windows-dr/pool.template.json", "", _time+"-blender-windows-dr_0001.png")        
 
         #Vray jobs
         #doesn't work yet
