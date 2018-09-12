@@ -18,6 +18,17 @@
                 "description": "The pool id"
             }
         },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2019",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2018",
+                "2019"
+            ]
+        },
         "vrayRenderer": {
             "type": "string",
             "defaultValue": "VRayAdv",
@@ -182,7 +193,13 @@
                         "elevationLevel": "nonAdmin",
                         "scope": "pool"
                     }
+                },
+                "resourceFiles":[
+                {
+                    "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                    "filePath":"PrepareVrayServices.bat"
                 }
+            ]       
             },
             "taskFactory":{
                 "type":"taskCollection",
@@ -190,7 +207,7 @@
                     {
                         "id":"Render",
                         "displayName":"Frame",
-                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
+                        "commandLine":"powershell.exe -File 3dsmax.ps1 -maxVersion \"[parameters('maxVersion')]\" -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
                                 "elevationLevel": "nonAdmin",
@@ -199,7 +216,7 @@
                         },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
-                            "coordinationCommandLine":"cmd.exe /c if \"[parameters('vrayRenderer')]\" == \"VRayAdv\" (cmd.exe /c start \"\" \"C:\\Autodesk\\3dsMax2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\") else (cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')])",
+                            "coordinationCommandLine":"cmd /c %AZ_BATCH_JOB_PREP_WORKING_DIR%/PrepareVrayServices.bat [parameters('maxVersion')] [parameters('vrayRenderer')] [parameters('vrayPort')])",
                             "commonResourceFiles":[
                             ]
                         },
@@ -207,6 +224,10 @@
                             {
                                 "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                                 "filePath":"3dsmax.ps1"
+                            }, 
+                            {
+                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                                "filePath":"PrepareVrayServices.bat"
                             }
                         ],
                         "outputFiles":[
