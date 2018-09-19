@@ -207,7 +207,7 @@
                     {
                         "id":"Render",
                         "displayName":"Frame",
-                        "commandLine":"powershell.exe -File 3dsmax.ps1 -maxVersion \"[parameters('maxVersion')]\" -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
+                        "commandLine":"powershell.exe -File 3dsmax.ps1 -maxVersion \"[parameters('maxVersion')]\" -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \" [parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
                                 "elevationLevel": "nonAdmin",
