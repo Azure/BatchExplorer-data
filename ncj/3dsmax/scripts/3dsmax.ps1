@@ -184,12 +184,56 @@ else
     Write-Host "No camera specified"
 }
 
+# User specified arguments
 $additionalArgumentsParam = ""
 if (ParameterValueSet $additionalArgs)
 {
     Write-Host "Using additional arguments $additionalArgs"
     $additionalArgumentsParam = $additionalArgs
 }
+
+# Default 3ds Max args
+$defaultArguments = @{
+    '-atmospherics'='0';
+    '-renderHidden'='0';
+    '-effects'='0';
+    '-useAreaLights'='0';
+    '-displacements'='0';
+    '-force2Sided'='0';
+    '-videoColorCheck'='0';
+    '-superBlack'='0';
+    '-renderFields'='0';
+    '-fieldOrder'='Odd';
+    '-skipRenderedFrames'='0';
+    '-renderElements'='1';
+    '-useAdvLight'='0';
+    '-computeAdvLight'='0';
+    '-ditherPaletted'='0';
+    '-ditherTrueColor'='0';
+    '-gammaCorrection'='1';
+    '-gammaValueIn'='2.2';
+    '-gammaValueOut'='2.2';
+    '-rfw'='0';
+    '-videopostJob'='0';
+    '-v'='5';
+}
+
+# If the user has specified an argument that overrides a default,
+# remove the default.
+$additionalArgumentsParam.Split(" ") | % {
+    $arg = $_
+    if ($arg.StartsWith("-") -And $arg.Contains(":"))
+    {
+        $name = $arg.Split(":")[0]
+        if ($defaultArguments.ContainsKey($name))
+        {
+            Write-Host "Removing default argument $name as the user has specified $arg"
+            $defaultArguments.Remove($name)
+        }
+    }
+}
+
+$defaultArgumentsParam = $defaultArguments.GetEnumerator() | % { "$($_.Name):$($_.Value)" }
 
 $renderPresetFileParam = ""
 if (ParameterValueSet $renderPresetFile)
@@ -238,9 +282,9 @@ Else
     $max_exec = $env:3DSMAX_2019_EXEC
 }
     
-Write-Host "Executing $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
+Write-Host "Executing $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
 
-cmd.exe /c $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
+cmd.exe /c $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
 $result = $lastexitcode
 
 Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
