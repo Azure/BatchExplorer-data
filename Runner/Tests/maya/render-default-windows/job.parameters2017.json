@@ -1,0 +1,32 @@
+{
+   "jobName":{
+      "value":"maya-windows-default-2017"
+   },
+   "poolId":{
+      "value":"default-windows"
+   },
+   "mayaVersion":{
+      "value":"Maya2017"
+   },
+   "inputFilegroup":{
+      "value":"myfilegroup"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputFilegroupSas":{
+      "value":"https://myfilegroup"
+   },
+   "sceneFile":{
+      "value":"maya.mb"
+   },
+   "additionalflags":{
+      "value":"-of png"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   },
+   "outputFilegroup":{
+      "value":"myfilegroup"
+   }
+}
