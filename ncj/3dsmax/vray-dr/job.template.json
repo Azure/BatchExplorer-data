@@ -187,7 +187,7 @@
                 "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0",
                 "userIdentity": {
                     "autoUser": {
-                        "elevationLevel": "nonAdmin",
+                        "elevationLevel": "admin",
                         "scope": "pool"
                     }
                 }
@@ -201,7 +201,7 @@
                         "commandLine":"powershell.exe -File 3dsmax.ps1 -maxVersion \"[parameters('maxVersion')]\" -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('vrayRenderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \" [parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
-                                "elevationLevel": "nonAdmin",
+                                "elevationLevel": "admin",
                                 "scope": "pool"
                             }
                         },
