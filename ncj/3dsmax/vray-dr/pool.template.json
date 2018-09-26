@@ -128,7 +128,7 @@
                     "filePath": "install-azure-nc-drivers.cmd"
                 },
                 {
-                    "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/vraydr-fixes/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                    "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
                     "filePath":"PrepareVrayServices.bat"
                 }
             ]
