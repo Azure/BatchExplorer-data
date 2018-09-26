@@ -1,0 +1,11 @@
+{
+  "tests": [
+    {
+        "name": "maya2018-default-linux",
+        "template": "../ncj/maya/render-default-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
+        "parameters": "Tests/maya/render-default-linux/job.parameters2018.json",
+        "expectedOutput":"maya.exr.0001"
+    }
+  ]
+} 
