@@ -119,7 +119,7 @@
         "parameters": "Tests/3dsmax/standard/job.parameters2018.json",
         "expectedOutput":"image0001.jpg"
     },
-        {
+    {
         "name": "3dsmax-default-2019",
         "template": "../ncj/3dsmax/standard/job.template.json",
         "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",

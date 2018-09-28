@@ -1,32 +1,18 @@
 from __future__ import print_function
-from msrestazure.azure_active_directory import AdalAuthentication 
 from azure.common.credentials import ServicePrincipalCredentials
 import azure.batch.batch_service_client as batch
-import azure.batch.batch_auth as batchauth
-import inspect
 import traceback
-import azure.batch
-import azure.batch.models.batch_error 
-import azure.common
-import logging
-import websockets
 import datetime
-import io
 import os
 import sys
-import time
 import json
-import string
 import asyncio
 import JobManager
 import Utils
-from os import listdir
-from os.path import isfile, join
 import azure.storage.blob as azureblob
-import azure.batch.batch_service_client as batch
-import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 import azext.batch as batch 
+
 import argparse
 
 sys.path.append('.')
@@ -42,7 +28,7 @@ _SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID = os.environ['PS_SERVICE_PRINCIPAL_CRED
 _SERVICE_PRINCIPAL_CREDENTIALS_SECRET = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET']
 _SERVICE_PRINCIPAL_CREDENTIALS_TENANT = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT']
 _SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE']
-
+timeout = 15
 _job_managers = []
 
 if __name__ == '__main__':
@@ -53,7 +39,6 @@ if __name__ == '__main__':
 
     # Create the blob client, for use in obtaining references to
     # blob storage containers and uploading files to containers.
-    
     blob_client = azureblob.BlockBlobService(
         account_name=_STORAGE_ACCOUNT_NAME,
         account_key=_STORAGE_ACCOUNT_KEY)
@@ -80,14 +65,14 @@ if __name__ == '__main__':
         with open(TestConfigurationFile) as f: 
             template = json.load(f)
         
-        #for i in range(0, len(template["tests"])):  # just testing out 2 files for testing. 
-        for i in range(0, 2):  
+        #for i in range(2, 3):  
+        for i in range(0, len(template["tests"])):  
             test = template["tests"][i]
             applicationLicenses = None
 
             try:
                 applicationLicenses = test["applicationLicense"]
-            except KeyError:
+            except:
                 pass
             
             _job_managers.append(JobManager.JobManager(test["template"], test["poolTemplate"], test["parameters"], test["expectedOutput"], applicationLicenses))
@@ -99,7 +84,7 @@ if __name__ == '__main__':
         loop.run_until_complete(asyncio.gather(*[j.upload_assets(blob_client) for j in _job_managers]))     
         loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client) for j in _job_managers]))
         loop.run_until_complete(asyncio.gather(*[j.RunJob(batch_client) for j in _job_managers]))
-        loop.run_until_complete(asyncio.gather(*[j.validate(batch_client) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.validate(batch_client, timeout) for j in _job_managers]))
         
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
@@ -110,6 +95,21 @@ if __name__ == '__main__':
         # Delete all the jobs and containers needed for the job 
         loop.run_until_complete(asyncio.gather(*[j.delete(batch_client, blob_client) for j in _job_managers]))
         loop.close()       
+        print("-----------------------------------------")
+
+        failedJobs = 0
+        for i in _job_managers:
+            if i.job_status[0] == False:
+                failedJobs+=1
+                print("job {} failed because {}".format(i.job_id,i.job_status[1]))
+
+        print("-----------------------------------------")
+        if failedJobs==0 : 
+
+            print("All jobs were successful Run")
+        else: 
+            print("Number of jobs passed {} out of {}.".format(len(_job_managers)-failedJobs, len(_job_managers)))
+
 
     end_time = datetime.datetime.now().replace(microsecond=0)
     print()

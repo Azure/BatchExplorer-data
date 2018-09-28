@@ -1,9 +1,9 @@
 {
    "jobName":{
-      "value":"3dsmax2019-default"
+      "value":"max2019-default"
    },
    "poolId":{
-      "value":"3dsmax-default"
+      "value":"max-default"
    },
    "inputFilegroup":{
       "value":"rendering"
