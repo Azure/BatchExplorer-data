@@ -1,0 +1,62 @@
+{
+  "tests": [
+    {
+        "name": "maya2017-vray-linux",
+        "template": "../ncj/maya/render-vray-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
+        "parameters": "Tests/maya/render-vray-linux/job.parameters2017.json",
+        "expectedOutput":"maya-vray.0001.png"
+    },
+    {
+        "name": "maya2018-vray-linux",
+        "template": "../ncj/maya/render-vray-linux/job.template.json",
+        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
+        "parameters": "Tests/maya/render-vray-linux/job.parameters2018.json",
+        "expectedOutput":"maya-vray.0001.png"
+    },
+    {
+        "name": "blender-windows",
+        "template": "../ncj/blender/render-windows/job.template.json",
+        "poolTemplate": "../ncj/blender/render-windows/pool.template.json",
+        "parameters": "Tests/blender/render-windows/job.parameters.json",
+        "expectedOutput":"blender-windows_0001.png"
+    },
+    {
+        "name": "blender-linux-dr",
+        "template": "../ncj/blender/render-linux-dr/job.template.json",
+        "poolTemplate": "../ncj/blender/render-linux-dr/pool.template.json",
+        "parameters": "Tests/blender/render-linux-dr/job.parameters.json",
+        "expectedOutput":"tile_001.png"
+    },
+    {
+        "name": "3dsmax-default-2018",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters2018.json",
+        "expectedOutput":"image0001.jpg"
+    },
+        {
+        "name": "3dsmax-default-2019",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters2019.json",
+        "expectedOutput":"image0001.jpg"
+    },
+    {
+        "name": "3dsmax-vray-2018",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters.vray2018.json",
+        "expectedOutput":"image0001.jpg",
+        "applicationLicense":"3dsmax,vray"
+    },
+    {
+        "name": "3dsmax-vray-2019",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters.vray2019.json",
+        "expectedOutput":"image0001.jpg",
+        "applicationLicense":"3dsmax,vray"
+    }
+  ]
+}

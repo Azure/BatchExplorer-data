@@ -1,0 +1,35 @@
+{
+   "jobName":{
+      "value":"blender-linux-dr"
+   },
+   "poolId":{
+      "value":"blender-linux-dr"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputDataSas":{
+      "value":"https://mayademoblob.blob.core.windows.net/fgrp-rendering?st=2018-09-13T03%3A23%3A19Z&se=2018-09-20T03%3A38%3A19Z&sp=rl&sv=2018-03-28&sr=c&sig=5JWCQOs%2BBVth%2F%2BDz%2F%2FQtTxd6uDDREttj4HS3CoBrFcw%3D"
+   },
+   "outputSas":{
+      "value":"https://mayademoblob.blob.core.windows.net/fgrp-rendering-output?st=2018-09-13T03%3A23%3A37Z&se=2018-09-20T03%3A38%3A37Z&sp=rwl&sv=2018-03-28&sr=c&sig=QpLlId0kC248uW5PJZnQhYZ4P6pz1QvcgpanEY7VIhg%3D"
+   },
+   "blendFile":{
+      "value":"shapes.blend"
+   },
+   "frameStart":{
+      "value":1
+   },
+      "xTiles":{
+      "value":2
+   },
+      "yTiles":{
+      "value":2
+   },
+   "frameEnd":{
+      "value":1
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}
