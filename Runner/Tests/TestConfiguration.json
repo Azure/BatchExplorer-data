@@ -113,18 +113,29 @@
         "expectedOutput":"tile_001.png"
     },
     {
-        "name": "3dsmax-default-2018",
-        "template": "../ncj/3dsmax/standard/job.template.json",
-        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters2018.json",
-        "expectedOutput":"image0001.jpg"
+        "name": "blender-windows-dr",
+        "template": "../ncj/blender/render-windows-dr/job.template.json",
+        "poolTemplate": "../ncj/blender/render-windows-dr/pool.template.json",
+        "parameters": "Tests/blender/render-windows-dr/job.parameters.json",
+        "expectedOutput":"tile_001.png"
     },
     {
-        "name": "3dsmax-default-2019",
+        "name": "3dsmax-arnold-2018",
         "template": "../ncj/3dsmax/standard/job.template.json",
         "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters2019.json",
-        "expectedOutput":"image0001.jpg"
+        "parameters": "Tests/3dsmax/standard/job.parameters.arnold2018.json",
+        "expectedOutput":"image0001.jpg",
+        "applicationLicense":"3dsmax,arnold"
+
+    },
+    {
+        "name": "3dsmax-arnold-2019",
+        "template": "../ncj/3dsmax/standard/job.template.json",
+        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
+        "parameters": "Tests/3dsmax/standard/job.parameters.arnold2019.json",
+        "expectedOutput":"image0001.jpg",
+        "applicationLicense":"3dsmax,arnold"
+
     },
     {
         "name": "vray-render-linux",

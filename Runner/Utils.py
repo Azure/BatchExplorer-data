@@ -4,9 +4,42 @@ import json
 import datetime
 import time
 import os
+from enum import Enum
 
 _time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
-#_time = "test"
+#_time = "test-2"
+
+
+class StorageInfo(object):
+    """docstring for StorageInfo"""
+    def __init__(self, input_container, output_container, input_container_SAS, output_container_SAS):
+        super(StorageInfo, self).__init__()
+        self.input_container = input_container
+        self.output_container = output_container
+        self.input_container_SAS = input_container_SAS     
+        self.output_container_SAS = output_container_SAS
+
+    def __str__(self) -> str:
+        return "[input_container: {}, output_container:{}, \ninput_container_SAS{},\noutput_container_SAS{}]".format(self.input_container, self.output_container, self.input_container_SAS, self.output_container_SAS)
+        
+class JobStatus(object):
+    """docstring for JobState"""
+    def __init__(self, job_state, message):
+        super(JobStatus, self).__init__()
+        self.job_state = job_state
+        self.message = message
+        
+    def __str__(self) -> str:
+       return "job's state: {}, message{}".format(self.job_state, self.message)
+
+class JobState(Enum):
+    NOT_STARTED = 1
+    STARTED = 2
+    COMPLETE = 3
+    UNEXPECTED_OUTPUT = 4
+    FAILED = 5
+    NOT_COMPLETE = 6
+    
 
 
 def set_template_name(template, pool_id):
@@ -40,15 +73,15 @@ def set_parameter_storage_info(template, storage_info):
     except KeyError:
         pass  
 
-    #Set file group SAS
+    #Set file group SAS input
     try:
         template["inputFilegroupSas"]["value"] = storage_info.input_container_SAS        
     except KeyError:
         pass
     try:
-        template["inputFilegroupSas"]["value"] = storage_info.input_container_SAS        
+        template["inputDataSas"]["value"] = storage_info.input_container_SAS        
     except KeyError:
-        pass   
+        pass
 
     #Set output filegroup
     try:
@@ -76,6 +109,17 @@ def set_job_template_name(template, job_id):
     except KeyError:
         pass        
 
+def set_image_reference_name(template, version, preview):
+    try:
+        template["parameters"]["variables"]["osType"]["imageReference"]["version"] = version    
+    except KeyError:
+        pass
+
+    if preview: 
+        try:
+            template["parameters"]["variables"]["osType"]["imageReference"]["offer"] = template["parameters"]["variables"]["osType"]["imageReference"]["offer"]+"-preview" 
+        except KeyError:
+            pass
 
 def get_job_id(parameters_file: str) -> str: 
     parameters = ""
@@ -130,8 +174,6 @@ def load_file(template_file: str) -> str:
 		template = json.load(f)
 
 	return template
-
-
 
 def print_batch_exception(batch_exception):
     """
@@ -207,25 +249,28 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
     tasks in the specified job do not reach Completed state within this time
     period, an exception will be raised.
     """
+    # How long we should be checking to see if the job is complete. 
     timeout_expiration = datetime.datetime.now() + timeout
-    print(timeout, timeout_expiration)
-
     #print("Monitoring all tasks for 'Completed' state, timeout in {}...".format(timeout), end='')
     
+    # Wait for task to complete for as long as the timeout
     while datetime.datetime.now() < timeout_expiration:
+        #print("{}, {}".format(datetime.datetime.now(),timeout_expiration))
+        # Grab all the tasks in the Job. 
         tasks = batch_service_client.task.list(job_id)
-        #tasks = await loop.run_in_executor(None, functools.partial(batch_service_client.task.list, batch_service_client, job_id))
+        #tasks = yield loop.run_in_executor(None, functools.partial(batch_service_client.task.list, batch_service_client, job_id))
 
+        # Check to see how many tasks are incomplete. 
         incomplete_tasks = [task for task in tasks if
                             task.state != batchmodels.TaskState.completed]
+        # if the all the tasks are complete we return a complete message, else we wait all the tasks are complete 
         if not incomplete_tasks:
-            return True, "job: {} successfully completed.".format(job_id)
+            return JobStatus(JobState.COMPLETE, "job {} successfully completed.".format(job_id))
         else:
             print("job: {} is running".format(job_id))
             time.sleep(3)
-
-    return False, ValueError("ERROR: Tasks did not reach 'Completed' state within "
-                       "timeout period of " + str(timeout))
+    
+    return JobStatus(JobState.NOT_COMPLETE, "ERROR: Tasks did not reach 'Completed' state within timeout period of " + str(timeout))
 
 def check_task_output(batch_service_client, job_id, expected_output):
     """Prints the stdout.txt file for each task in the job.
@@ -240,23 +285,11 @@ def check_task_output(batch_service_client, job_id, expected_output):
     
     for task in tasks:    
         all_files = batch_service_client.file.list_from_task(job_id, task.id, recursive=True)
-        #all_files = await loop.run_in_executor(None, functools.partial(batch_service_client.file.list_from_task, batch_service_client, job_id))
 
         for f in all_files:
             if expected_output in f.name:
-                return True, "File found {0}".format('expected_output')
+                print("Job {} expected output matched {}".format(job_id, expected_output))
+                return JobStatus(JobState.COMPLETE, "File found {0}".format(expected_output))
 
-    return False, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id))
+    return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id)))
 
-
-class StorageInfo(object):
-    """docstring for StorageInfo"""
-    def __init__(self, input_container, output_container, input_container_SAS, output_container_SAS):
-        super(StorageInfo, self).__init__()
-        self.input_container = input_container
-        self.output_container = output_container
-        self.input_container_SAS = input_container_SAS     
-        self.output_container_SAS = output_container_SAS
-
-    def __str__(self) -> str:
-        return "input_container: {} output_container:{} ".format(self.input_container, self.output_container)

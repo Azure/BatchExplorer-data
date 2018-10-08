@@ -3,7 +3,7 @@
       "value":"max2018-vray"
    },
    "poolId":{
-      "value":"max-vray"
+      "value":"max-vray-1"
    },
    "inputFilegroup":{
       "value":"rendering"
@@ -33,10 +33,10 @@
       "value":1
    },
    "frameWidth":{
-      "value":1600
+      "value":400
    },
    "frameHeight":{
-      "value":1200
+      "value":300
    },
    "outputFilegroup":{
       "value":"rendering-output"

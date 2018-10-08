@@ -9,7 +9,7 @@
         },
         "dedicatedVmCount": {
             "type": "int",
-            "defaultValue": 1,
+            "defaultValue": 4,
             "metadata": {
                 "description": "The number of dedicated nodes in the Azure Batch pool"
             }

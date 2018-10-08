@@ -1,6 +1,6 @@
 {
    "jobName":{
-      "value":"maya-windows-2018"
+      "value":"maya-vray-windows-2018"
    },
    "poolId":{
       "value":"vray-windows"
