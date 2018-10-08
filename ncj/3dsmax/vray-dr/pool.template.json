@@ -119,7 +119,8 @@
             "maxTaskRetryCount": 1,
             "userIdentity": {
                 "autoUser": {
-                    "elevationLevel": "admin"
+                    "elevationLevel": "admin",
+                    "scope": "pool"
                 }
             },
             "resourceFiles": [
