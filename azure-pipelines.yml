@@ -25,12 +25,12 @@ steps:
       if not Runner_py:
           raise SystemExit('Could not find a Django project')
       project_location = path.dirname(path.abspath(Runner_py))
+      print('project_location')
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     python -m pip install --upgrade pip setuptools wheel django
-    pip install -r requirements.txt
-    pip install unittest-xml-reporting
+    pip install -r Runner/requirements.txt
   displayName: 'Install prerequisites'
 
 - script: |
