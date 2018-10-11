@@ -13,16 +13,16 @@ steps:
     architecture: 'x64'
 
 - task: PythonScript@0
-  displayName: 'Export project path'
+  displayName: 'Template Runner'
   inputs:
     scriptSource: 'inline'
     script: |
-      """Search all subdirectories for `runner.py`."""
+      """Search all subdirectories for `Runner.py`."""
       from glob import iglob
       from os import path
       # Python >= 3.5
-      runner_py = next(iglob(path.join('**', 'runner.py'), recursive=True), None)
-      if not runner_py:
+      Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
+      if not Runner_py:
           raise SystemExit('Could not find a Django project')
       project_location = path.dirname(path.abspath(manage_py))
       print('Found Django project in', project_location)
