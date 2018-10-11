@@ -24,7 +24,7 @@ steps:
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
           raise SystemExit('Could not find a Django project')
-      project_location = path.dirname(path.abspath(manage_py))
+      project_location = path.dirname(path.abspath(Runner_py))
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
