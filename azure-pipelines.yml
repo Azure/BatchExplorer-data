@@ -7,10 +7,39 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: 3.5
+    architecture: 'x64'
+
+- task: PythonScript@0
+  displayName: 'Export project path'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Search all subdirectories for `runner.py`."""
+      from glob import iglob
+      from os import path
+      # Python >= 3.5
+      runner_py = next(iglob(path.join('**', 'runner.py'), recursive=True), None)
+      if not runner_py:
+          raise SystemExit('Could not find a Django project')
+      project_location = path.dirname(path.abspath(manage_py))
+      print('Found Django project in', project_location)
+      print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+- script: |
+    python -m pip install --upgrade pip setuptools wheel django
+    pip install -r requirements.txt
+    pip install unittest-xml-reporting
+  displayName: 'Install prerequisites'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    pushd '$(projectRoot)'
+    python Runner.py ".\Tests\TestConfiguration.json" 
+  condition: succeededOrFailed()
+  displayName: 'Run tests'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: "**/TEST-*.xml"
+    testRunTitle: 'Python $(PYTHON_VERSION)'
