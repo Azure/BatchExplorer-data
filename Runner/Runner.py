@@ -81,7 +81,6 @@ if __name__ == '__main__':
         with open(TestConfigurationFile) as f: 
             template = json.load(f)
         
-        #for i in range(0, 1):  
         for i in range(0, len(template["tests"])):  
             test = template["tests"][i]
             applicationLicenses = None
@@ -92,16 +91,22 @@ if __name__ == '__main__':
                 pass
             
             _job_managers.append(JobManager.JobManager(test["template"], test["poolTemplate"], test["parameters"], test["expectedOutput"], applicationLicenses))
-
-
-        print("Submitting {} jobs ".format(len(_job_managers)))
         
+        images_refernces = []
+        for i in range(0, len(template["images"])):
+            image = template["images"][i]
+
+            images_refernces.append(Utils.ImageReference(image["osType"], image["offer"], image["version"]))
+
+        print("{} jobs will be created".format(len(_job_managers)))
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.gather(*[j.upload_assets(blob_client) for j in _job_managers]))     
-        loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client) for j in _job_managers]))
+        print("Creating pools...")
+        loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client, images_refernces) for j in _job_managers]))
+        print("Submitting jobs...")
         loop.run_until_complete(asyncio.gather(*[j.create_and_submit_Job(batch_client) for j in _job_managers]))
+        print("waiting for jobs to complete...")
         loop.run_until_complete(asyncio.gather(*[j.wait_for_tasks_to_complete(batch_client, timeout) for j in _job_managers]))
-        #loop.run_until_complete(asyncio.gather(*[j.validate(batch_client, timeout) for j in _job_managers]))
         
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
@@ -110,7 +115,11 @@ if __name__ == '__main__':
     finally: 
         loop = asyncio.get_event_loop()
         # Delete all the jobs and containers needed for the job 
-        loop.run_until_complete(asyncio.gather(*[j.delete(batch_client, blob_client) for j in _job_managers]))
+        # Reties any jobs that failed 
+        print("-----------------------------------------")
+        loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, timeout/2) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()
         print_result()
 

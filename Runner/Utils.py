@@ -20,7 +20,7 @@ class StorageInfo(object):
         self.output_container_SAS = output_container_SAS
 
     def __str__(self) -> str:
-        return "[input_container: {}, output_container:{}, \ninput_container_SAS{},\noutput_container_SAS{}]".format(self.input_container, self.output_container, self.input_container_SAS, self.output_container_SAS)
+        return "[input_container: {}, output_container:{}".format(self.input_container, self.output_container)
         
 class JobStatus(object):
     """docstring for JobState"""
@@ -32,13 +32,28 @@ class JobStatus(object):
     def __str__(self) -> str:
        return "job's state: {}, message{}".format(self.job_state, self.message)
 
+class ImageReference(object):   
+    """docstring for imageReferences"""
+    def __init__(self, osType, offer, version):        
+        super(ImageReference, self).__init__()
+        self.osType = osType
+        self.offer = offer
+        self.version = version        
+
+    def __str__(self) -> str:
+       return "osType: {}, offer{}, version".format(self.osType, self.offer, self.version)
+
 class JobState(Enum):
+    # Job never started
     NOT_STARTED = 1
-    STARTED = 2
+    # Pool never started due to an resize error 
+    POOL_FAILED = 2
+    # Job ran to completion and the output matched the test configuration file
     COMPLETE = 3
+    # The outout file did not match the expected output desscibed in the test configuration file
     UNEXPECTED_OUTPUT = 4
-    FAILED = 5
-    NOT_COMPLETE = 6
+    # pool started but the job failed to complete in time 
+    NOT_COMPLETE = 5
     
 
 
@@ -49,6 +64,10 @@ def set_template_name(template, pool_id):
         pass
     try:
         template["parameters"]["poolId"]["defaultValue"] = pool_id
+    except KeyError:
+        pass  
+    try:
+        template["parameters"]["poolId"]["value"] = pool_id
     except KeyError:
         pass
 
@@ -64,12 +83,16 @@ def set_parameter_name(template, job_id):
                 
 def set_parameter_storage_info(template, storage_info):
     #Set input filegroup 
+
+    """
+    'fgrp-' needs to be removed.  
+    """
     try:
-        template["inputData"]["value"] = storage_info.input_container        
+        template["inputData"]["value"] = storage_info.input_container.replace("fgrp-", "")        
     except KeyError:
         pass
     try:
-        template["inputFilegroup"]["value"] = storage_info.input_container        
+        template["inputFilegroup"]["value"] = storage_info.input_container.replace("fgrp-", "")        
     except KeyError:
         pass  
 
@@ -85,11 +108,11 @@ def set_parameter_storage_info(template, storage_info):
 
     #Set output filegroup
     try:
-        template["outputFilegroup"]["value"] = storage_info.output_container 
+        template["outputFilegroup"]["value"] = storage_info.output_container.replace("fgrp-", "")
     except KeyError:
         pass
     try:
-        template["outputs"]["value"] = storage_info.output_container 
+        template["outputs"]["value"] = storage_info.output_container.replace("fgrp-", "")
     except KeyError:
         pass
 
@@ -109,18 +132,37 @@ def set_job_template_name(template, job_id):
     except KeyError:
         pass        
 
-def set_image_reference_name(template, version, preview):
+def set_image_reference_properties(template, image_reference):
     try:
-        template["parameters"]["variables"]["osType"]["imageReference"]["version"] = version    
+        template["version"] = image_reference.version    
+    except KeyError:
+        pass
+    
+    try:
+        template["offer"] = image_reference.offer
     except KeyError:
         pass
 
-    if preview: 
-        try:
-            template["parameters"]["variables"]["osType"]["imageReference"]["offer"] = template["parameters"]["variables"]["osType"]["imageReference"]["offer"]+"-preview" 
-        except KeyError:
-            pass
 
+def set_image_reference(template, image_references):
+    template_image_reference = template["variables"]["osType"]["imageReference"]
+    
+    # If the image is not a rendering image then no action needs to happen on the pool template 
+    if template_image_reference["publisher"] != "batch": 
+        return
+
+    # If template is windows version 
+    if "windows" in template_image_reference["offer"]:
+        for i in range(0, len(image_references)):  
+            if image_references[i].osType == "windows":
+                set_image_reference_properties(template_image_reference, image_references[i])
+
+    # if the template is centos
+    if "centos" in template_image_reference["offer"]:
+        for i in range(0, len(image_references)):  
+            if image_references[i].osType == "liunx":
+                set_image_reference_properties(template_image_reference, image_references[i])
+    
 def get_job_id(parameters_file: str) -> str: 
     parameters = ""
     job_id = ""
@@ -191,11 +233,21 @@ def print_batch_exception(batch_exception):
             print()
             for mesg in batch_exception.error.values:
                 print('{}:\t{}'.format(mesg.key, mesg.value))
+                print('{}'.format(mesg.value))
     print('-------------------------------------------')
 
 
+def expected_exception(batch_exception, message) -> bool:
+    if batch_exception.error and \
+            batch_exception.error.message and \
+            batch_exception.error.message.value:
+        if message in batch_exception.error.message.value:
+            return True
+
+    return False 
+
 def get_container_sas_token(block_blob_client,
-                            container_name, blob_permissions):
+                            container_name, blob_permissions) -> str:
     """
     Obtains a shared access signature granting the specified permissions to the
     container.
@@ -238,7 +290,7 @@ def upload_file_to_container(block_blob_client, container_name, file_path):
                                             blob_name,
                                             file_path)
 
-def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
+def wait_for_tasks_to_complete(batch_service_client, job_id, timeout) -> JobStatus:
     """
     Returns when all tasks in the specified job reach the Completed state.
 
@@ -251,7 +303,6 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
     """
     # How long we should be checking to see if the job is complete. 
     timeout_expiration = datetime.datetime.now() + timeout
-    #print("Monitoring all tasks for 'Completed' state, timeout in {}...".format(timeout), end='')
     
     # Wait for task to complete for as long as the timeout
     while datetime.datetime.now() < timeout_expiration:
@@ -265,10 +316,10 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout):
                             task.state != batchmodels.TaskState.completed]
         # if the all the tasks are complete we return a complete message, else we wait all the tasks are complete 
         if not incomplete_tasks:
-            return JobStatus(JobState.COMPLETE, "job {} successfully completed.".format(job_id))
+            return JobStatus(JobState.COMPLETE, "Job {} successfully completed.".format(job_id))
         else:
-            print("job: {} is running".format(job_id))
-            time.sleep(3)
+            print("Job: {} is running".format(job_id))
+            time.sleep(10)
     
     return JobStatus(JobState.NOT_COMPLETE, "ERROR: Tasks did not reach 'Completed' state within timeout period of " + str(timeout))
 
