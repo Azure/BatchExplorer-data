@@ -25,7 +25,8 @@ steps:
       if not Runner_py:
           raise SystemExit('Could not find a Django project')
       project_location = path.dirname(path.abspath(Runner_py))
-      print('project_location')
+      print("PS_BATCH_ACCOUNT_KEY= ",$(PS_BATCH_ACCOUNT_KEY))
+      print("system.collectionId= ",$(system.collectionId))
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
