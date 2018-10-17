@@ -48,7 +48,7 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    python Runner.py ".\Tests\TestConfiguration.json" 
+    python Runner.py "Tests/TestConfiguration.json" 
   condition: succeededOrFailed()
   displayName: 'Run tests'
 
