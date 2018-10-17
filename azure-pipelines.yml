@@ -20,6 +20,9 @@ steps:
       """Search all subdirectories for `Runner.py`."""
       from glob import iglob
       from os import path
+      import os
+      # Python >= 3.5
+
       os.environ["PS_BATCH_ACCOUNT_KEY"] = "$(PS_BATCH_ACCOUNT_KEY)" 
       os.environ["PS_BATCH_ACCOUNT_NAME"] = "$(PS_BATCH_ACCOUNT_NAME)"
       os.environ["PS_BATCH_ACCOUNT_SUB"] = "$(PS_BATCH_ACCOUNT_SUB)"
@@ -30,7 +33,6 @@ steps:
       os.environ["PS_STORAGE_ACCOUNT_KEY"] = "$(PS_STORAGE_ACCOUNT_KEY)"
       os.environ["PS_STORAGE_ACCOUNT_NAME"] = "$(PS_STORAGE_ACCOUNT_NAME)"
  
-      # Python >= 3.5
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
           raise SystemExit('Could not find a Django project')
