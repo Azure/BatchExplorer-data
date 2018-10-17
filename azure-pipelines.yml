@@ -20,13 +20,22 @@ steps:
       """Search all subdirectories for `Runner.py`."""
       from glob import iglob
       from os import path
+      os.environ["PS_BATCH_ACCOUNT_KEY"] = "$(PS_BATCH_ACCOUNT_KEY)" 
+      os.environ["PS_BATCH_ACCOUNT_NAME"] = "$(PS_BATCH_ACCOUNT_NAME)"
+      os.environ["PS_BATCH_ACCOUNT_SUB"] = "$(PS_BATCH_ACCOUNT_SUB)"
+      os.environ["PS_BATCH_ACCOUNT_URL"] = "$(PS_BATCH_ACCOUNT_URL)"
+      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" 
+      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
+      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)"
+      os.environ["PS_STORAGE_ACCOUNT_KEY"] = "$(PS_STORAGE_ACCOUNT_KEY)"
+      os.environ["PS_STORAGE_ACCOUNT_NAME"] = "$(PS_STORAGE_ACCOUNT_NAME)"
+ 
       # Python >= 3.5
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
           raise SystemExit('Could not find a Django project')
       project_location = path.dirname(path.abspath(Runner_py))
-      print("PS_BATCH_ACCOUNT_KEY= ",$(PS_BATCH_ACCOUNT_KEY))
-      print("system.collectionId= ",$(system.collectionId))
+      print("PS_BATCH_ACCOUNT_KEY= ","$(PS_BATCH_ACCOUNT_KEY)")
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
