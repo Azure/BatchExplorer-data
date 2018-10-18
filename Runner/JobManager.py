@@ -127,6 +127,7 @@ class JobManager(object):
                 
                 #filePath = os.getcwd()+"\\Assets\\"+file
                 filePath = Path("Assets/"+file)
+                print("filePath:", filePath)
                 await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, input_container_name, filePath))
 
 

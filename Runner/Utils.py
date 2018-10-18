@@ -283,7 +283,7 @@ def upload_file_to_container(block_blob_client, container_name, file_path):
     """
     blob_name = os.path.basename(file_path)
 
-    print('Uploading file {} to container [{}]...'.format(file_path,
+    print('Uploading file [{}] to container [{}]...'.format(file_path,
                                                           container_name))
 
     block_blob_client.create_blob_from_path(container_name,
@@ -318,7 +318,7 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout) -> JobStat
         if not incomplete_tasks:
             return JobStatus(JobState.COMPLETE, "Job {} successfully completed.".format(job_id))
         else:
-            print("Job: {} is running".format(job_id))
+            print("Job: [{}] is running".format(job_id))
             time.sleep(10)
     
     return JobStatus(JobState.NOT_COMPLETE, "ERROR: Tasks did not reach 'Completed' state within timeout period of " + str(timeout))
@@ -339,7 +339,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
         for f in all_files:
             if expected_output in f.name:
-                print("Job {} expected output matched {}".format(job_id, expected_output))
+                print("Job [{}] expected output matched {}".format(job_id, expected_output))
                 return JobStatus(JobState.COMPLETE, "File found {0}".format(expected_output))
 
     return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id)))
