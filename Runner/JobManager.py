@@ -124,10 +124,7 @@ class JobManager(object):
         # Upload the asset file that will be rendered and 
         for file in os.listdir("Assets"):        
             if scenefile == file:
-                
-                #filePath = os.getcwd()+"\\Assets\\"+file
                 filePath = Path("Assets/"+file)
-                print("filePath:", filePath)
                 await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, input_container_name, filePath))
 
 
