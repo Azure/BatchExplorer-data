@@ -1,4 +1,5 @@
 from azure.storage.blob.models import BlobBlock, ContainerPermissions, ContentSettings
+from pathlib import Path
 import azure.batch.models as batchmodels
 import traceback
 import asyncio
@@ -123,7 +124,10 @@ class JobManager(object):
         # Upload the asset file that will be rendered and 
         for file in os.listdir("Assets"):        
             if scenefile == file:
-                await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, input_container_name, os.getcwd()+"\\Assets\\"+file))
+                
+                #filePath = os.getcwd()+"\\Assets\\"+file
+                filePath = Path("Assets/"+file)
+                await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, input_container_name, filePath))
 
 
     async def check_expected_output(self, batch_service_client):
