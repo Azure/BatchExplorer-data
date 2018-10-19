@@ -41,7 +41,7 @@ class JobManager(object):
 
     
     def __str__(self) -> str:
-        return "job_id: {} pool_id:{} ".format(self.job_id, self.pool_id)
+        return "job_id: [{}] pool_id: [{}] ".format(self.job_id, self.pool_id)
 
     async def create_and_submit_Job(self, batch_service_client):
         """
@@ -121,6 +121,7 @@ class JobManager(object):
         # Set the storage info for the container. 
         self.storage_info = Utils.StorageInfo(input_container_name, output_container_name, full_sas_url_input, full_sas_url_output)        
         print("self.storage_info", self.storage_info)
+        
         # Upload the asset file that will be rendered and 
         for file in os.listdir("Assets"):        
             if scenefile == file:
