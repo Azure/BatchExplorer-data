@@ -52,7 +52,17 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now().replace(microsecond=0)
     print('Sample start: {}'.format(start_time))
     print()
-
+    print("_BATCH_ACCOUNT_NAME",_BATCH_ACCOUNT_NAME)
+    print("_BATCH_ACCOUNT_KEY",_BATCH_ACCOUNT_KEY)
+    print("_BATCH_ACCOUNT_URL",_BATCH_ACCOUNT_URL)
+    print("_BATCH_ACCOUNT_SUB",_BATCH_ACCOUNT_SUB)
+    print("_STORAGE_ACCOUNT_NAME",_STORAGE_ACCOUNT_NAME)
+    print("_STORAGE_ACCOUNT_KEY",_STORAGE_ACCOUNT_KEY)
+    print("_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID",_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)
+    print("_SERVICE_PRINCIPAL_CREDENTIALS_SECRET",_SERVICE_PRINCIPAL_CREDENTIALS_SECRET)
+    print("_SERVICE_PRINCIPAL_CREDENTIALS_TENANT",_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)
+    print("_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE",_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)
+    print()
     # Create the blob client, for use in obtaining references to
     # blob storage containers and uploading files to containers.
     blob_client = azureblob.BlockBlobService(
@@ -119,7 +129,7 @@ if __name__ == '__main__':
         print("-----------------------------------------")
         loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, timeout/2) for j in _job_managers]))
         loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
-        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
+        #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()
         print_result()
 
