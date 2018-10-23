@@ -107,11 +107,22 @@
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
         "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
-        "packageReferences": [
-            {
-                "type": "aptPackage",
-                "id": "blender"
-            }
-        ]
+        "startTask": {
+            "commandLine": "/bin/bash -c ./setup-linux-pool.sh",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "scope": "pool",
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/setup-linux-pool.sh",
+                    "filePath": "setup-linux-pool.sh"
+                }
+            ]
+        }
     }
 }
