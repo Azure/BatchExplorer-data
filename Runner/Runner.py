@@ -92,7 +92,7 @@ if __name__ == '__main__':
         with open(TestConfigurationFile) as f: 
             template = json.load(f)
         
-        for i in range(0, len(template["tests"])):  
+        for i in range(0, 0):  
             test = template["tests"][i]
 
             applicationLicenses = None
