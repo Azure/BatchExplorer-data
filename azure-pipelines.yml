@@ -54,6 +54,6 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit
-    testResultsFiles: "Tests/output.xml"
+    testResultsFiles: "output.xml"
     testRunTitle: 'Python $(PYTHON_VERSION)'
     buildPlatform:
