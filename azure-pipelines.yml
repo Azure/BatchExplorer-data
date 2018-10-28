@@ -33,6 +33,9 @@ steps:
       os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET)"
       os.environ["PS_STORAGE_ACCOUNT_KEY"] = "$(PS_STORAGE_ACCOUNT_KEY)"
       os.environ["PS_STORAGE_ACCOUNT_NAME"] = "$(PS_STORAGE_ACCOUNT_NAME)"
+      
+      print(os.listdir())
+      os.listdir()
  
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
