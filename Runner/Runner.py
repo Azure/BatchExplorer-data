@@ -139,6 +139,4 @@ if __name__ == '__main__':
     print()
     print('Sample end: {}'.format(end_time))
     print('Elapsed time: {}'.format(end_time - start_time))
-
     print()
-    input('Press ENTER to exit...')
