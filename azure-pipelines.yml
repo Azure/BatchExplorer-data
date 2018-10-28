@@ -48,11 +48,13 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    python Runner.py "Tests/TestConfiguration.json" 
+    python Runner.py "Tests/TestConfiguration2.json" 
   condition: succeededOrFailed()
   displayName: 'Run tests'
 
 - task: PublishTestResults@2
   inputs:
-    testResultsFiles: "**/TEST-*.xml"
+    testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit
+    testResultsFiles: "Tests/output.xml"
     testRunTitle: 'Python $(PYTHON_VERSION)'
+    buildPlatform:

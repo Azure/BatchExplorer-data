@@ -3,7 +3,7 @@
       "value":"max2018-vray"
    },
    "poolId":{
-      "value":"max-vray-1"
+      "value":"max-vray-only"
    },
    "inputFilegroup":{
       "value":"rendering"

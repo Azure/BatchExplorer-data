@@ -27,6 +27,7 @@ _SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID = os.environ['PS_SERVICE_PRINCIPAL_CRED
 _SERVICE_PRINCIPAL_CREDENTIALS_SECRET = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET']
 _SERVICE_PRINCIPAL_CREDENTIALS_TENANT = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT']
 _SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE']
+
 timeout = 10
 _job_managers = []
 
@@ -93,8 +94,8 @@ if __name__ == '__main__':
         
         for i in range(0, len(template["tests"])):  
             test = template["tests"][i]
-            applicationLicenses = None
 
+            applicationLicenses = None
             try:
                 applicationLicenses = test["applicationLicense"]
             except:

@@ -1,20 +1,11 @@
 {
   "tests": [
     {
-        "name": "max-arnold-2018",
-        "template": "../ncj/3dsmax/standard/job.template.json",
-        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters.arnold2018.json",
-        "expectedOutput":"image0001.jpg",
-        "applicationLicense":"3dsmax,arnold"
-    },
-    {
-        "name": "max-arnold-2017",
-        "template": "../ncj/3dsmax/standard/job.template.json",
-        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters.arnold2019.json",
-        "expectedOutput":"image0001.jpg",
-        "applicationLicense":"3dsmax,arnold"
+        "name": "maya2018-arnold-windows",
+        "template": "../ncj/maya/render-arnold-windows/job.template.json",
+        "poolTemplate": "../ncj/maya/render-arnold-windows/pool.template.json",
+        "parameters": "Tests/maya/render-arnold-windows/job.parameters2018.json",
+        "expectedOutput":"maya.exr.0001"
     }
   ], 
   "images": [
