@@ -220,7 +220,7 @@ class JobManager(object):
         # delete the job 
         try:
             await loop.run_in_executor(None, functools.partial(batch_service_client.job.delete, self.job_id))    
-        except:
+        except batchmodels.batch_error.BatchErrorException as err:
             if Utils.expected_exception(batch_exception, "The specified pool has been marked for deletion"):
                 print("The specified pool [{}] has been marked for deletion.".format(self.pool_id))
             else:
