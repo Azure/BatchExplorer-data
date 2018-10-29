@@ -11,6 +11,8 @@ import functools
 import datetime
 import time
 
+_time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
+
 async def submit_job(batch_service_client, template, parameters):
     """
     Submits a Job against the batch service.
@@ -29,7 +31,8 @@ class JobManager(object):
 
     def __init__(self, template_file, pool_template_file, parameters_file, expected_output, application_licenses=None):
         super(JobManager, self).__init__()
-        self.job_id = Utils.get_job_id(parameters_file)
+        self.raw_job_id = Utils.get_job_id(parameters_file)
+        self.job_id = _time + "-" + self.raw_job_id        
         self.pool_id = Utils.get_pool_id(parameters_file)
         self.template_file = template_file
         self.parameters_file = parameters_file

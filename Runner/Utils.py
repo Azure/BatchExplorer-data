@@ -7,10 +7,6 @@ import os
 from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
 
-_time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
-#_time = "test-2"
-
-
 class StorageInfo(object):
     """docstring for StorageInfo"""
     def __init__(self, input_container, output_container, input_container_SAS, output_container_SAS):
@@ -363,7 +359,7 @@ def export_result(job_managers, time_taken):
             subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(i.job_id, i.job_status.job_state))
             subChild.text = str(i.job_status.message)
 
-        child.attrib["name"] = str(i.job_id)
+        child.attrib["name"] = str(i.raw_job_id)
         convertedDuration = time.strptime(str(i.duration).split(',')[0],'%H:%M:%S')
         child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
         
