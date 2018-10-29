@@ -202,8 +202,8 @@
   "images": [
     {
         "osType": "windows",
-        "offer": "rendering-windows2016-preview",
-        "version": "1.3.0"
+        "offer": "rendering-windows2016",
+        "version": "1.2.9"
     },
     {
         "osType": "linux",
