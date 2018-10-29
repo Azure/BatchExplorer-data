@@ -361,18 +361,15 @@ def export_result(job_managers, time_taken):
             failedJobs+=1
             subChild = SubElement(child, "failure")
             subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(i.job_id, i.job_status.job_state))
-            #child.append(subChild)
             subChild.text = str(i.job_status.message)
 
         child.attrib["name"] = str(i.job_id)
-        child.attrib["duration"] = str(i.duration)
-        #child.attrib["job_state"] = i.job_status.job_state
-        #root.append(child)
-    
+        convertedDuration = time.strptime(str(i.duration).split(',')[0],'%H:%M:%S')
+        child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
+        
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
-    root.attrib["duration"] = str(time_taken)
+    root.attrib["time"] = str(time_taken)
 
     tree = ElementTree(root)
     tree.write("Tests/output.xml")
-

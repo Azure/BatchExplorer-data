@@ -185,8 +185,9 @@ class JobManager(object):
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
 
             await self.check_expected_output(batch_service_client)
-            # end time - start time 
-            self.duration = datetime.datetime.now().replace(microsecond=0)-self.duration
+            
+        # end time - start time 
+        self.duration = (datetime.datetime.now().replace(microsecond=0)) - self.duration
             
     async def retry(self, batch_service_client, blob_client, timeout):
         """ 
