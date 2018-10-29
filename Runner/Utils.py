@@ -178,7 +178,7 @@ def get_job_id(parameters_file: str) -> str:
     except KeyError:
         pass
 
-    return _time+"-"+job_id 
+    return job_id 
 
 def get_pool_id(parameters_file: str) -> str: 
     parameters = ""
@@ -365,13 +365,13 @@ def export_result(job_managers, time_taken):
             subChild.text = str(i.job_status.message)
 
         child.attrib["name"] = str(i.job_id)
-        child.attrib["time"] = str(i.duration)
+        child.attrib["duration"] = str(i.duration)
         #child.attrib["job_state"] = i.job_status.job_state
         #root.append(child)
     
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
-    root.attrib["time"] = str(time_taken)
+    root.attrib["duration"] = str(time_taken)
 
     tree = ElementTree(root)
     tree.write("Tests/output.xml")
