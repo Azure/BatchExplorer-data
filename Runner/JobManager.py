@@ -38,6 +38,7 @@ class JobManager(object):
         self.pool_template_file = pool_template_file
         self.storage_info = None 
         self.job_status = Utils.JobStatus(Utils.JobState.NOT_STARTED, "Job hasn't started yet.")
+        self.duration = None
 
     
     def __str__(self) -> str:
@@ -73,6 +74,9 @@ class JobManager(object):
         """
         # load the template file 
         template = Utils.load_file(self.pool_template_file)    
+
+        # the current start time
+        self.duration = datetime.datetime.now().replace(microsecond=0)
 
         # set extra license if needed 
         if self.application_licenses is not None:
@@ -181,7 +185,9 @@ class JobManager(object):
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
 
             await self.check_expected_output(batch_service_client)
-
+            # end time - start time 
+            self.duration = datetime.datetime.now().replace(microsecond=0)-self.duration
+            
     async def retry(self, batch_service_client, blob_client, timeout):
         """ 
         Retries a job if it failed 

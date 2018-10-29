@@ -360,11 +360,12 @@ def export_result(job_managers, time_taken):
         if i.job_status.job_state != JobState.COMPLETE:
             failedJobs+=1
             subChild = SubElement(child, "failure")
-            subChild.attrib["message"] = str(i.job_status.job_state)
+            subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(i.job_id, i.job_status.job_state))
             #child.append(subChild)
             subChild.text = str(i.job_status.message)
 
-        child.attrib["name"] = i.job_id
+        child.attrib["name"] = str(i.job_id)
+        child.attrib["time"] = str(i.duration)
         #child.attrib["job_state"] = i.job_status.job_state
         #root.append(child)
     
