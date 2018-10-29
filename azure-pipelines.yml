@@ -9,7 +9,7 @@ pool:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: 3.5
+    versionSpec: 3.6
     architecture: 'x64'
 
 - task: PythonScript@0
@@ -21,7 +21,7 @@ steps:
       from glob import iglob
       from os import path
       import os
-      # Python >= 3.5
+      # Python >= 3.6
 
       os.environ["PS_BATCH_ACCOUNT_KEY"] = "$(PS_BATCH_ACCOUNT_KEY)" 
       os.environ["PS_BATCH_ACCOUNT_NAME"] = "$(PS_BATCH_ACCOUNT_NAME)"

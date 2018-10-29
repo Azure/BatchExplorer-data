@@ -282,14 +282,19 @@ def upload_file_to_container(block_blob_client, container_name, file_path):
     :param str file_path: The local path to the file.
     tasks.
     """
-    blob_name = os.path.basename(file_path)
+    
+    try:    
+        blob_name = os.path.basename(file_path)
 
-    print('Uploading file [{}] to container [{}]...'.format(file_path,
-                                                          container_name))
+        print('Uploading file [{}] to container [{}]...'.format(file_path, container_name))
 
-    block_blob_client.create_blob_from_path(container_name,
+        block_blob_client.create_blob_from_path(container_name,
                                             blob_name,
                                             file_path)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+
 
 def wait_for_tasks_to_complete(batch_service_client, job_id, timeout) -> JobStatus:
     """
