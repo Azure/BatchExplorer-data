@@ -5,6 +5,7 @@ import datetime
 import time
 import os
 from enum import Enum
+from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
 
 _time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
 #_time = "test-2"
@@ -343,4 +344,37 @@ def check_task_output(batch_service_client, job_id, expected_output):
                 return JobStatus(JobState.COMPLETE, "File found {0}".format(expected_output))
 
     return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id)))
+
+def export_result(job_managers, time_taken):
+    failedJobs = 0
+    print("Exporting test output file")
+    root = Element('testsuite')    
+    
+    for i in job_managers:
+        child = SubElement(root, "testcase")
+        print("iiii = ", i)
+        if i.job_status.job_state != JobState.COMPLETE:
+            failedJobs+=1
+            print("job {} failed because {} : {}".format(i.job_id, i.job_status.job_state, i.job_status.message))
+            subChild = SubElement(child, "failure")
+            subChild.attrib["message"] = str(i.job_status.job_state)
+            #child.append(subChild)
+            subChild.text = str(i.job_status.message)
+
+        if failedJobs==0: 
+            print("-----------------------------------------")
+            print("All jobs were successful Run")
+        else: 
+            print("-----------------------------------------")
+            print("Number of jobs passed {} out of {}.".format(len(job_managers)-failedJobs, len(job_managers)))    
+        child.attrib["name"] = i.job_id
+        #child.attrib["job_state"] = i.job_status.job_state
+        #root.append(child)
+    
+    root.attrib["failures"] = str(failedJobs)
+    root.attrib["tests"] = str(len(job_managers))
+    root.attrib["time"] = str(time_taken)
+
+    tree = ElementTree(root)
+    tree.write("Tests/output.xml")
 

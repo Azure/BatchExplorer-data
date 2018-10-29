@@ -45,8 +45,7 @@ def print_result():
             print("All jobs were successful Run")
         else: 
             print("-----------------------------------------")
-            print("Number of jobs passed {} out of {}.".format(len(_job_managers)-failedJobs, len(_job_managers)))
-    
+            print("Number of jobs passed {} out of {}.".format(len(_job_managers)-failedJobs, len(_job_managers)))    
 
 if __name__ == '__main__':
 
@@ -92,7 +91,7 @@ if __name__ == '__main__':
         with open(TestConfigurationFile) as f: 
             template = json.load(f)
         
-        for i in range(0, 0):  
+        for i in range(0, len(template["tests"])):  
             test = template["tests"][i]
 
             applicationLicenses = None
@@ -131,12 +130,13 @@ if __name__ == '__main__':
         loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, timeout/2) for j in _job_managers]))
         loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
         #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
-        loop.close()
+        loop.close()    
         print_result()
-
-
+        
     end_time = datetime.datetime.now().replace(microsecond=0)
+    Utils.export_result(_job_managers, end_time-start_time)
     print()
     print('Sample end: {}'.format(end_time))
     print('Elapsed time: {}'.format(end_time - start_time))
+
     print()
