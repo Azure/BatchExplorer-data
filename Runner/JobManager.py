@@ -120,7 +120,6 @@ class JobManager(object):
         
         # Set the storage info for the container. 
         self.storage_info = Utils.StorageInfo(input_container_name, output_container_name, full_sas_url_input, full_sas_url_output)        
-        print("self.storage_info", self.storage_info)
         
         # Upload the asset file that will be rendered and 
         for file in os.listdir("Assets"):        
@@ -219,8 +218,17 @@ class JobManager(object):
         """
         loop = asyncio.get_event_loop()
         # delete the job 
-        await loop.run_in_executor(None, functools.partial(batch_service_client.job.delete, self.job_id))    
-                  
+        try:
+            await loop.run_in_executor(None, functools.partial(batch_service_client.job.delete, self.job_id))    
+        except:
+            if Utils.expected_exception(batch_exception, "The specified pool has been marked for deletion"):
+                print("The specified pool [{}] has been marked for deletion.".format(self.pool_id))
+            else:
+                print
+                traceback.print_exc()
+                Utils.print_batch_exception(batch_exception)
+                raise       
+
         if self.job_status.job_state == Utils.JobState.COMPLETE or force_delete:           
             print('Deleting container [{}]...'.format(self.storage_info.input_container))
             blob_client.delete_container(self.storage_info.input_container)

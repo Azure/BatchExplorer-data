@@ -352,10 +352,8 @@ def export_result(job_managers, time_taken):
     
     for i in job_managers:
         child = SubElement(root, "testcase")
-        print("iiii = ", i)
         if i.job_status.job_state != JobState.COMPLETE:
             failedJobs+=1
-            print("job {} failed because {} : {}".format(i.job_id, i.job_status.job_state, i.job_status.message))
             subChild = SubElement(child, "failure")
             subChild.attrib["message"] = str(i.job_status.job_state)
             #child.append(subChild)
