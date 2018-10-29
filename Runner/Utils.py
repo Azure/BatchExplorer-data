@@ -361,12 +361,6 @@ def export_result(job_managers, time_taken):
             #child.append(subChild)
             subChild.text = str(i.job_status.message)
 
-        if failedJobs==0: 
-            print("-----------------------------------------")
-            print("All jobs were successful Run")
-        else: 
-            print("-----------------------------------------")
-            print("Number of jobs passed {} out of {}.".format(len(job_managers)-failedJobs, len(job_managers)))    
         child.attrib["name"] = i.job_id
         #child.attrib["job_state"] = i.job_status.job_state
         #root.append(child)
