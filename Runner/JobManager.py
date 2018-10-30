@@ -78,9 +78,6 @@ class JobManager(object):
         # load the template file 
         template = Utils.load_file(self.pool_template_file)    
 
-        # the current start time
-        self.duration = datetime.datetime.now().replace(microsecond=0)
-
         # set extra license if needed 
         if self.application_licenses is not None:
             template["pool"]["applicationLicenses"] = self.application_licenses.split(",")
@@ -153,8 +150,6 @@ class JobManager(object):
         while pool.allocation_state.value == "resizing" and datetime.datetime.now() <= timeout_expiration:
             time.sleep(10)
             pool = batch_service_client.pool.get(self.pool_id)
-            print("Waiting for pool {} to finish resizing... current time {} -> timeout = {}".format(self.pool_id, datetime.datetime.now(), timeout_expiration))            
-
 
         # Check if pool is ready
         if pool.allocation_state.value == "steady" and pool.resize_errors != None:  
@@ -177,7 +172,7 @@ class JobManager(object):
             return True
         else: 
             self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED, "Failed to start the pool [{}] before [{}], you may want to increase your timeout].".format(self.pool_id, timeout))
-            print("POOL {} FAILED TO ALLOCATE IN TIME".format(self.pool_id))
+            print("POOL [{}] FAILED TO ALLOCATE IN TIME".format(self.pool_id))
             return False 
 
 
@@ -193,9 +188,6 @@ class JobManager(object):
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
 
             await self.check_expected_output(batch_service_client)
-            
-        # end time - start time 
-        self.duration = (datetime.datetime.now().replace(microsecond=0)) - self.duration
             
     async def retry(self, batch_service_client, blob_client, timeout):
         """ 

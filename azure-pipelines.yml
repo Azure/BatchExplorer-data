@@ -50,7 +50,7 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    python Runner.py "Tests/TestConfiguration2.json" 
+    python Runner.py "Tests/TestConfiguration.json" 
   condition: succeededOrFailed()
   displayName: 'Run tests'
 

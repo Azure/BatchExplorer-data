@@ -351,17 +351,27 @@ def export_result(job_managers, time_taken):
     print("Exporting test output file")
     root = Element('testsuite')    
     
+
     for i in job_managers:
         child = SubElement(root, "testcase")
+        # add a message to the error 
+        child.attrib["name"] = str(i.raw_job_id)
         if i.job_status.job_state != JobState.COMPLETE:
             failedJobs+=1
             subChild = SubElement(child, "failure")
             subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(i.job_id, i.job_status.job_state))
             subChild.text = str(i.job_status.message)
 
-        child.attrib["name"] = str(i.raw_job_id)
-        convertedDuration = time.strptime(str(i.duration).split(',')[0],'%H:%M:%S')
-        child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
+        # add time it took for the test to compete             
+        if i.duration != None:
+            test_end_time = (datetime.datetime.now().replace(microsecond=0)) - i.duration
+            print("time = {}".format(str(test_end_time)))
+            convertedDuration = time.strptime(str(test_end_time).split(',')[0],'%H:%M:%S')
+            print("convertedDuration = {}".format(str(convertedDuration)))
+            child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
+        else: 
+            child.attrib["time"] = "0:00:00" 
+
         
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
