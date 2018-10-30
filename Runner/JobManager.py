@@ -232,14 +232,14 @@ class JobManager(object):
             await loop.run_in_executor(None, functools.partial(batch_service_client.job.delete, self.job_id))    
         except batchmodels.batch_error.BatchErrorException as batch_exception:
             if Utils.expected_exception(batch_exception, "The specified job does not exist"):
-                print("The specified Job[{}] was not created.".format(self.job_id))
+                print("The specified Job [{}] was not created.".format(self.job_id))
             else:
                 print
                 traceback.print_exc()
                 Utils.print_batch_exception(batch_exception)
-                raise       
 
-        if self.job_status.job_state == Utils.JobState.COMPLETE or force_delete:           
+
+        if self.job_status.job_state in {Utils.JobState.COMPLETE, Utils.JobState.POOL_FAILED, Utils.JobState.NOT_STARTED} or force_delete:
             print('Deleting container [{}]...'.format(self.storage_info.input_container))
             blob_client.delete_container(self.storage_info.input_container)
                

@@ -320,7 +320,7 @@ def wait_for_tasks_to_complete(batch_service_client, job_id, timeout) -> JobStat
         if not incomplete_tasks:
             return JobStatus(JobState.COMPLETE, "Job {} successfully completed.".format(job_id))
         else:
-            print("Job: [{}] is running".format(job_id))
+            print("Job [{}] is running".format(job_id))
             time.sleep(10)
     
     return JobStatus(JobState.NOT_COMPLETE, "ERROR: Tasks did not reach 'Completed' state within timeout period of " + str(timeout))
