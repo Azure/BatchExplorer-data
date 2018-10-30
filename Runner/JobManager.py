@@ -147,12 +147,14 @@ class JobManager(object):
 
     def check_pool_state(self, batch_service_client, timeout):
         pool = batch_service_client.pool.get(self.pool_id)
+        timeout_expiration = datetime.datetime.now() + timeout          
 
         # wait for pool to come up 
-        while pool.allocation_state.value == "resizing":
+        while pool.allocation_state.value == "resizing" and datetime.datetime.now() <= timeout_expiration:
             time.sleep(10)
             pool = batch_service_client.pool.get(self.pool_id)
-            #print("Waiting for pool {} to finish resizing...".format(self.pool_id))            
+            print("Waiting for pool {} to finish resizing... current time {} -> timeout = {}".format(self.pool_id, datetime.datetime.now(), timeout_expiration))            
+
 
         # Check if pool is ready
         if pool.allocation_state.value == "steady" and pool.resize_errors != None:  
@@ -164,16 +166,19 @@ class JobManager(object):
 
         # Wait for TVMs to become available 
         nodes = list(batch_service_client.compute_node.list(self.pool_id))
-        timeout_expiration = datetime.datetime.now() + timeout          
 
         print("Waiting for a TVM to allocate in pool: [{}]".format(self.pool_id))                    
-        while (any([n for n in nodes if n.state != batchmodels.ComputeNodeState.idle])) and datetime.datetime.now() < timeout_expiration :
+        while (any([n for n in nodes if n.state != batchmodels.ComputeNodeState.idle])) and datetime.datetime.now() <= timeout_expiration:
             time.sleep(10)
             nodes = list(batch_service_client.compute_node.list(self.pool_id))
 
         if any([n for n in nodes if n.state == batchmodels.ComputeNodeState.idle]):      
             print("Job [{}] is starting to run on a TVM".format(self.job_id))
             return True
+        else: 
+            self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED, "Failed to start the pool [{}] before [{}], you may want to increase your timeout].".format(self.pool_id, timeout))
+            print("POOL {} FAILED TO ALLOCATE IN TIME".format(self.pool_id))
+            return False 
 
 
     async def wait_for_tasks_to_complete(self, batch_service_client, timeout):
