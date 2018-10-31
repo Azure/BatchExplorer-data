@@ -105,6 +105,9 @@ class JobManager(object):
         else:
             print('pool [{}] already exists'.format(self.pool_id))
 
+        #Start the stopwatch for the test. 
+        self.duration = datetime.datetime.now().replace(microsecond=0)
+
     async def upload_assets(self, blob_client):
         loop = asyncio.get_event_loop()
         input_container_name = "fgrp-"+self.job_id

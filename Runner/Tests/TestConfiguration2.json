@@ -1,18 +1,11 @@
 {
   "tests": [
     {
-        "name": "maya2017-default-windows",
-        "template": "../ncj/maya/render-default-windows/job.template.json",
-        "poolTemplate": "../ncj/maya/render-default-windows/pool.template.json",
-        "parameters": "Tests/maya/render-default-windows/job.parameters2017.json",
-        "expectedOutput":"maya.exr.0001"
-    },
-    {
-        "name": "maya2018-default-windows",
-        "template": "../ncj/maya/render-default-windows/job.template.json",
-        "poolTemplate": "../ncj/maya/render-default-windows/pool.template.json",
-        "parameters": "Tests/maya/render-default-windows/job.parameters2018.json",
-        "expectedOutput":"maya.exr.0001"
+        "name": "arnold-windows-standalone",
+        "template": "../ncj/arnold/render-windows/job.template.json",
+        "poolTemplate": "../ncj/arnold/render-windows/pool.template.json",
+        "parameters": "Tests/arnold/render-windows/job.parameters.json",
+        "expectedOutput":"arnold.ass.tif"
     }
   ], 
   "images": [

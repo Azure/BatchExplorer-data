@@ -351,7 +351,6 @@ def export_result(job_managers, time_taken):
     print("Exporting test output file")
     root = Element('testsuite')    
     
-
     for i in job_managers:
         child = SubElement(root, "testcase")
         # add a message to the error 
@@ -362,7 +361,7 @@ def export_result(job_managers, time_taken):
             subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(i.job_id, i.job_status.job_state))
             subChild.text = str(i.job_status.message)
 
-        # add time it took for the test to compete             
+        # Add the time it took for this test to compete.
         if i.duration != None:
             test_end_time = (datetime.datetime.now().replace(microsecond=0)) - i.duration
             print("time = {}".format(str(test_end_time)))
@@ -371,8 +370,7 @@ def export_result(job_managers, time_taken):
             child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
         else: 
             child.attrib["time"] = "0:00:00" 
-
-        
+    
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
     root.attrib["time"] = str(time_taken)
