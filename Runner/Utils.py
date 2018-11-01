@@ -346,7 +346,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
     return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id)))
 
-def export_result(job_managers, start_time):
+def export_result(job_managers, total_time):
     failedJobs = 0
     print("Exporting test output file")
     root = Element('testsuite')    
@@ -371,7 +371,7 @@ def export_result(job_managers, start_time):
     
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
-    root.attrib["time"] = str((datetime.datetime.now().replace(microsecond=0) - start_time))
+    root.attrib["time"] = str(total_time)
 
     tree = ElementTree(root)
     tree.write("Tests/output.xml")

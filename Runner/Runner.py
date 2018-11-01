@@ -135,7 +135,7 @@ if __name__ == '__main__':
         print_result()
         
     end_time = datetime.datetime.now().replace(microsecond=0)
-    Utils.export_result(_job_managers, start_time)
+    Utils.export_result(_job_managers, end_time - start_time)
     print()
     print('Sample end: {}'.format(end_time))
     print('Elapsed time: {}'.format(end_time - start_time))
