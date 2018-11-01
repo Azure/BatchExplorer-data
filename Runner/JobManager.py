@@ -196,12 +196,8 @@ class JobManager(object):
          
         if await loop.run_in_executor(None, self.check_pool_state, batch_service_client, datetime.timedelta(minutes=timeout)):
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
-
             await self.check_expected_output(batch_service_client)
-            job = await loop.run_in_executor(None, functools.partial(batch_service_client.job.get, self.job_id))    
-            print("get job: start: {} end: {} : length = ".format(job.state_transition_time, job.previous_state_transition_time, ))
-
-            #Start the stopwatch for the test. 
+            #stop the stopwatch so we record how long the test ran for. 
             self.duration = datetime.datetime.now().replace(microsecond=0)
 
             

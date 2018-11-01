@@ -112,7 +112,6 @@ if __name__ == '__main__':
         loop.run_until_complete(asyncio.gather(*[j.upload_assets(blob_client) for j in _job_managers]))     
         print("Creating pools...")
         # We want to start the timer right before all the pools start being created 
-        start_time = datetime.datetime.now().replace(microsecond=0)
         loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client, images_refernces) for j in _job_managers]))
         print("Submitting jobs...")
         loop.run_until_complete(asyncio.gather(*[j.create_and_submit_Job(batch_client) for j in _job_managers]))
@@ -135,7 +134,7 @@ if __name__ == '__main__':
         print_result()
         
     end_time = datetime.datetime.now().replace(microsecond=0)
-    Utils.export_result(_job_managers, end_time - start_time)
+    Utils.export_result(_job_managers, (end_time - start_time))
     print()
     print('Sample end: {}'.format(end_time))
     print('Elapsed time: {}'.format(end_time - start_time))
