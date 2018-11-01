@@ -65,6 +65,7 @@ class JobManager(object):
         Utils.set_parameter_storage_info(parameters, self.storage_info)
 
         # Subsmit the job 
+
         await submit_job(batch_service_client, template, parameters)
 
 
@@ -77,7 +78,6 @@ class JobManager(object):
         """
         # load the template file 
         template = Utils.load_file(self.pool_template_file)    
-
         # set extra license if needed 
         if self.application_licenses is not None:
             template["pool"]["applicationLicenses"] = self.application_licenses.split(",")
@@ -108,16 +108,14 @@ class JobManager(object):
     async def upload_assets(self, blob_client):
         loop = asyncio.get_event_loop()
         input_container_name = "fgrp-"+self.job_id
+        output_container_name = "fgrp-"+self.job_id+'-output'
 
         # Create input container 
         await loop.run_in_executor(None, functools.partial(blob_client.create_container, input_container_name, fail_on_exist=False))    
-        output_container_name = "fgrp-"+self.job_id+'-output'
 
         # Create output container 
-        #blob_client.create_container(output_container_name, fail_on_exist=False)
         await loop.run_in_executor(None, functools.partial(blob_client.create_container, output_container_name, fail_on_exist=False))
 
-        scenefile = Utils.get_scene_file(self.parameters_file)
 
         full_sas_url_input = 'https://{}.blob.core.windows.net/{}?{}'.format(blob_client.account_name, input_container_name, Utils.get_container_sas_token(blob_client, input_container_name, ContainerPermissions.READ + ContainerPermissions.LIST))
         full_sas_url_output = 'https://{}.blob.core.windows.net/{}?{}'.format(blob_client.account_name, output_container_name, Utils.get_container_sas_token(blob_client, output_container_name, ContainerPermissions.READ + ContainerPermissions.LIST + ContainerPermissions.WRITE))
@@ -126,6 +124,7 @@ class JobManager(object):
         self.storage_info = Utils.StorageInfo(input_container_name, output_container_name, full_sas_url_input, full_sas_url_output)        
         
         # Upload the asset file that will be rendered and 
+        scenefile = Utils.get_scene_file(self.parameters_file)
         for file in os.listdir("Assets"):        
             if scenefile == file:
                 filePath = Path("Assets/"+file)
@@ -164,8 +163,7 @@ class JobManager(object):
             pool = batch_service_client.pool.get(self.pool_id)
 
         # Check if pool allocated with a resize errors. 
-        if self.check_pool_resize_error(pool):
-            
+        if self.check_pool_resize_error(pool):            
             return False
 
         # Wait for TVMs to become available 
@@ -186,6 +184,7 @@ class JobManager(object):
             return False 
 
 
+
     async def wait_for_tasks_to_complete(self, batch_service_client, timeout):
         """
         Wait for tasks to complete, and set the job status. 
@@ -193,12 +192,18 @@ class JobManager(object):
         """
         loop = asyncio.get_event_loop()
         # Wait for all the tasks to complete
-         
+        self.duration = time.time()
         if await loop.run_in_executor(None, self.check_pool_state, batch_service_client, datetime.timedelta(minutes=timeout)):
+            # how long it takes for the pool to start up 
+            poolTime = time.time() - self.duration
+            jobTime = time.time()            
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
+            jobTime = time.time() - jobTime            
+            # How long it took for both the pool and job time to start. 
+            self.duration = (datetime.timedelta(seconds=(poolTime + jobTime)))            
             await self.check_expected_output(batch_service_client)
-            #stop the stopwatch so we record how long the test ran for. 
-            self.duration = datetime.datetime.now().replace(microsecond=0)
+
+
 
             
     async def retry(self, batch_service_client, blob_client, timeout):

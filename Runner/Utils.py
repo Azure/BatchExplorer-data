@@ -363,8 +363,8 @@ def export_result(job_managers, total_time):
 
         # Add the time it took for this test to compete.
         if i.duration != None:
-            test_end_time = (datetime.datetime.now().replace(microsecond=0)) - i.duration            
-            convertedDuration = time.strptime(str(test_end_time).split(',')[0],'%H:%M:%S')
+            test_end_time = i.duration            
+            convertedDuration = time.strptime(str(test_end_time).split(',')[0],'%H:%M:%S.%f')
             child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
         else: 
             child.attrib["time"] = "0:00:00" 
