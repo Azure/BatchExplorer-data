@@ -105,9 +105,6 @@ class JobManager(object):
         else:
             print('pool [{}] already exists'.format(self.pool_id))
 
-        #Start the stopwatch for the test. 
-        self.duration = datetime.datetime.now().replace(microsecond=0)
-
     async def upload_assets(self, blob_client):
         loop = asyncio.get_event_loop()
         input_container_name = "fgrp-"+self.job_id
@@ -144,29 +141,38 @@ class JobManager(object):
 
         if self.job_status.job_state == Utils.JobState.COMPLETE:
             self.job_status = await loop.run_in_executor(None, Utils.check_task_output, batch_service_client, self.job_id, self.expected_output)  
-
-    def check_pool_state(self, batch_service_client, timeout):
-        pool = batch_service_client.pool.get(self.pool_id)
-        timeout_expiration = datetime.datetime.now() + timeout          
-
-        # wait for pool to come up 
-        while pool.allocation_state.value == "resizing" and datetime.datetime.now() <= timeout_expiration:
-            time.sleep(10)
-            pool = batch_service_client.pool.get(self.pool_id)
-
-        # Check if pool is ready
+    
+    def check_pool_resize_error(self, pool):
         if pool.allocation_state.value == "steady" and pool.resize_errors != None:  
             self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED, 
                 "Job failed to start since the pool [{}] failed to allocate any TVMs due to error [Code: {}, message {}]."
                 .format(self.pool_id, pool.resize_errors[0].code, pool.resize_errors[0].message))
             print("POOL {} FAILED TO ALLOCATE".format(self.pool_id))
+            return True
+        return False
+
+    def check_timeout(self, timeout):
+        timeout_expiration = datetime.datetime.now() + timeout          
+        return datetime.datetime.now() <= timeout_expiration
+
+    def check_pool_state(self, batch_service_client, timeout):
+        pool = batch_service_client.pool.get(self.pool_id)
+
+        # wait for pool to come up 
+        while pool.allocation_state.value == "resizing" and self.check_timeout(timeout):
+            time.sleep(10)
+            pool = batch_service_client.pool.get(self.pool_id)
+
+        # Check if pool allocated with a resize errors. 
+        if self.check_pool_resize_error(pool):
+            
             return False
 
         # Wait for TVMs to become available 
         nodes = list(batch_service_client.compute_node.list(self.pool_id))
 
         print("Waiting for a TVM to allocate in pool: [{}]".format(self.pool_id))                    
-        while (any([n for n in nodes if n.state != batchmodels.ComputeNodeState.idle])) and datetime.datetime.now() <= timeout_expiration:
+        while (any([n for n in nodes if n.state != batchmodels.ComputeNodeState.idle])) and self.check_timeout(timeout):
             time.sleep(10)
             nodes = list(batch_service_client.compute_node.list(self.pool_id))
 
@@ -174,7 +180,8 @@ class JobManager(object):
             print("Job [{}] is starting to run on a TVM".format(self.job_id))
             return True
         else: 
-            self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED, "Failed to start the pool [{}] before [{}], you may want to increase your timeout].".format(self.pool_id, timeout))
+            self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED, 
+                "Failed to start the pool [{}] before [{}], you may want to increase your timeout].".format(self.pool_id, timeout))
             print("POOL [{}] FAILED TO ALLOCATE IN TIME".format(self.pool_id))
             return False 
 
@@ -191,6 +198,12 @@ class JobManager(object):
             self.job_status = await loop.run_in_executor(None, Utils.wait_for_tasks_to_complete, batch_service_client, self.job_id, datetime.timedelta(minutes=timeout))
 
             await self.check_expected_output(batch_service_client)
+            job = await loop.run_in_executor(None, functools.partial(batch_service_client.job.get, self.job_id))    
+            print("get job: start: {} end: {} : length = ".format(job.state_transition_time, job.previous_state_transition_time, ))
+
+            #Start the stopwatch for the test. 
+            self.duration = datetime.datetime.now().replace(microsecond=0)
+
             
     async def retry(self, batch_service_client, blob_client, timeout):
         """ 

@@ -346,7 +346,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
     return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError("Error: Cannot find file {} in job {}".format(expected_output, job_id)))
 
-def export_result(job_managers, time_taken):
+def export_result(job_managers, start_time):
     failedJobs = 0
     print("Exporting test output file")
     root = Element('testsuite')    
@@ -363,17 +363,15 @@ def export_result(job_managers, time_taken):
 
         # Add the time it took for this test to compete.
         if i.duration != None:
-            test_end_time = (datetime.datetime.now().replace(microsecond=0)) - i.duration
-            print("time = {}".format(str(test_end_time)))
+            test_end_time = (datetime.datetime.now().replace(microsecond=0)) - i.duration            
             convertedDuration = time.strptime(str(test_end_time).split(',')[0],'%H:%M:%S')
-            print("convertedDuration = {}".format(str(convertedDuration)))
             child.attrib["time"] = str(datetime.timedelta(hours=convertedDuration.tm_hour, minutes=convertedDuration.tm_min, seconds=convertedDuration.tm_sec).total_seconds())
         else: 
             child.attrib["time"] = "0:00:00" 
     
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
-    root.attrib["time"] = str(time_taken)
+    root.attrib["time"] = str((datetime.datetime.now().replace(microsecond=0) - start_time))
 
     tree = ElementTree(root)
     tree.write("Tests/output.xml")

@@ -28,7 +28,7 @@ _SERVICE_PRINCIPAL_CREDENTIALS_SECRET = os.environ['PS_SERVICE_PRINCIPAL_CREDENT
 _SERVICE_PRINCIPAL_CREDENTIALS_TENANT = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT']
 _SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE']
 
-timeout = 15
+timeout = 25
 _job_managers = []
 
 def print_result():
@@ -48,7 +48,6 @@ def print_result():
             print("Number of jobs passed {} out of {}.".format(len(_job_managers)-failedJobs, len(_job_managers)))    
 
 if __name__ == '__main__':
-
     start_time = datetime.datetime.now().replace(microsecond=0)
     print('Sample start: {}'.format(start_time))
     print()
@@ -112,6 +111,8 @@ if __name__ == '__main__':
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.gather(*[j.upload_assets(blob_client) for j in _job_managers]))     
         print("Creating pools...")
+        # We want to start the timer right before all the pools start being created 
+        start_time = datetime.datetime.now().replace(microsecond=0)
         loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client, images_refernces) for j in _job_managers]))
         print("Submitting jobs...")
         loop.run_until_complete(asyncio.gather(*[j.create_and_submit_Job(batch_client) for j in _job_managers]))
@@ -129,12 +130,12 @@ if __name__ == '__main__':
         print("-----------------------------------------")
         loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, timeout/2) for j in _job_managers]))
         loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
-        #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()    
         print_result()
         
     end_time = datetime.datetime.now().replace(microsecond=0)
-    Utils.export_result(_job_managers, end_time-start_time)
+    Utils.export_result(_job_managers, start_time)
     print()
     print('Sample end: {}'.format(end_time))
     print('Elapsed time: {}'.format(end_time - start_time))
