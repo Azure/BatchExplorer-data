@@ -22,10 +22,16 @@ async def submit_job(batch_service_client, template, parameters):
     :param str template: the json desciption of the job
     :param str the parameters of the job
     """
-    loop = asyncio.get_event_loop()
-    job_json = batch_service_client.job.expand_template(template, parameters)
-    jobparameters = batch_service_client.job.jobparameter_from_json(job_json)    
-    job = await loop.run_in_executor(None, functools.partial(batch_service_client.job.add, jobparameters))    
+    try:    
+        loop = asyncio.get_event_loop()
+        job_json = batch_service_client.job.expand_template(template, parameters)
+        jobparameters = batch_service_client.job.jobparameter_from_json(job_json)    
+        job = await loop.run_in_executor(None, functools.partial(batch_service_client.job.add, jobparameters))    
+    except batchmodels.batch_error.BatchErrorException as err:
+        print("Failed to submit job\n{}\n with params\n{}".format(template, parameters))
+        traceback.print_exc()
+        Utils.print_batch_exception(err)
+        raise   
 
 class JobManager(object):
 
@@ -65,9 +71,7 @@ class JobManager(object):
         Utils.set_parameter_storage_info(parameters, self.storage_info)
 
         # Subsmit the job 
-
-        await submit_job(batch_service_client, template, parameters)
-
+        await submit_job(batch_service_client, template, parameters)   
 
     async def create_pool(self, batch_service_client, image_references):
         """

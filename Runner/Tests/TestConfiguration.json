@@ -126,7 +126,6 @@
         "parameters": "Tests/3dsmax/standard/job.parameters.arnold2018.json",
         "expectedOutput":"image0001.jpg",
         "applicationLicense":"3dsmax,arnold"
-
     },
     {
         "name": "max-arnold-2019",
