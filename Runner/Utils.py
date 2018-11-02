@@ -371,7 +371,6 @@ def export_result(job_managers, total_time):
     
     root.attrib["failures"] = str(failedJobs)
     root.attrib["tests"] = str(len(job_managers))
-    root.attrib["time"] = str(total_time)
-
+    root.attrib["time"] = str(total_time.total_seconds())
     tree = ElementTree(root)
     tree.write("Tests/output.xml")
