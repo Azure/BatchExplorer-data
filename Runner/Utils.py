@@ -11,7 +11,7 @@ utc=pytz.UTC
 
 
 class StorageInfo(object):
-    """docstring for StorageInfo"""
+    """Data objects to store the for StorageInfo for the job's input and output containers"""
     def __init__(self, input_container, output_container, input_container_SAS, output_container_SAS):
         super(StorageInfo, self).__init__()
         self.input_container = input_container
@@ -22,18 +22,8 @@ class StorageInfo(object):
     def __str__(self) -> str:
         return "[input_container: {}, output_container:{}".format(self.input_container, self.output_container)
         
-class JobStatus(object):
-    """docstring for JobState"""
-    def __init__(self, job_state, message):
-        super(JobStatus, self).__init__()
-        self.job_state = job_state
-        self.message = message
-        
-    def __str__(self) -> str:
-       return "job's state: {}, message{}".format(self.job_state, self.message)
-
 class ImageReference(object):   
-    """docstring for imageReferences"""
+    """docstring for imageReference"""
     def __init__(self, osType, offer, version):        
         super(ImageReference, self).__init__()
         self.osType = osType
@@ -42,6 +32,16 @@ class ImageReference(object):
 
     def __str__(self) -> str:
        return "osType: {}, offer{}, version".format(self.osType, self.offer, self.version)
+
+class JobStatus(object):
+    """docstring for JobState"""
+    def __init__(self, job_state, message):
+        super(JobStatus, self).__init__()
+        self.job_state = job_state
+        self.message = message
+        
+    def __str__(self) -> str:
+       return "Job's state: {}, message{}".format(self.job_state, self.message)
 
 class JobState(Enum):
     # Job never started
@@ -54,8 +54,6 @@ class JobState(Enum):
     UNEXPECTED_OUTPUT = 4
     # pool started but the job failed to complete in time 
     NOT_COMPLETE = 5
-    
-
 
 def set_template_name(template, pool_id):
     try:
@@ -377,6 +375,7 @@ def export_result(job_managers, total_time):
 
 def cleanup_old_resources(blob_client):
     for container in blob_client.list_containers():
-        if container.properties.last_modified < utc.localize(datetime.datetime.now() + datetime.timedelta(days=-7) and 'fgrp' in container.name):
-            print("Deleting container {} that is older than 7 days.".format(container))
-            blob_client.delete_container(container.name)
+        if (container.properties.last_modified < (utc.localize(datetime.datetime.now() + datetime.timedelta(days=-7)))):
+            if 'fgrp' in container.name:
+                print("Deleting container {} that is older than 7 days.".format(container))
+                blob_client.delete_container(container.name)

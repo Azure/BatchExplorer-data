@@ -133,7 +133,7 @@ if __name__ == '__main__':
         print("-----------------------------------------")
         loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, timeout/2) for j in _job_managers]))
         loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
-        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
+        #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()    
         print_result()
         

@@ -236,7 +236,6 @@ class JobManager(object):
                 print
                 traceback.print_exc()
                 Utils.print_batch_exception(batch_exception)
-                raise       
 
     async def delete_resouces(self, batch_service_client, blob_client, force_delete=False):
         """ 
