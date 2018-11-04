@@ -11,7 +11,7 @@ import functools
 import datetime
 import time
 
-_time = str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
+_time = str(datetime.datetime.now().day)+"-"+str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)
 
 async def submit_job(batch_service_client, template, parameters):
     """
@@ -206,9 +206,6 @@ class JobManager(object):
             # How long it took for both the pool and job time to start. 
             self.duration = (datetime.timedelta(seconds=(poolTime + jobTime)))            
             await self.check_expected_output(batch_service_client)
-
-
-
             
     async def retry(self, batch_service_client, blob_client, timeout):
         """ 
@@ -233,6 +230,8 @@ class JobManager(object):
         except batchmodels.batch_error.BatchErrorException as batch_exception:   
             if Utils.expected_exception(batch_exception, "The specified pool has been marked for deletion"):
                 print("The specified pool [{}] has been marked for deletion.".format(self.pool_id))
+            if Utils.expected_exception(batch_exception, "The specified pool does not exist"):
+                print("The specified pool [{}] has been deleterd.".format(self.pool_id))
             else:
                 print
                 traceback.print_exc()

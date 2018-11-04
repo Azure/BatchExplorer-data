@@ -85,6 +85,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     TestConfigurationFile = args.TestConfig #"Tests/TestConfiguration.json"
+    try:
+        Utils.cleanup_old_resources(blob_client)
+    except Exception as e:
+        raise e
 
     try:
         with open(TestConfigurationFile) as f: 
@@ -102,7 +106,7 @@ if __name__ == '__main__':
             _job_managers.append(JobManager.JobManager(test["template"], test["poolTemplate"], test["parameters"], test["expectedOutput"], applicationLicenses))
         
         images_refernces = []
-        for i in range(0, len(template["images"])):
+        for i in range(0, 0):
             image = template["images"][i]
 
             images_refernces.append(Utils.ImageReference(image["osType"], image["offer"], image["version"]))

@@ -6,6 +6,9 @@ import time
 import os
 from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
+import pytz
+utc=pytz.UTC
+
 
 class StorageInfo(object):
     """docstring for StorageInfo"""
@@ -371,3 +374,9 @@ def export_result(job_managers, total_time):
     root.attrib["time"] = str(total_time.total_seconds())
     tree = ElementTree(root)
     tree.write("Tests/output.xml")
+
+def cleanup_old_resources(blob_client):
+    for container in blob_client.list_containers():
+        if container.properties.last_modified < utc.localize(datetime.datetime.now() + datetime.timedelta(days=-7) and 'fgrp' in container.name):
+            print("Deleting container {} that is older than 7 days.".format(container))
+            blob_client.delete_container(container.name)
