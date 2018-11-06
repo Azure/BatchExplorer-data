@@ -54,15 +54,14 @@
       "Standard_A0",
       "Standard_DS*",
       "Standard_GS*",
-      "Standard_A1_v2",
-      "Standard_A2_v2",
       "Standard_L*",
-      "Standard_F*s",
       "*Promo"
     ],
     "iaas": [],
     "paas": [
-      "Basic_A*"
+      "Basic_A*",
+      "Standard_A1_v2",
+      "Standard_A2_v2"
     ]
   }
 }
