@@ -1,9 +1,9 @@
 {
    "jobName":{
-      "value":"maya-arnold-2017"
+      "value":"maya-arnold-windows-2017"
    },
    "poolId":{
-      "value":"arnold-windows"
+      "value":"maya-arnold-pool-windows"
    },
    "mayaVersion":{
       "value":"Maya2017"

@@ -1,9 +1,9 @@
 {
    "jobName":{
-      "value":"blender-linux-dr"
+      "value":"blender-windows-dr"
    },
    "poolId":{
-      "value":"blender-ubuntu-dr"
+      "value":"blender-windows-dr"
    },
    "inputData":{
       "value":"rendering"
@@ -29,6 +29,7 @@
    "yTiles":{
       "value":3
    },
+
    "outputs":{
       "value":"rendering-output"
    }

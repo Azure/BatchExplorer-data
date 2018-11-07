@@ -1,9 +1,10 @@
 {
    "jobName":{
-      "value":"maya-vray-2017"
+      "value":"maya-vray-linux-2017"
    },
    "poolId":{
-      "value":"vray-linux"
+      "value":"vray-linux-2017"
+
    },
    "mayaVersion":{
       "value":"Maya2017"

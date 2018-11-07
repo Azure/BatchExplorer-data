@@ -1,9 +1,9 @@
 {
    "jobName":{
-      "value":"3dsMax2018-vray"
+      "value":"max2018-vray"
    },
    "poolId":{
-      "value":"3dsmax-vray"
+      "value":"max-vray-only"
    },
    "inputFilegroup":{
       "value":"rendering"
@@ -33,10 +33,10 @@
       "value":1
    },
    "frameWidth":{
-      "value":1600
+      "value":400
    },
    "frameHeight":{
-      "value":1200
+      "value":300
    },
    "outputFilegroup":{
       "value":"rendering-output"
