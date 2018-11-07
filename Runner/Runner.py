@@ -28,7 +28,7 @@ _SERVICE_PRINCIPAL_CREDENTIALS_SECRET = os.environ['PS_SERVICE_PRINCIPAL_CREDENT
 _SERVICE_PRINCIPAL_CREDENTIALS_TENANT = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT']
 _SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE = os.environ['PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE']
 
-_timeout = 25
+_timeout = 15
 _job_managers = []
 
 def print_result():
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         # Delete all the jobs and containers needed for the job 
         # Reties any jobs that failed 
         print("-----------------------------------------")
-        loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, _timeout/2) for j in _job_managers]))
+        #loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, _timeout/2) for j in _job_managers]))
         #loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
         #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()    
