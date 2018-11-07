@@ -110,30 +110,28 @@ class JobManager(object):
             print('pool [{}] already exists'.format(self.pool_id))
 
     async def upload_assets(self, blob_client):
-
-        print("uploading asset")
         loop = asyncio.get_event_loop()
-        input_container_name = self.job_id
+        input_container_name = "fgrp-"+self.job_id
+        output_container_name = "fgrp-"+self.job_id+'-output'
 
         # Create input container 
-        await loop.run_in_executor(None, functools.partial(blob_client.create_container, "fgrp-"+input_container_name, fail_on_exist=False))    
-        output_container_name = self.job_id+'-output'
+        await loop.run_in_executor(None, functools.partial(blob_client.create_container, input_container_name, fail_on_exist=False))    
 
         # Create output container 
-        await loop.run_in_executor(None, functools.partial(blob_client.create_container, "fgrp-"+output_container_name, fail_on_exist=False))
-
-        scenefile = Utils.get_scene_file(self.parameters_file)
+        await loop.run_in_executor(None, functools.partial(blob_client.create_container, output_container_name, fail_on_exist=False))
 
         full_sas_url_input = 'https://{}.blob.core.windows.net/{}?{}'.format(blob_client.account_name, input_container_name, Utils.get_container_sas_token(blob_client, input_container_name, ContainerPermissions.READ + ContainerPermissions.LIST))
-        full_sas_url_output = 'https://{}.blob.core.windows.net/{}?{}'.format(blob_client.account_name, output_container_name, Utils.get_container_sas_token(blob_client, output_container_name, ContainerPermissions.READ + ContainerPermissions.LIST))
+        full_sas_url_output = 'https://{}.blob.core.windows.net/{}?{}'.format(blob_client.account_name, output_container_name, Utils.get_container_sas_token(blob_client, output_container_name, ContainerPermissions.READ + ContainerPermissions.LIST + ContainerPermissions.WRITE))
         
         # Set the storage info for the container. 
         self.storage_info = Utils.StorageInfo(input_container_name, output_container_name, full_sas_url_input, full_sas_url_output)        
-
+        
         # Upload the asset file that will be rendered and 
+        scenefile = Utils.get_scene_file(self.parameters_file)
         for file in os.listdir("Assets"):        
             if scenefile == file:
-                await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, "fgrp-"+input_container_name, os.getcwd()+"\\Assets\\"+file))
+                filePath = Path("Assets/"+file)
+                await loop.run_in_executor(None, functools.partial(Utils.upload_file_to_container, blob_client, input_container_name, filePath))
 
         
     async def validate(self, batch_service_client):

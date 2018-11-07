@@ -1,11 +1,11 @@
 {
   "tests": [
-     {
-        "name": "maya2017-default-linux",
-        "template": "../ncj/maya/render-default-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
-        "parameters": "Tests/maya/render-default-linux/job.parameters2017.json",
-        "expectedOutput":"maya.exr.0001"
+    {
+        "name": "blender-windows-dr",
+        "template": "../ncj/blender/render-windows-dr/job.template.json",
+        "poolTemplate": "../ncj/blender/render-windows-dr/pool.template.json",
+        "parameters": "Tests/blender/render-windows-dr/job.parameters.json",
+        "expectedOutput":"tile_001.png"
     }
   ], 
   "images": [
