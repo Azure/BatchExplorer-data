@@ -1,6 +1,6 @@
 {
     "templateMetadata":{
-        "description":"VRay DR Pool Rendering"
+        "description":"VRay DR Pool Setup Job.  This job will start the VRay DR services."
     },
     "parameters":{
         "jobName": {
