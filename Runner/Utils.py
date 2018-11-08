@@ -9,6 +9,9 @@ from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
 import pytz
 utc = pytz.UTC
 
+"""
+Utility module that holds the data objects and some useful methods
+"""
 
 class StorageInfo(object):
     """Data objects to store the for StorageInfo for the job's input and output containers"""

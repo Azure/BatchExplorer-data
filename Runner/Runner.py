@@ -13,6 +13,11 @@ import azure.storage.blob as azureblob
 import azure.batch.models as batchmodels
 import azext.batch as batch
 import argparse
+"""
+This python module is used for valiading the rendering templates by using the azure CLI. 
+This module will load the manifest file 'TestConfiguration' specified by the user and
+create pools and jobs based on this file.
+"""
 
 sys.path.append('.')
 sys.path.append('..')
