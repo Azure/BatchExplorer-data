@@ -141,9 +141,9 @@ if __name__ == '__main__':
         # Delete all the jobs and containers needed for the job
         # Reties any jobs that failed
         print("-----------------------------------------")
-        #loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, _timeout/2) for j in _job_managers]))
-        #loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
-        #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, _timeout/2) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
+        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()
         Utils.print_result(_job_managers)
 
