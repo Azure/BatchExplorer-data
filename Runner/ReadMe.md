@@ -40,3 +40,6 @@ The manifest file contains 5 properties you need to set and 1 optional.
 		"applicationLicense": "if any addadtional licenses need to be set"
     }
 }
+
+IMPORTANT 
+If you want to use a new rendering image you need to update the json in the TestConfiguration.json file. 
