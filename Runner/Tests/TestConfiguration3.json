@@ -1,11 +1,11 @@
 {
   "tests": [
     {
-        "name": "arnold-windows-standalone",
-        "template": "../ncj/arnold/render-windows/job.template.json",
-        "poolTemplate": "../ncj/arnold/render-windows/pool.template.json",
-        "parameters": "Tests/arnold/render-windows/job.parameters.json",
-        "expectedOutput":"arnold.ass.tif"
+        "name": "blender-windows-dr",
+        "template": "../ncj/blender/render-windows-dr/job.template.json",
+        "poolTemplate": "../ncj/blender/render-windows-dr/pool.template.json",
+        "parameters": "Tests/blender/render-windows-dr/job.parameters.json",
+        "expectedOutput":"tile_001.png"
     }
   ], 
   "images": [
