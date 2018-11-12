@@ -38,7 +38,7 @@ async def submit_job(batch_service_client, template, parameters):
             job_json)
         job = await loop.run_in_executor(None, functools.partial(batch_service_client.job.add, jobparameters))
     except batchmodels.batch_error.BatchErrorException as err:
-        print(
+        Utils.logger.info(
             "Failed to submit job\n{}\n with params\n{}".format(
                 template, parameters))
         traceback.print_exc()
@@ -75,10 +75,7 @@ class JobManager(object):
         :param batch_client: The batch client to use.
         :type batch_client: `batchserviceclient.BatchServiceClient`
         """
-        print(
-            'Creating Job [{}]...'.format(
-                self.job_id), " job will run on [{}]".format(
-                self.pool_id))
+        Utils.logger.info('Creating Job [{}]... job will run on [{}]'.format(self.job_id, self.pool_id))
 
         # load the template and parameters file
         template = ctm.load_file(self.template_file)
@@ -114,24 +111,24 @@ class JobManager(object):
         all_pools = [p.id for p in await loop.run_in_executor(None, functools.partial(batch_service_client.pool.list))]
 
         ctm.set_template_name(template, self.pool_id)
-        if(self.pool_id not in all_pools):
+        if self.pool_id not in all_pools:
             pool_json = batch_service_client.pool.expand_template(template)
             pool = batch_service_client.pool.poolparameter_from_json(pool_json)
-            print('Creating pool [{}]...'.format(self.pool_id))
+            Utils.logger.info('Creating pool [{}]...'.format(self.pool_id))
             try:
                 await loop.run_in_executor(None, functools.partial(batch_service_client.pool.add, pool))
             except batchmodels.batch_error.BatchErrorException as err:
                 if Utils.expected_exception(
                         err, "The specified pool already exists"):
-                    print(
+                    Utils.logger.info(
                         "Pool [{}] is already being created.".format(
                             self.pool_id))
                 else:
-                    print("Create pool error: ", err)
+                    Utils.logger.info("Create pool error: ", err)
                     traceback.print_exc()
                     Utils.print_batch_exception(err)
         else:
-            print('pool [{}] already exists'.format(self.pool_id))
+            Utils.logger.info('pool [{}] already exists'.format(self.pool_id))
 
     async def upload_assets(self, blob_client):
         loop = asyncio.get_event_loop()
@@ -191,7 +188,7 @@ class JobManager(object):
             self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED,
                                               "Job failed to start since the pool [{}] failed to allocate any TVMs due to error [Code: {}, message {}]."
                                               .format(self.pool_id, pool.resize_errors[0].code, pool.resize_errors[0].message))
-            print("POOL {} FAILED TO ALLOCATE".format(self.pool_id))
+            Utils.logger.error("POOL {} FAILED TO ALLOCATE".format(self.pool_id))
             return True
         return False
 
@@ -205,6 +202,7 @@ class JobManager(object):
         # wait for pool to come up
         while pool.allocation_state.value == "resizing" and self.check_timeout(
                 timeout):
+            # Query the pool status every 10 seconds instead of every second
             time.sleep(10)
             pool = batch_service_client.pool.get(self.pool_id)
 
@@ -213,24 +211,24 @@ class JobManager(object):
             return False
 
         # Wait for TVMs to become available
-        nodes = list(batch_service_client.compute_node.list(self.pool_id))
+        nodes = batch_service_client.compute_node.list(self.pool_id)
 
-        print(
+        Utils.logger.info(
             "Waiting for a TVM to allocate in pool: [{}]".format(
                 self.pool_id))
         while (any([n for n in nodes if n.state != batchmodels.ComputeNodeState.idle])
-               ) and self.check_timeout(timeout):
+              ) and self.check_timeout(timeout):
             time.sleep(10)
-            nodes = list(batch_service_client.compute_node.list(self.pool_id))
+            nodes = batch_service_client.compute_node.list(self.pool_id)
 
         if any([n for n in nodes if n.state ==
                 batchmodels.ComputeNodeState.idle]):
-            print("Job [{}] is starting to run on a TVM".format(self.job_id))
+            Utils.logger.info("Job [{}] is starting to run on a TVM".format(self.job_id))
             return True
         else:
             self.job_status = Utils.JobStatus(Utils.JobState.POOL_FAILED,
                                               "Failed to start the pool [{}] before [{}], you may want to increase your timeout].".format(self.pool_id, timeout))
-            print("POOL [{}] FAILED TO ALLOCATE IN TIME".format(self.pool_id))
+            Utils.logger.error("POOL [{}] FAILED TO ALLOCATE IN TIME".format(self.pool_id))
             return False
 
     async def wait_for_tasks_to_complete(self, batch_service_client, timeout):
@@ -265,7 +263,7 @@ class JobManager(object):
         if self.job_status.job_state == Utils.JobState.NOT_COMPLETE or self.job_status.job_state == Utils.JobState.UNEXPECTED_OUTPUT:
             # Deletes the resources needed for the old job.
             await self.delete_resouces(batch_service_client, blob_client, True)
-            print(
+            Utils.logger.warn(
                 "Job [{}] did not complete in time so it will be recreated with the '-retry' postfix ".format(self.job_id))
             # Set a new job id
             self.job_id = self.job_id + "-retry"
@@ -279,18 +277,18 @@ class JobManager(object):
         should ignore the batch exception that is thrown. These errors come up due to multiple jobs using the same pool
         and when a the job cleans up after it's self it will call delete on the same pool since they are a shared resource.
         """
-        print("Deleting pool: {}.".format(self.pool_id))
+        Utils.logger.info("Deleting pool: {}.".format(self.pool_id))
         loop = asyncio.get_event_loop()
         try:
             await loop.run_in_executor(None, functools.partial(batch_service_client.pool.delete, self.pool_id))
         except batchmodels.batch_error.BatchErrorException as batch_exception:
             if Utils.expected_exception(
                     batch_exception, "The specified pool has been marked for deletion"):
-                print(
+                Utils.logger.warn(
                     "The specified pool [{}] has been marked for deletion.".format(
                         self.pool_id))
             elif Utils.expected_exception(batch_exception, "The specified pool does not exist"):
-                print(
+                Utils.logger.warn(
                     "The specified pool [{}] has been deleted.".format(
                         self.pool_id))
             else:
@@ -310,7 +308,7 @@ class JobManager(object):
         except batchmodels.batch_error.BatchErrorException as batch_exception:
             if Utils.expected_exception(
                     batch_exception, "The specified job does not exist"):
-                print(
+                Utils.logger.error(
                     "The specified Job [{}] was not created.".format(
                         self.job_id))
             else:
@@ -320,15 +318,15 @@ class JobManager(object):
 
         if self.job_status.job_state in {
                 Utils.JobState.COMPLETE, Utils.JobState.POOL_FAILED, Utils.JobState.NOT_STARTED} or force_delete:
-            print('Deleting container [{}]...'.format(
+            Utils.logger.info('Deleting container [{}]...'.format(
                 self.storage_info.input_container))
             blob_client.delete_container(self.storage_info.input_container)
 
-            print('Deleting container [{}]...'.format(
+            Utils.logger.info('Deleting container [{}]...'.format(
                 self.storage_info.output_container))
             await loop.run_in_executor(None, blob_client.delete_container, self.storage_info.output_container)
         else:
-            print("Did not delete the output container")
-            print(
+            Utils.logger.info("Did not delete the output container")
+            Utils.logger.info(
                 "Job: {}. did not complete successfully, Container {} was not deleted.".format(
                     self.job_id, self.storage_info.output_container))

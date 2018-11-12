@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 """
 This module responsiblilty is for reading and setting elements of the json templates
@@ -17,7 +18,6 @@ def set_template_name(template, pool_id):
         template["parameters"]["poolId"]["value"] = pool_id
     except KeyError:
         pass
-
 
 def set_parameter_name(template, job_id):
     try:
@@ -92,7 +92,7 @@ def set_image_reference_properties(template, image_reference):
         pass
 
 
-def set_image_reference(template, image_references):
+def set_image_reference(template, image_ref):
     template_image_reference = template["variables"]["osType"]["imageReference"]
 
     # If the image is not a rendering image then no action needs to happen on
@@ -102,47 +102,46 @@ def set_image_reference(template, image_references):
 
     # If template is windows version
     if "windows" in template_image_reference["offer"]:
-        for i in range(0, len(image_references)):
-            if image_references[i].osType == "windows":
-                set_image_reference_properties(template_image_reference, image_references[i])
+        for i in range(0, len(image_ref)):
+            if image_ref[i].osType == "windows":
+                set_image_reference_properties(template_image_reference, image_ref[i])
 
     # if the template is centos
     if "centos" in template_image_reference["offer"]:
-        for i in range(0, len(image_references)):
-            if image_references[i].osType == "liunx":
-                set_image_reference_properties(template_image_reference, image_references[i])
+        for i in range(0, len(image_ref)):
+            if image_ref[i].osType == "liunx":
+                set_image_reference_properties(template_image_reference, image_ref[i])
 
 
 def get_job_id(parameters_file: str) -> str:
-    parameters = ""
     job_id = ""
+
     with open(parameters_file) as f:
         parameters = json.load(f)
-    try:
-        job_id = parameters["jobName"]["value"]
-    except KeyError:
-        pass
-    try:
-        job_id = parameters["jobId"]["value"]
-    except KeyError:
-        pass
+        try:
+            job_id = parameters["jobName"]["value"]
+        except KeyError:
+            pass
+        try:
+            job_id = parameters["jobId"]["value"]
+        except KeyError:
+            pass
     return job_id
 
 
 def get_pool_id(parameters_file: str) -> str:
-    parameters = ""
     pool_id = ""
 
     with open(parameters_file) as f:
         parameters = json.load(f)
-    try:
-        pool_id = parameters["poolName"]["value"]
-    except KeyError:
-        pass
-    try:
-        pool_id = parameters["poolId"]["value"]
-    except KeyError:
-        pass
+        try:
+            pool_id = parameters["poolName"]["value"]
+        except KeyError:
+            pass
+        try:
+            pool_id = parameters["poolId"]["value"]
+        except KeyError:
+            pass
 
     return pool_id
 

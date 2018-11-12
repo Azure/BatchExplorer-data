@@ -9,7 +9,7 @@ pool:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: 3.6
+    versionSpec: 3.7.1
     architecture: 'x64'
 
 - task: PythonScript@0
@@ -21,27 +21,13 @@ steps:
       from glob import iglob
       from os import path
       import os
-      # Python >= 3.6
-
-      os.environ["PS_BATCH_ACCOUNT_KEY"] = "$(PS_BATCH_ACCOUNT_KEY)" 
-      os.environ["PS_BATCH_ACCOUNT_NAME"] = "$(PS_BATCH_ACCOUNT_NAME)"
-      os.environ["PS_BATCH_ACCOUNT_SUB"] = "$(PS_BATCH_ACCOUNT_SUB)"
-      os.environ["PS_BATCH_ACCOUNT_URL"] = "$(PS_BATCH_ACCOUNT_URL)"
-      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" 
-      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
-      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)"
-      os.environ["PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET"] = "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_SECRET)"
-      os.environ["PS_STORAGE_ACCOUNT_KEY"] = "$(PS_STORAGE_ACCOUNT_KEY)"
-      os.environ["PS_STORAGE_ACCOUNT_NAME"] = "$(PS_STORAGE_ACCOUNT_NAME)"
-      
-      print(os.listdir())
-      os.listdir()
+      # Python >= 3.7.1
  
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
-          raise SystemExit('Could not find a Django project')
+          raise SystemExit('Could not find a Runner.py')
       project_location = path.dirname(path.abspath(Runner_py))
-      print('Found Django project in', project_location)
+      print('Starting the {}', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     python -m pip install --upgrade pip setuptools wheel django

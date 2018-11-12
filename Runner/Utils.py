@@ -1,13 +1,30 @@
 import azure.storage.blob as azureblob
 import azure.batch.models as batchmodels
-import json
 import datetime
 import time
 import os
 from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
+from pytz import timezone
 import pytz
-utc = pytz.UTC
+utc = pytz.utc
+import logging
+
+logger = logging.getLogger('rendering-log')
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('template.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+# add the handlers to logger
+logger.addHandler(ch)
+logger.addHandler(fh)
 
 """
 Utility module that holds the data objects and some useful methods
@@ -62,7 +79,7 @@ class JobState(Enum):
     POOL_FAILED = 2
     # Job ran to completion and the output matched the test configuration file
     COMPLETE = 3
-    # The outout file did not match the expected output desscibed in the test
+    # The output file did not match the expected output described in the test
     # configuration file
     UNEXPECTED_OUTPUT = 4
     # pool started but the job failed to complete in time
@@ -75,18 +92,18 @@ def print_batch_exception(batch_exception):
 
     :param batch_exception:
     """
-    print('-------------------------------------------')
-    print('Exception encountered:')
+    logger.error('-------------------------------------------')
+    logger.error('Exception encountered:')
     if batch_exception.error and \
             batch_exception.error.message and \
             batch_exception.error.message.value:
-        print(batch_exception.error.message.value)
+        logger.error(batch_exception.error.message.value)
         if batch_exception.error.values:
-            print()
+            logger.error()
             for mesg in batch_exception.error.values:
-                print('{}:\t{}'.format(mesg.key, mesg.value))
-                print('{}'.format(mesg.value))
-    print('-------------------------------------------')
+                logger.error('{}:\t{}'.format(mesg.key, mesg.value))
+                logger.error('{}'.format(mesg.value))
+    logger.error('-------------------------------------------')
 
 
 def expected_exception(batch_exception, message) -> bool:
@@ -136,7 +153,7 @@ def upload_file_to_container(block_blob_client, container_name, file_path):
     """
     blob_name = os.path.basename(file_path)
 
-    print(
+    logger.info(
         'Uploading file [{}] to container [{}]...'.format(
             file_path,
             container_name))
@@ -202,7 +219,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
         for f in all_files:
             if expected_output in f.name:
-                print(
+                logger.info(
                     "Job [{}] expected output matched {}".format(
                         job_id, expected_output))
                 return JobStatus(JobState.COMPLETE,
@@ -213,30 +230,29 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
 
 def print_result(job_managers):
-    print("-----------------------------------------")
-    print("Number of jobs run {}.".format(len(job_managers)))
+    logger.info("Number of jobs run {}.".format(len(job_managers)))
     failedJobs = 0
     for i in job_managers:
         if i.job_status.job_state != JobState.COMPLETE:
             failedJobs += 1
-            print(
+            logger.info(
                 "job {} failed because {} : {}".format(
                     i.job_id,
                     i.job_status.job_state,
                     i.job_status.message))
 
     if failedJobs == 0:
-        print("-----------------------------------------")
-        print("All jobs were successful Run")
+        logger.info("-----------------------------------------")
+        logger.info("All jobs were successful Run")
     else:
-        print("-----------------------------------------")
-        print("Number of jobs passed {} out of {}.".format(
+        logger.info("-----------------------------------------")
+        logger.info("Number of jobs passed {} out of {}.".format(
             len(job_managers) - failedJobs, len(job_managers)))
 
 
 def export_result(job_managers, total_time):
     failedJobs = 0
-    print("Exporting test output file")
+    logger.info("Exporting test output file")
     root = Element('testsuite')
 
     for i in job_managers:
@@ -279,6 +295,6 @@ def cleanup_old_resources(blob_client):
     for container in blob_client.list_containers():
         if (container.properties.last_modified < timeout):
             if 'fgrp' in container.name:
-                print(
+                logger.info(
                     "Deleting container {} that is older than 7 days.".format(container))
                 blob_client.delete_container(container.name)

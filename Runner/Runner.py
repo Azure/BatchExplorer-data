@@ -13,6 +13,8 @@ import azure.storage.blob as azureblob
 import azure.batch.models as batchmodels
 import azext.batch as batch
 import argparse
+
+ 
 """
 This python module is used for valiading the rendering templates by using the azure CLI. 
 This module will load the manifest file 'TestConfiguration' specified by the user and
@@ -39,23 +41,10 @@ _job_managers = []
 
 if __name__ == '__main__':
     start_time = datetime.datetime.now().replace(microsecond=0)
-    print('Sample start: {}'.format(start_time))
-    print()
-    print("_BATCH_ACCOUNT_NAME", _BATCH_ACCOUNT_NAME)
-    print("_BATCH_ACCOUNT_KEY", _BATCH_ACCOUNT_KEY)
-    print("_BATCH_ACCOUNT_URL", _BATCH_ACCOUNT_URL)
-    print("_BATCH_ACCOUNT_SUB", _BATCH_ACCOUNT_SUB)
-    print("_STORAGE_ACCOUNT_NAME", _STORAGE_ACCOUNT_NAME)
-    print("_STORAGE_ACCOUNT_KEY", _STORAGE_ACCOUNT_KEY)
-    print("_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID",
-          _SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)
-    print("_SERVICE_PRINCIPAL_CREDENTIALS_SECRET",
-          _SERVICE_PRINCIPAL_CREDENTIALS_SECRET)
-    print("_SERVICE_PRINCIPAL_CREDENTIALS_TENANT",
-          _SERVICE_PRINCIPAL_CREDENTIALS_TENANT)
-    print("_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE",
-          _SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)
-    print()
+    Utils.logger.info('Template runner start time: {}'.format(start_time))
+    Utils.logger.info("_BATCH_ACCOUNT_NAME: {}".format(_BATCH_ACCOUNT_NAME))
+    Utils.logger.info("_BATCH_ACCOUNT_URL: {}".format(_BATCH_ACCOUNT_URL))
+    Utils.logger.info("_STORAGE_ACCOUNT_NAME: {}".format(_STORAGE_ACCOUNT_NAME))
 
     # Create the blob client, for use in obtaining references to
     # blob storage containers and uploading files to containers.
@@ -82,7 +71,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # "Tests/TestConfiguration.json"
-    TestConfigurationFile = args.TestConfig
+    jsonConfigFile = args.TestConfig
 
     # Clean up any storage container that is older than a 7 days old.
     try:
@@ -91,30 +80,28 @@ if __name__ == '__main__':
         raise e
 
     try:
-        with open(TestConfigurationFile) as f:
+        with open(jsonConfigFile) as f:
             template = json.load(f)
 
         for i in range(0, len(template["tests"])):
-            test = template["tests"][i]
+            jobSettings = template["tests"][i]
 
             applicationLicenses = None
             try:
-                applicationLicenses = test["applicationLicense"]
+                applicationLicenses = jobSettings["applicationLicense"]
             except KeyError as e:
                 pass
-            except Exception as e:
-                raise e
 
             _job_managers.append(
                 JobManager.JobManager(
-                    test["template"],
-                    test["poolTemplate"],
-                    test["parameters"],
-                    test["expectedOutput"],
+                    jobSettings["template"],
+                    jobSettings["poolTemplate"],
+                    jobSettings["parameters"],
+                    jobSettings["expectedOutput"],
                     applicationLicenses))
 
         images_refernces = []
-        for i in range(0, 0):
+        for i in range(0, len(template["images"])):
             image = template["images"][i]
             images_refernces.append(
                 Utils.ImageReference(
@@ -122,14 +109,14 @@ if __name__ == '__main__':
                     image["offer"],
                     image["version"]))
 
-        print("{} jobs will be created".format(len(_job_managers)))
+        Utils.logger.info("{} jobs will be created".format(len(_job_managers)))
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.gather(*[j.upload_assets(blob_client) for j in _job_managers]))
-        print("Creating pools...")
+        Utils.logger.info("Creating pools...")
         loop.run_until_complete(asyncio.gather(*[j.create_pool(batch_client, images_refernces) for j in _job_managers]))
-        print("Submitting jobs...")
+        Utils.logger.info("Submitting jobs...")
         loop.run_until_complete(asyncio.gather(*[j.create_and_submit_Job(batch_client) for j in _job_managers]))
-        print("waiting for jobs to complete...")
+        Utils.logger.info("waiting for jobs to complete...")
         loop.run_until_complete(asyncio.gather(*[j.wait_for_tasks_to_complete(batch_client, _timeout) for j in _job_managers]))
 
     except batchmodels.batch_error.BatchErrorException as err:
@@ -140,16 +127,15 @@ if __name__ == '__main__':
         loop = asyncio.get_event_loop()
         # Delete all the jobs and containers needed for the job
         # Reties any jobs that failed
-        print("-----------------------------------------")
+        Utils.logger.info("-----------------------------------------")
         loop.run_until_complete(asyncio.gather(*[j.retry(batch_client, blob_client, _timeout/2) for j in _job_managers]))
-        loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
-        loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
+        #loop.run_until_complete(asyncio.gather(*[j.delete_resouces(batch_client, blob_client) for j in _job_managers]))
+        #loop.run_until_complete(asyncio.gather(*[j.delete_pool(batch_client) for j in _job_managers]))
         loop.close()
         Utils.print_result(_job_managers)
 
         end_time = datetime.datetime.now().replace(microsecond=0)
         Utils.export_result(_job_managers, (end_time - start_time))
-    print()
-    print('Sample end: {}'.format(end_time))
-    print('Elapsed time: {}'.format(end_time - start_time))
-    print()
+    Utils.logger.info("-----------------------------------------")
+    Utils.logger.info('Sample end: {}'.format(end_time))
+    Utils.logger.info('Elapsed time: {}'.format(end_time - start_time))
