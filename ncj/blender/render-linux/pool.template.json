@@ -102,6 +102,7 @@
     },
     "pool": {
         "id": "[parameters('poolId')]",
+        "displayName": "Blender Ubuntu standard pool",
         "vmSize": "[parameters('nodeSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
