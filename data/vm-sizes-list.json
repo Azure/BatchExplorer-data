@@ -27,7 +27,7 @@
             "^standard_a[0-9a-z]*$",
             "^standard_d[0-9a-z]*$",
             "^basic_a[0-9a-z]*$"
-        ],
+        ]
     },
     "all": [
         "^standard_d[0-9]*$",
