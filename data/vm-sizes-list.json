@@ -28,40 +28,6 @@
             "^standard_d[0-9a-z]*$",
             "^basic_a[0-9a-z]*$"
         ],
-        "a": [
-            "^basic_a[0-9a-z]*$",
-            "^standard_a[0-9a-z]*$",
-            "^standard_a[0-9a-z]*_[v2]*$"
-        ],
-        "d": [
-            "^standard_d[0-9a-z]*$",
-            "^standard_d[0-9a-z]*_[v2]*$",
-            "^standard_d[0-9a-z]*_[v3]*$"
-        ],
-        "ev3": [
-            "^standard_e[0-9a-z]*_[v3]*$"
-        ],
-        "f": [
-            "^standard_f[0-9a-z]*$",
-            "^standard_f[0-9a-z]*s_[v2]*$"
-        ],
-        "g": [
-            "^standard_g[0-9a-z]*$"
-        ],
-        "h": [
-            "^standard_h[0-9a-z]*$"
-        ],
-        "nc": [
-            "^standard_nc",
-            "^standard_nc[0-9a-z]*_[v2]*$",
-            "^standard_nc[0-9a-z]*_[v3]*$"
-        ],
-        "nv": [
-            "^standard_nv"
-        ],
-        "m": [
-            "^standard_m"
-        ]
     },
     "all": [
         "^standard_d[0-9]*$",
