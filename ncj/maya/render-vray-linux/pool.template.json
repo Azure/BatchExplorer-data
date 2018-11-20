@@ -26,7 +26,7 @@
             "metadata": {
                 "description": "The size of the virtual machines that run the application"
             },
-            "defaultValue": "Standard_D2_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
                 "Standard_D1_v2",
                 "Standard_D2_v2",
@@ -72,19 +72,7 @@
                 "Standard_L32",
                 "Standard_M64s",
                 "Standard_M64ms",
-                "Standard_M128s",
-                "Standard_NC6",
-                "Standard_NC12",
-                "Standard_NC24",
-                "Standard_NC24r",
-                "Standard_NC6s_v2",
-                "Standard_NC12s_v2",
-                "Standard_NC24s_v2",
-                "Standard_NC24rs_v2",
-                "Standard_NC6s_v3",
-                "Standard_NC12s_v3",
-                "Standard_NC24s_v3",
-                "Standard_NC24rs_v3"
+                "Standard_M128s"
             ]
         }
     },

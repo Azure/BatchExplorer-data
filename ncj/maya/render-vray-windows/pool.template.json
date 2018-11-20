@@ -26,7 +26,7 @@
             "metadata": {
                 "description": "The size of the virtual machines that run the application"
             },
-            "defaultValue": "Standard_D2_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
                 "Standard_D1_v2",
                 "Standard_D2_v2",
@@ -110,6 +110,22 @@
         "applicationLicenses": [
             "maya",
             "vray"
-        ]
+        ],
+        "startTask": {
+            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('nodeSize')]",
+            "waitForSuccess": true,
+            "maxTaskRetryCount": 0,
+            "userIdentity": {
+                "autoUser": {
+                    "elevationLevel": "admin"
+                }
+            },
+            "resourceFiles": [
+                {
+                    "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/install-azure-nc-drivers.cmd",
+                    "filePath": "install-azure-nc-drivers.cmd"
+                }
+            ]
+        }
     }
 }
