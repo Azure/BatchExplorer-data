@@ -23,7 +23,17 @@ steps:
       import os
       # Python >= 3.7.0
       print('Starting')
-
+      print('$(PS_BATCH_ACCOUNT_NAME)')
+      print('$(BatchAccountKey)')
+      print('$(PS_BATCH_ACCOUNT_SUB)')
+      print('$(PS_BATCH_ACCOUNT_URL)')
+      print('$(PS_BATCH_ACCOUNT_NAME)')
+      print('$(PS_STORAGE_ACCOUNT_NAME)')
+      print('$(StorageAccountKey)')
+      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)')
+      print('$(ServicePrincipalCredentialsSecret)')
+      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)')
+      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)')
 
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
