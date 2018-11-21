@@ -47,10 +47,6 @@ steps:
      '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)' 
   condition: succeededOrFailed()
 
-- script: |
-    
-  displayName: 'Run tests'
-
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit
