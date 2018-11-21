@@ -41,8 +41,12 @@ steps:
       project_location = path.dirname(path.abspath(Runner_py))
       print('Starting the {}'.format(project_location))
 
-      python Runner.py "Tests/TestConfiguration.json" '$(PS_BATCH_ACCOUNT_NAME)' '$(BatchAccountKey)' '$(PS_BATCH_ACCOUNT_SUB)' '$(PS_BATCH_ACCOUNT_URL)' '$(PS_BATCH_ACCOUNT_NAME)' '$(PS_STORAGE_ACCOUNT_NAME)' $(StorageAccountKey)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)' '$(ServicePrincipalCredentialsSecret)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)' 
+  
+
+- script: |
+    python Runner.py "Tests/TestConfiguration.json" '$(PS_BATCH_ACCOUNT_NAME)' '$(BatchAccountKey)' '$(PS_BATCH_ACCOUNT_SUB)' '$(PS_BATCH_ACCOUNT_URL)' '$(PS_BATCH_ACCOUNT_NAME)' '$(PS_STORAGE_ACCOUNT_NAME)' $(StorageAccountKey)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)' '$(ServicePrincipalCredentialsSecret)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)' 
   condition: succeededOrFailed()
+  displayName: 'Run tests'
 
 - task: PublishTestResults@2
   inputs:
