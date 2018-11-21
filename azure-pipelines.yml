@@ -9,7 +9,7 @@ pool:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: 3.7.1
+    versionSpec: 3.7.0
     architecture: 'x64'
 
 - task: PythonScript@0
@@ -21,7 +21,7 @@ steps:
       from glob import iglob
       from os import path
       import os
-      # Python >= 3.7.1
+      # Python >= 3.7.0
  
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
@@ -36,7 +36,10 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    python Runner.py "Tests/TestConfiguration.json" 
+    python Runner.py "Tests/TestConfiguration.json $(PS_BATCH_ACCOUNT_NAME) $(BatchAccountKey) $(PS_BATCH_ACCOUNT_SUB)
+     $(PS_BATCH_ACCOUNT_URL) $(PS_BATCH_ACCOUNT_NAME) $(PS_STORAGE_ACCOUNT_NAME) $(StorageAccountKey) 
+     $(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID) $(ServicePrincipalCredentialsSecret) $(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)
+     $(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
   condition: succeededOrFailed()
   displayName: 'Run tests'
 

@@ -1,34 +1,19 @@
-import azure.storage.blob as azureblob
 import azure.batch.models as batchmodels
 import datetime
 import time
 import os
 from enum import Enum
-from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
-from pytz import timezone
 import pytz
-utc = pytz.utc
-import logging
+import Logger
+from multiprocessing.pool import ThreadPool
+import threading
 
-logger = logging.getLogger('rendering-log')
-logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler('template.log')
-fh.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
-# add the handlers to logger
-logger.addHandler(ch)
-logger.addHandler(fh)
+utc = pytz.utc
 
 """
 Utility module that holds the data objects and some useful methods
 """
+
 
 class StorageInfo(object):
     """Data objects to store the for StorageInfo for the job's input and output containers"""
@@ -90,23 +75,30 @@ def print_batch_exception(batch_exception):
     """
     Prints the contents of the specified Batch exception.
 
-    :param batch_exception:
+    :param batch_exception: The exception to convert into something readable
     """
-    logger.error('-------------------------------------------')
-    logger.error('Exception encountered:')
+    Logger.error('-------------------------------------------')
+    Logger.error('Exception encountered:')
     if batch_exception.error and \
             batch_exception.error.message and \
             batch_exception.error.message.value:
-        logger.error(batch_exception.error.message.value)
+        Logger.error(batch_exception.error.message.value)
         if batch_exception.error.values:
-            logger.error()
+            Logger.error()
             for mesg in batch_exception.error.values:
-                logger.error('{}:\t{}'.format(mesg.key, mesg.value))
-                logger.error('{}'.format(mesg.value))
-    logger.error('-------------------------------------------')
+                Logger.error('{}:\t{}'.format(mesg.key, mesg.value))
+                Logger.error('{}'.format(mesg.value))
+    Logger.error('-------------------------------------------')
 
 
 def expected_exception(batch_exception, message) -> bool:
+    """
+    If the expected exception is hit we want to return True, this is to ignore the errors
+    we do not care about.
+    :param batch_exception:
+    :param message:
+    :return: bool
+    """
     if batch_exception.error and \
             batch_exception.error.message and \
             batch_exception.error.message.value:
@@ -153,7 +145,7 @@ def upload_file_to_container(block_blob_client, container_name, file_path):
     """
     blob_name = os.path.basename(file_path)
 
-    logger.info(
+    Logger.info(
         'Uploading file [{}] to container [{}]...'.format(
             file_path,
             container_name))
@@ -196,7 +188,7 @@ def wait_for_tasks_to_complete(
             return JobStatus(JobState.COMPLETE,
                              "Job {} successfully completed.".format(job_id))
         else:
-            print("Job [{}] is running".format(job_id))
+            Logger.info("Job [{}] is running".format(job_id))
             time.sleep(10)
 
     return JobStatus(JobState.NOT_COMPLETE,
@@ -206,8 +198,9 @@ def wait_for_tasks_to_complete(
 def check_task_output(batch_service_client, job_id, expected_output):
     """Prints the stdout.txt file for each task in the job.
 
-    :param batch_client: The batch client to use.
-    :type batch_client: `batchserviceclient.BatchServiceClient`
+    :param expected_output: The file name of the expected output
+    :param batch_service_client: The batch client to use.
+    :type batch_service_client: `Azure.Batch.BatchServiceClient`
     :param str job_id: The id of the job with task output files to print.
     """
 
@@ -219,7 +212,7 @@ def check_task_output(batch_service_client, job_id, expected_output):
 
         for f in all_files:
             if expected_output in f.name:
-                logger.info(
+                Logger.info(
                     "Job [{}] expected output matched {}".format(
                         job_id, expected_output))
                 return JobStatus(JobState.COMPLETE,
@@ -229,72 +222,45 @@ def check_task_output(batch_service_client, job_id, expected_output):
         "Error: Cannot find file {} in job {}".format(expected_output, job_id)))
 
 
-def print_result(job_managers):
-    logger.info("Number of jobs run {}.".format(len(job_managers)))
-    failedJobs = 0
-    for i in job_managers:
-        if i.job_status.job_state != JobState.COMPLETE:
-            failedJobs += 1
-            logger.info(
-                "job {} failed because {} : {}".format(
-                    i.job_id,
-                    i.job_status.job_state,
-                    i.job_status.message))
-
-    if failedJobs == 0:
-        logger.info("-----------------------------------------")
-        logger.info("All jobs were successful Run")
-    else:
-        logger.info("-----------------------------------------")
-        logger.info("Number of jobs passed {} out of {}.".format(
-            len(job_managers) - failedJobs, len(job_managers)))
-
-
-def export_result(job_managers, total_time):
-    failedJobs = 0
-    logger.info("Exporting test output file")
-    root = Element('testsuite')
-
-    for i in job_managers:
-        child = SubElement(root, "testcase")
-        # Add a message to the error
-        child.attrib["name"] = str(i.raw_job_id)
-        if i.job_status.job_state != JobState.COMPLETE:
-            failedJobs += 1
-            subChild = SubElement(child, "failure")
-            subChild.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(
-                    i.job_id, i.job_status.job_state))
-
-            subChild.text = str(i.job_status.message)
-
-        # Add the time it took for this test to compete.
-        if i.duration is not None:
-            test_end_time = i.duration
-            convertedDuration = time.strptime(str(test_end_time).split(',')[0], '%H:%M:%S.%f')
-            child.attrib["time"] = str(
-                datetime.timedelta(
-                    hours=convertedDuration.tm_hour,
-                    minutes=convertedDuration.tm_min,
-                    seconds=convertedDuration.tm_sec).total_seconds())
-        else:
-            child.attrib["time"] = "0:00:00"
-
-    root.attrib["failures"] = str(failedJobs)
-    root.attrib["tests"] = str(len(job_managers))
-    root.attrib["time"] = str(total_time.total_seconds())
-    tree = ElementTree(root)
-    tree.write("Tests/output.xml")
-
-
 def cleanup_old_resources(blob_client):
     """
     Delete any storage container that has been around for 7 days. 
+
+    :param blob_client: A blob service client.
+    :type blob_client: `azure.storage.blob.BlockBlobService`
     """
+    # The current time 7 days ago. 
     timeout = utc.localize(datetime.datetime.now()) + datetime.timedelta(days=-7)
 
-    for container in blob_client.list_containers():
-        if (container.properties.last_modified < timeout):
-            if 'fgrp' in container.name:
-                logger.info(
-                    "Deleting container {} that is older than 7 days.".format(container))
-                blob_client.delete_container(container.name)
+    try:
+        for container in blob_client.list_containers():
+            if container.properties.last_modified < timeout:
+                if 'fgrp' in container.name:
+                    Logger.info(
+                        "Deleting container {} that is older than 7 days.".format(container.name))
+                    blob_client.delete_container(container.name)
+    except Exception as e:
+        Logger.error(e)
+        raise e
+
+
+def create_thread_collection(method_name, job_managers, *args):
+    """
+    Creates and runs a thread for every job_managers and runs the method_name for the given job_managers. 
+    Will also wait until all the tasks are complete
+
+    :param method_name: The job_managers method to be called 
+    :param job_managers: a collection of jobs that will be run 
+    :param args: the arguments the method needs to run 
+    """
+    threads = []
+
+    for j in job_managers:
+        # create_thread(), *args)
+        thread = threading.Thread(target=getattr(j, method_name), args=args)
+        threads.append(thread)
+        thread.start()
+    
+    # wait for all threads to finish
+    for thread in threads:
+        thread.join()

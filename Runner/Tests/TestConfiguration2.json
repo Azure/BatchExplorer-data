@@ -1,21 +1,7 @@
 {
   "tests": [
-       {
-        "name": "max-default-2018",
-        "template": "../ncj/3dsmax/standard/job.template.json",
-        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters2018.json",
-        "expectedOutput":"image0001.jpg"
-    },
-        {
-        "name": "max-default-2019",
-        "template": "../ncj/3dsmax/standard/job.template.json",
-        "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
-        "parameters": "Tests/3dsmax/standard/job.parameters2019.json",
-        "expectedOutput":"image0001.jpg"
-    },
     {
-        "name": "max-vray-2018",
+        "name": "3dsmax-vray-2018",
         "template": "../ncj/3dsmax/standard/job.template.json",
         "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
         "parameters": "Tests/3dsmax/standard/job.parameters.vray2018.json",
@@ -23,7 +9,7 @@
         "applicationLicense":"3dsmax,vray"
     },
     {
-        "name": "max-vray-2019",
+        "name": "3dsmax-vray-2019",
         "template": "../ncj/3dsmax/standard/job.template.json",
         "poolTemplate": "../ncj/3dsmax/standard/pool.template.json",
         "parameters": "Tests/3dsmax/standard/job.parameters.vray2019.json",

@@ -1,98 +1,95 @@
 # -*- coding: utf-8 -*-
 import json
 """
-This module responsiblilty is for reading and setting elements of the json templates
+This module responsibility is for reading and setting elements of the json templates
 """
 
 
-def set_template_name(template, pool_id):
-    try:
+def set_template_pool_id(template, pool_id):
+    """
+    Finds the correct poolName or poolId and sets the value based on the pool_id
+
+    :param template: The json file that needs to be changed
+    :param str pool_id: The value that needs to be set 
+    """
+
+    # Since these are nested we have to do some deeper digging. 
+    if template.get("parameters").get("poolName") != None:
         template["parameters"]["poolName"]["defaultValue"] = pool_id
-    except KeyError:
-        pass
-    try:
-        template["parameters"]["poolId"]["defaultValue"] = pool_id
-    except KeyError:
-        pass
-    try:
-        template["parameters"]["poolId"]["value"] = pool_id
-    except KeyError:
-        pass
+    
+    elif template.get("parameters").get("poolId") != None: 
+        if template.get("parameters").get("poolId").get('defaultValue') != None:
+            template["parameters"]["poolId"]["defaultValue"] = pool_id
+        
+        elif template.get("parameters").get("poolId").get('value') != None:
+            template["parameters"]["poolId"]["value"] = pool_id    
+
 
 def set_parameter_name(template, job_id):
-    try:
+    """
+    Finds the correct jobName or jobId and sets the value based on the job_id
+
+    :param template: The json file that needs to be changed
+    :param job_id: The value that needs to be set
+    """
+    if 'jobName' in template:
         template["jobName"]["value"] = job_id
-    except KeyError:
-        pass
-    try:
+
+    elif 'jobId' in template:
         template["jobId"]["value"] = job_id
-    except KeyError:
-        pass
 
 
 def set_parameter_storage_info(template, storage_info):
-    # Set input filegroup
     """
-    'fgrp-' needs to be removed.
+    Finds the correct input data or inputFilegroup  and sets the value based on the storage_info
+
+    :param template: The json file that needs to be changed
+    :param storage_info: 'Utils.StorageInfo'
     """
-    try:
+
+    # 'fgrp-' needs to be removed.
+    if 'inputData' in template:
         template["inputData"]["value"] = storage_info.input_container.replace("fgrp-", "")
-    except KeyError:
-        pass
-    try:
+    elif 'inputFilegroup' in template:
         template["inputFilegroup"]["value"] = storage_info.input_container.replace("fgrp-", "")
-    except KeyError:
-        pass
 
     # Set file group SAS input
-    try:
+    if 'inputFilegroupSas' in template:
         template["inputFilegroupSas"]["value"] = storage_info.input_container_SAS
-    except KeyError:
-        pass
-    try:
+    elif 'inputDataSas' in template:
         template["inputDataSas"]["value"] = storage_info.input_container_SAS
-    except KeyError:
-        pass
 
     # Set output filegroup
-    try:
+    if 'outputFilegroup' in template:
         template["outputFilegroup"]["value"] = storage_info.output_container.replace("fgrp-", "")
-    except KeyError:
-        pass
-    try:
+    elif 'outputs' in template:
         template["outputs"]["value"] = storage_info.output_container.replace("fgrp-", "")
-    except KeyError:
-        pass
-    try:
+
+    if 'outputSas' in template:
         template["outputSas"]["value"] = storage_info.output_container_SAS
-    except KeyError:
-        pass
+        
 
+def set_image_reference_properties(template, image_ref):
+    """
+    Sets what rendering image the tests are going to run on. 
 
-def set_job_template_name(template, job_id):
-    try:
-        template["parameters"]["jobName"]["defaultValue"] = job_id
-    except KeyError:
-        pass
-    try:
-        template["parameters"]["jobId"]["defaultValue"] = job_id
-    except KeyError:
-        pass
+    :param template: The json file that needs to be changed
+    :param image_ref: 'Utils.ImageReference'
+    """
+    if 'version' in template:
+        template["version"] = image_ref.version
 
-
-def set_image_reference_properties(template, image_reference):
-    try:
-        template["version"] = image_reference.version
-    except KeyError:
-        pass
-
-    try:
-        template["offer"] = image_reference.offer
-    except KeyError:
-        pass
+    if 'offer' in template:
+        template["offer"] = image_ref.offer
 
 
 def set_image_reference(template, image_ref):
+    """
+    Sets what rendering image the tests are going to run on. 
+
+    :param template: The json file that needs to be changed
+    :param image_reference: 'Utils.ImageReference'
+    """
     template_image_reference = template["variables"]["osType"]["imageReference"]
 
     # If the image is not a rendering image then no action needs to happen on
@@ -114,55 +111,76 @@ def set_image_reference(template, image_ref):
 
 
 def get_job_id(parameters_file: str) -> str:
+    """
+    Gets the job id from the parameters json file. 
+
+    :param parameters_file: The parameters json file we want to load. 
+    :rtype: str
+    :return: The job id that is in the parameters
+    """
     job_id = ""
+    if parameters_file == None:
+        return "empty-job"
 
     with open(parameters_file) as f:
         parameters = json.load(f)
-        try:
+        if 'jobName' in parameters:
             job_id = parameters["jobName"]["value"]
-        except KeyError:
-            pass
-        try:
+        elif 'jobId' in parameters:
             job_id = parameters["jobId"]["value"]
-        except KeyError:
-            pass
+
     return job_id
 
 
 def get_pool_id(parameters_file: str) -> str:
+    """
+    Gets the pool id from the parameters json file. 
+
+    :param parameters_file: The parameters json file we want to load. 
+    :rtype: str
+    :return: The pool id that is in the parameters
+    """
+    if parameters_file == None:
+        return "empty-pool"
     pool_id = ""
 
     with open(parameters_file) as f:
         parameters = json.load(f)
-        try:
+        if 'poolName' in parameters:
             pool_id = parameters["poolName"]["value"]
-        except KeyError:
-            pass
-        try:
+        elif 'poolId' in parameters:
             pool_id = parameters["poolId"]["value"]
-        except KeyError:
-            pass
 
     return pool_id
 
 
 def get_scene_file(parameters_file: str) -> str:
+    """
+    Gets the scene file from the parameters json file. 
+
+    :param parameters_file: The parameters json file we want to load. 
+    :rtype: str
+    :return: The scene file that is in the parameters
+    """
     with open(parameters_file) as f:
         parameters = json.load(f)
-    try:
-        sceneFile = parameters["sceneFile"]["value"]
-    except KeyError:
-        pass
-    try:
-        sceneFile = parameters["blendFile"]["value"]
-    except KeyError:
-        pass
+        if 'sceneFile' in parameters:
+            scene_file = parameters["sceneFile"]["value"]
 
-    return sceneFile
+        elif 'blendFile' in parameters:
+            scene_file = parameters["blendFile"]["value"]
+ 
+    return scene_file
 
 
 def load_file(template_file: str) -> str:
-    template = ""
+    """
+    load the a file 
+
+    :param template_file: The template file. 
+    :rtype: str
+    :return: loads the json from a file into memory 
+    """
     with open(template_file) as f:
         template = json.load(f)
 
