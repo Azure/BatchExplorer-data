@@ -22,27 +22,17 @@ steps:
       from os import path
       import os
       # Python >= 3.7.0
-      print('Starting')
-      print('$(PS_BATCH_ACCOUNT_NAME)')
-      print('$(BatchAccountKey)')
-      print('$(PS_BATCH_ACCOUNT_SUB)')
-      print('$(PS_BATCH_ACCOUNT_URL)')
-      print('$(PS_BATCH_ACCOUNT_NAME)')
-      print('$(PS_STORAGE_ACCOUNT_NAME)')
-      print('$(StorageAccountKey)')
-      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)')
-      print('$(ServicePrincipalCredentialsSecret)')
-      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)')
-      print('$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)')
-
+ 
       Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
       if not Runner_py:
           raise SystemExit('Could not find a Runner.py')
       project_location = path.dirname(path.abspath(Runner_py))
-      print('Starting the {}'.format(project_location))
-
-  
-
+      print('Starting the {}', project_location)
+      print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+- script: |
+    python -m pip install --upgrade pip setuptools wheel django
+    pip install -r Runner/requirements.txt
+  displayName: 'Install prerequisites'
 - script: |
     pushd '$(projectRoot)'
     python Runner.py "Tests/TestConfiguration.json" '$(PS_BATCH_ACCOUNT_NAME)' '$(BatchAccountKey)' '$(PS_BATCH_ACCOUNT_SUB)' '$(PS_BATCH_ACCOUNT_URL)' '$(PS_BATCH_ACCOUNT_NAME)' '$(PS_STORAGE_ACCOUNT_NAME)' '$(StorageAccountKey)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)' '$(ServicePrincipalCredentialsSecret)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)' '$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)' 
