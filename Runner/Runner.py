@@ -139,7 +139,7 @@ def main():
         Logger.info("-----------------------------------------")
         Utils.create_thread_collection("retry", _job_managers, batch_client, blob_client, _timeout / 2)
         Utils.create_thread_collection("delete_resouces", _job_managers, batch_client, blob_client)
-        # Utils.create_thread_collection("delete_pool", _job_managers, batch_client)
+        Utils.create_thread_collection("delete_pool", _job_managers, batch_client)
         end_time = datetime.datetime.now().replace(microsecond=0)
         Logger.print_result(_job_managers)
         Logger.export_result(_job_managers, (end_time - start_time))
