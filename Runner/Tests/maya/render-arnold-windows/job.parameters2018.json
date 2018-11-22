@@ -13,6 +13,9 @@
    },
    "inputData":{
       "value":"rendering"
+   },   
+   "inputDataSas":{
+      "value":"rendering"
    },
    "sceneFile":{
       "value":"maya.mb"

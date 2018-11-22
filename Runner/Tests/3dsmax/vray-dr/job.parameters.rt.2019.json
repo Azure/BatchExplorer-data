@@ -3,7 +3,7 @@
       "value":"max2019-vray-rt"
    },
    "poolId":{
-      "value":"3dsmax2019-vray-dr-RT"
+      "value":"3dsmax-vray-dr-RT"
    },
    "inputFilegroup":{
       "value":"rendering"

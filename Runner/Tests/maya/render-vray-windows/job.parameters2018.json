@@ -14,8 +14,8 @@
    "inputData":{
       "value":"rendering"
    },
-   "inputFilegroupSas":{
-      "value":"https://myfilegroup"
+   "inputDataSas":{
+      "value":"rendering"
    },
    "sceneFile":{
       "value":"maya-vray.mb"

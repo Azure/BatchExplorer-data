@@ -3,7 +3,7 @@
       "value":"maya-vray-linux-2017"
    },
    "poolId":{
-      "value":"vray-linux-2017"
+      "value":"vray-linux"
    },
    "mayaVersion":{
       "value":"Maya2017"
@@ -12,6 +12,9 @@
       "value":"myfilegroup"
    },
    "inputData":{
+      "value":"rendering"
+   },
+   "inputDataSas":{
       "value":"rendering"
    },
    "sceneFile":{

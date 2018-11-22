@@ -14,7 +14,7 @@
    "inputData":{
       "value":"rendering"
    },
-   "inputFilegroupSas":{
+   "inputDataSas":{
       "value":"https://myfilegroup"
    },
    "sceneFile":{
