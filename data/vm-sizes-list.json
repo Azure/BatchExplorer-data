@@ -1,0 +1,80 @@
+{
+    "category": {
+        "all": [ ".*" ],
+        "compute": [
+            "^standard_f[0-9a-z]*$",
+            "^standard_f[0-9a-z]*_[v2]*$",
+            "^standard_f[0-9a-z]*_[v3]*$"
+        ],
+        "memory": [
+            "^standard_g[0-9a-z]*$",
+            "^standard_d[0-9a-z]*$",
+            "^standard_d[0-9a-z]*_[v2]*$"
+        ],
+        "gpu": [
+            "^standard_n[0-9a-z]*$",
+            "^standard_n[0-9a-z]*_[v2]*$",
+            "^standard_n[0-9a-z]*_[v3]*$"
+        ],
+        "hpc": [
+            "^standard_h[0-9a-z]*$",
+            "^standard_a8",
+            "^standard_a9",
+            "^standard_a10",
+            "^standard_a11"
+        ],
+        "standard": [
+            "^standard_a[0-9a-z]*$",
+            "^standard_d[0-9a-z]*$",
+            "^basic_a[0-9a-z]*$"
+        ]
+    },
+    "all": [
+        "^standard_d[0-9]*$",
+        "^standard_d[0-9]*_[v2]*$",
+        "^standard_d[0-9]*_[v3]*$",
+        "^standard_g[0-9]*$",        
+        "^standard_h[0-9a-z]*$",
+        "standard_a4_v2",
+        "standard_a8_v2",
+        "standard_a4m_v2",
+        "standard_a8m_v2",
+        "standard_m64ms",
+        "standard_m128s",
+        "standard_e2_v3",
+        "standard_e4_v3",
+        "standard_e8_v3",
+        "standard_e16_v3",
+        "standard_e32_v3",
+        "standard_e64_v3"
+    ],
+    "paas": [
+        "small",
+        "medium",
+        "large",
+        "extralarge",
+        "^a[0-9]$"
+    ],
+    "iaas": [
+        "^basic_a[1-9][0-9]*$", 
+        "^standard_a[1-9][0-9]*$", 
+        "^standard_f[0-9a-z]*$",
+        "^standard_f[0-9a-z]*_[v2]*$",
+        "^standard_nv[0-9a-z]*$",
+        "^standard_nc",
+        "^standard_nc[0-9a-z]*_[v2]*$",
+        "^standard_nc[0-9a-z]*_[v3]*$",
+        "standard_a2m_v2",
+        "standard_a1_v2",
+        "standard_a2_v2",
+        "^standard_ds[0-9a-z]*$",
+        "^standard_ds[0-9a-z]*_[v2]*$",
+        "^standard_d[0-9a-z]*s_[v3]*$",
+        "^standard_e((?!20)[0-9])*s_[v3]*$", 
+        "^standard_gs[0-9a-z]*$",
+        "^standard_l[0-9a-z]*s$",
+        "^standard_nd[0-9a-z]*$",
+        "standard_m64s",
+        "standard_m128ms"
+    ]
+}

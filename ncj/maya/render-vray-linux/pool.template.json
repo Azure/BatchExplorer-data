@@ -7,50 +7,27 @@
                 "description": "Id of the pool"
             }
         },
-        "vmCount": {
+        "dedicatedVmCount": {
             "type": "int",
             "defaultValue": 1,
             "metadata": {
-                "description": "The number of virtual machines in the Azure Batch pool where the job will run"
+                "description": "The number of dedicated nodes in the Azure Batch pool"
             }
         },
-        "vmSize": {
+        "lowPriorityVmCount": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "The number of low priority nodes in the Azure Batch pool"
+            }
+        },
+        "nodeSize": {
             "type": "string",
             "metadata": {
                 "description": "The size of the virtual machines that run the application"
             },
-            "defaultValue": "Standard_D2_v2",
+            "defaultValue": "Standard_D4_v2",
             "allowedValues": [
-                "Standard_A1",
-                "Standard_A2",
-                "Standard_A3",
-                "Standard_A4",
-                "Standard_A5",
-                "Standard_A6",
-                "Standard_A7",
-                "Standard_A8",
-                "Standard_A9",
-                "Standard_A10",
-                "Standard_A11",
-                "Standard_A1_v2",
-                "Standard_A2_v2",
-                "Standard_A4_v2",
-                "Standard_A8_v2",
-                "Standard_A2m_v2",
-                "Standard_A4m_v2",
-                "Standard_A8m_v2",
-                "Standard_D1",
-                "Standard_D2",
-                "Standard_D3",
-                "Standard_D4",
-                "Standard_D11",
-                "Standard_D12",
-                "Standard_D13",
-                "Standard_D14",
-                "Standard_D11",
-                "Standard_D12",
-                "Standard_D13",
-                "Standard_D14",
                 "Standard_D1_v2",
                 "Standard_D2_v2",
                 "Standard_D3_v2",
@@ -65,6 +42,8 @@
                 "Standard_D4_v3",
                 "Standard_D8_v3",
                 "Standard_D16_v3",
+                "Standard_D32_v3",
+                "Standard_D64_v3",
                 "Standard_E2_v3",
                 "Standard_E4_v3",
                 "Standard_E8_v3",
@@ -81,6 +60,12 @@
                 "Standard_G3",
                 "Standard_G4",
                 "Standard_G5",
+                "Standard_H8",
+                "Standard_H16",
+                "Standard_H8m",
+                "Standard_H16m",
+                "Standard_H16r",
+                "Standard_H16mr",
                 "Standard_L4",
                 "Standard_L8",
                 "Standard_L16",
@@ -105,9 +90,10 @@
     "pool": {
         "id": "[parameters('poolName')]",
         "displayName": "Maya V-Ray rendering pool for CentOS",
-        "vmSize": "[parameters('vmSize')]",
+        "vmSize": "[parameters('nodeSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
-        "targetDedicatedNodes": "[parameters('vmCount')]",
+        "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
+        "targetLowPriorityNodes": "[parameters('lowPriorityVmCount')]",
         "enableAutoScale": false,
         "applicationLicenses": [
             "maya",

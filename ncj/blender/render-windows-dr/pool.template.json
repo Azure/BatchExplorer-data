@@ -59,6 +59,13 @@
                 "Standard_F4",
                 "Standard_F8",
                 "Standard_F16",
+                "Standard_F2s_v2",
+                "Standard_F4s_v2",
+                "Standard_F8s_v2",
+                "Standard_F16s_v2",
+                "Standard_F32s_v2",
+                "Standard_F64s_v2",
+                "Standard_F72s_v2",
                 "Standard_G1",
                 "Standard_G2",
                 "Standard_G3",
@@ -76,16 +83,7 @@
                 "Standard_L32",
                 "Standard_M64s",
                 "Standard_M64ms",
-                "Standard_M128s",
-                "Standard_NC6",
-                "Standard_NC12",
-                "Standard_NC24",
-                "Standard_NC6s_v2",
-                "Standard_NC12s_v2",
-                "Standard_NC24s_v2",
-                "Standard_NC6s_v3",
-                "Standard_NC12s_v3",
-                "Standard_NC24s_v3"
+                "Standard_M128s"
             ]
         }
     },
@@ -103,6 +101,7 @@
     },
     "pool": {
         "id": "[parameters('poolId')]",
+        "displayName": "Blender Windows DR pool",
         "vmSize": "[parameters('nodeSize')]",
         "virtualMachineConfiguration": "[variables('osType')]",
         "targetDedicatedNodes": "[parameters('dedicatedVmCount')]",
