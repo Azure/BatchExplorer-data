@@ -177,6 +177,15 @@
                     }
                 }
             },
+            "jobReleaseTask": {
+                "userIdentity": {
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "nonAdmin"
+                    }
+                },
+                "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            },
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
