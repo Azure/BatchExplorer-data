@@ -29,7 +29,7 @@
     "frameHeight":{
         "value":1200
     },
-    "outputFilegroup":{
+    "outputs":{
         "value":"myfilegroup"
     },
     "nodeCount":{

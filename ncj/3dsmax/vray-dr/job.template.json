@@ -157,7 +157,7 @@
                 "description": "Frame height"
             }
         },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -220,7 +220,7 @@
                                 "filePattern":"../stdout.txt",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs/frame.log"
                                     }
                                 },
@@ -232,7 +232,7 @@
                                 "filePattern":"../stderr.txt",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs/frame_error.log"
                                     }
                                 },
@@ -244,7 +244,7 @@
                                 "filePattern":"images/**/*",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/outputs"
                                     }
                                 },
@@ -256,7 +256,7 @@
                                 "filePattern":"*.log",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs"
                                     }
                                 },
@@ -268,7 +268,7 @@
                                 "filePattern":"vraylog.*",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs"
                                     }
                                 },
