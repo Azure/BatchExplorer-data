@@ -23,12 +23,6 @@
     "frameEnd":{
         "value":1
     },
-    "frameWidth":{
-        "value":1600
-    },
-    "frameHeight":{
-        "value":1200
-    },
     "outputs":{
         "value":"myfilegroup"
     },

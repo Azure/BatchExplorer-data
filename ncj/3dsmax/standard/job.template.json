@@ -120,7 +120,7 @@
             "type": "string",
             "defaultValue": " ",
             "metadata": {
-                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1"
+                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1 -width:800 -height:600"
             }
         },
         "frameStart": {
@@ -135,20 +135,6 @@
             "defaultValue": 1,
             "metadata": {
                 "description": "Index of the last frame to render"
-            }
-        },
-        "frameWidth": {
-            "type": "int",
-            "defaultValue": 1600,
-            "metadata": {
-                "description": "Frame width"
-            }
-        },
-        "frameHeight": {
-            "type": "int",
-            "defaultValue": 1200,
-            "metadata": {
-                "description": "Frame height"
             }
         },
         "outputs": {
@@ -203,7 +189,7 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe 3dsmax.ps1 -maxVersion \\\"[parameters('maxVersion')]\\\" -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\" [parameters('additionalArgs')]\\\" -irradianceMap \\\"[parameters('irradianceMapFile')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
+                    "commandLine": "powershell.exe 3dsmax.ps1 -maxVersion \\\"[parameters('maxVersion')]\\\" -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\" [parameters('additionalArgs')]\\\" -irradianceMap \\\"[parameters('irradianceMapFile')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
                     "resourceFiles":[
                         {
                             "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
