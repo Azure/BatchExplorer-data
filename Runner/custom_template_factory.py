@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+
 """
 This module responsibility is for reading and setting elements of the json templates in memory.
 """
@@ -18,13 +19,13 @@ def set_template_pool_id(json_object: str, pool_id: str):
     # Since these are nested we have to do some deeper digging. 
     if json_object.get("parameters").get("poolName") is not None:
         json_object["parameters"]["poolName"]["defaultValue"] = pool_id
-    
+
     elif json_object.get("parameters").get("poolId") is not None:
         if json_object.get("parameters").get("poolId").get('defaultValue') is not None:
             json_object["parameters"]["poolId"]["defaultValue"] = pool_id
-        
+
         elif json_object.get("parameters").get("poolId").get('value') is not None:
-            json_object["parameters"]["poolId"]["value"] = pool_id    
+            json_object["parameters"]["poolId"]["value"] = pool_id
 
 
 def set_parameter_name(json_object: str, job_id: str):
@@ -38,7 +39,7 @@ def set_parameter_name(json_object: str, job_id: str):
     """
     if json_object.get("jobName") is not None:
         json_object["jobName"]["value"] = job_id
-    
+
     elif json_object.get("jobId") is not None:
         json_object["jobId"]["value"] = job_id
 
@@ -70,10 +71,10 @@ def set_parameter_storage_info(json_object: str, storage_info: str):
         json_object["outputFilegroup"]["value"] = storage_info.output_container.replace("fgrp-", "")
     elif json_object.get("outputs") is not None:
         json_object["outputs"]["value"] = storage_info.output_container.replace("fgrp-", "")
-    
+
     if json_object.get("outputSas") is not None:
         json_object["outputSas"]["value"] = storage_info.output_container_SAS
-        
+
 
 def set_image_reference_properties(json_object: str, image_ref: 'List[util.ImageReference]'):
     """
@@ -181,7 +182,7 @@ def get_scene_file(parameters_file: str) -> str:
 
         elif 'blendFile' in parameters:
             scene_file = parameters["blendFile"]["value"]
- 
+
     return scene_file
 
 

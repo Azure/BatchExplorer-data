@@ -1,7 +1,7 @@
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 import logging
 import utils
-import time 
+import time
 import datetime
 
 logger = logging.getLogger('rendering-log')
@@ -93,8 +93,9 @@ def export_result(job_managers: 'list[job_manager.JobManager]', total_time: int)
         # Add the time it took for this test to compete.
         if job_item.duration is not None:
             info("Job {} took {} to complete".format(job_item.job_id, job_item.duration))
-            converted_time = time.strptime(str(job_item.duration).split('.')[0],'%H:%M:%S')
-            total_seconds = datetime.timedelta(hours=converted_time.tm_hour, minutes=converted_time.tm_min, seconds=converted_time.tm_sec).total_seconds()            
+            converted_time = time.strptime(str(job_item.duration).split('.')[0], '%H:%M:%S')
+            total_seconds = datetime.timedelta(hours=converted_time.tm_hour, minutes=converted_time.tm_min,
+                                               seconds=converted_time.tm_sec).total_seconds()
             child.attrib["time"] = str(total_seconds)
         # job did not run, so the test did not run
         else:
@@ -102,7 +103,7 @@ def export_result(job_managers: 'list[job_manager.JobManager]', total_time: int)
 
     root.attrib["failures"] = str(failed_jobs)
     root.attrib["tests"] = str(len(job_managers))
-    
+
     root.attrib["time"] = str(total_time.total_seconds())
     tree = ElementTree(root)
     tree.write("Tests/output.xml")
@@ -132,4 +133,4 @@ def print_result(job_managers: 'list[job_manager.JobManager]'):
 
     else:
         info("Number of jobs passed {} out of {}.".format(
-        len(job_managers) - failed_jobs, len(job_managers)))
+            len(job_managers) - failed_jobs, len(job_managers)))

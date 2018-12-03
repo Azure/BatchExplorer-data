@@ -25,7 +25,7 @@ _timeout = 25  # type: int
 _job_managers = []  # type: List[job_manager.JobManager]
 
 
-def create_batch_client(args: object)-> batch.BatchExtensionsClient:
+def create_batch_client(args: object) -> batch.BatchExtensionsClient:
     """
     Create a batch client using AAD.
 
@@ -72,7 +72,8 @@ def runner_arguments():
     return parser.parse_args()
 
 
-def run_job_manager_tests(blob_client:azureblob.BlockBlobService, batch_client:batch.BatchExtensionsClient, images_ref:'List[util.ImageReference]'):
+def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client: batch.BatchExtensionsClient,
+                          images_ref: 'List[util.ImageReference]'):
     """
     Creates all resources needed to run the job, including creating the containers and the pool needed to run the job.
     Then creates job and checks if the expected output is correct.
@@ -124,11 +125,11 @@ def main():
                     application_licenses = jobSetting["applicationLicense"]
 
                 _job_managers.append(job_manager.JobManager(
-                                jobSetting["template"],
-                                jobSetting["poolTemplate"],
-                                jobSetting["parameters"],
-                                jobSetting["expectedOutput"],
-                                application_licenses))
+                    jobSetting["template"],
+                    jobSetting["poolTemplate"],
+                    jobSetting["parameters"],
+                    jobSetting["expectedOutput"],
+                    application_licenses))
 
             for image in template["images"]:
                 images_ref.append(utils.ImageReference(image["osType"], image["offer"], image["version"]))

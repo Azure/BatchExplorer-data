@@ -194,7 +194,7 @@ def wait_for_tasks_to_complete(
         # Check to see how many tasks are incomplete.
         incomplete_tasks = [task for task in tasks if
                             task.state != batchmodels.TaskState.completed]
-                            
+
         # if the all the tasks are complete we return a complete message, else
         # we wait all the tasks are complete
         if not incomplete_tasks:
@@ -212,7 +212,7 @@ def check_task_output(batch_service_client: batch.BatchExtensionsClient, job_id:
     """Prints the stdout.txt file for each task in the job.
 
     :param batch_service_client: The batch client to use.
-    :type batch_service_client: `Azure.Batch.BatchServiceClient`
+    :type batch_service_client: `Azure.Batch.BatchExtensionsClient`
     :param job_id: The id of the job with task output files to print.
     :type job_id: str
     :param expected_output: The file name of the expected output
@@ -276,7 +276,7 @@ def create_thread_collection(method_name: str, job_managers: 'list[job_manager.J
         thread = threading.Thread(target=getattr(j, method_name), args=args)
         threads.append(thread)
         thread.start()
-    
+
     # wait for all threads to finish
     for thread in threads:
         thread.join()

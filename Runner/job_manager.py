@@ -49,8 +49,8 @@ def submit_job(batch_service_client: batch.BatchExtensionsClient, template: str,
 
 class JobManager(object):
 
-    def __init__(self, template_file: str, pool_template_file :str ,
-                 parameters_file :str, expected_output:str, application_licenses:str=None): 
+    def __init__(self, template_file: str, pool_template_file: str,
+                 parameters_file: str, expected_output: str, application_licenses: str = None):
         super(JobManager, self).__init__()
         self.raw_job_id = ctm.get_job_id(parameters_file)  # The attribute 'raw_job_id' of type 'str'
         self.job_id = _time + "-" + self.raw_job_id  # The attribute 'job_id' of type 'str'
@@ -115,7 +115,8 @@ class JobManager(object):
                 traceback.print_exc()
                 utils.print_batch_exception(err)
 
-    def create_pool(self, batch_service_client: batch.BatchExtensionsClient, image_references:'List[util.ImageReference]'):
+    def create_pool(self, batch_service_client: batch.BatchExtensionsClient,
+                    image_references: 'List[util.ImageReference]'):
         """
         Creates the Pool that will be submitted to the batch service.
 
@@ -233,7 +234,8 @@ class JobManager(object):
         timeout_expiration = datetime.datetime.now() + timeout
         return datetime.datetime.now() <= timeout_expiration
 
-    def wait_for_steady_tvm(self, batch_service_client: batch.BatchExtensionsClient, timeout: datetime.timedelta) -> bool:
+    def wait_for_steady_tvm(self, batch_service_client: batch.BatchExtensionsClient,
+                            timeout: datetime.timedelta) -> bool:
         """
         This method will wait until the pool has TVM available to run the job. 
 
@@ -273,7 +275,7 @@ class JobManager(object):
             logger.error("POOL [{}] FAILED TO ALLOCATE IN TIME".format(self.pool_id))
             return False
 
-    def wait_for_job_results(self, batch_service_client: batch.BatchExtensionsClient, timeout:int):
+    def wait_for_job_results(self, batch_service_client: batch.BatchExtensionsClient, timeout: int):
         """
         Wait for tasks to complete, and set the job status.
 
@@ -300,7 +302,8 @@ class JobManager(object):
             self.duration = (datetime.timedelta(seconds=(pool_time + job_time)))
             self.check_expected_output(batch_service_client)
 
-    def retry(self, batch_service_client: batch.BatchExtensionsClient, blob_client: azureblob.BlockBlobService, timeout:int):
+    def retry(self, batch_service_client: batch.BatchExtensionsClient, blob_client: azureblob.BlockBlobService,
+              timeout: int):
         """
         Retries a job if it failed due to a NOT_COMPLETE or UNEXPECTED_OUTPUT. If the pool fails we don't retry the job
 
@@ -349,7 +352,8 @@ class JobManager(object):
                 traceback.print_exc()
                 utils.print_batch_exception(batch_exception)
 
-    def delete_resources(self, batch_service_client: batch.BatchExtensionsClient, blob_client: azureblob.BlockBlobService, force_delete: bool=None):
+    def delete_resources(self, batch_service_client: batch.BatchExtensionsClient,
+                         blob_client: azureblob.BlockBlobService, force_delete: bool = None):
         """
         Deletes the job, pool and the containers used for the job. If the job fails the output container will not be deleted.
         The non deleted container is used for debugging.
