@@ -39,3 +39,4 @@ jspm_packages
 # Python build files 
 __pycache__/
 Runner/Tests/output.xml
+.idea
