@@ -17,15 +17,15 @@ steps:
   inputs:
     scriptSource: 'inline'
     script: |
-      """Search all subdirectories for `Runner.py`."""
+      """Search all subdirectories for `runner.py`."""
       from glob import iglob
       from os import path
       import os
       # Python >= 3.7.0
  
-      Runner_py = next(iglob(path.join('**', 'Runner.py'), recursive=True), None)
+      Runner_py = next(iglob(path.join('**', 'runner.py'), recursive=True), None)
       if not Runner_py:
-          raise SystemExit('Could not find a Runner.py')
+          raise SystemExit('Could not find a runner.py')
       project_location = path.dirname(path.abspath(Runner_py))
       print('Starting the {}', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
@@ -35,7 +35,7 @@ steps:
   displayName: 'Install prerequisites'
 - script: |
     pushd '$(projectRoot)'
-    python Runner.py "Tests/TestConfiguration.json" "$(PS_BATCH_ACCOUNT_NAME)" "$(BatchAccountKey)" "$(PS_BATCH_ACCOUNT_URL)" "$(PS_BATCH_ACCOUNT_SUB)" "$(PS_STORAGE_ACCOUNT_NAME)" "$(StorageAccountKey)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" "$(ServicePrincipalCredentialsSecret)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
+    python runner.py "Tests/TestConfiguration.json" "$(PS_BATCH_ACCOUNT_NAME)" "$(BatchAccountKey)" "$(PS_BATCH_ACCOUNT_URL)" "$(PS_BATCH_ACCOUNT_SUB)" "$(PS_STORAGE_ACCOUNT_NAME)" "$(StorageAccountKey)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" "$(ServicePrincipalCredentialsSecret)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
   condition: succeededOrFailed()
   displayName: 'Run tests'
 
