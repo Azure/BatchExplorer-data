@@ -3,17 +3,17 @@ from azure.common.credentials import ServicePrincipalCredentials
 import traceback
 import datetime
 import sys
-import Logger
+import logger
 import json
-import JobManager
-import Utils
+import job_manager
+import utils
 import azure.storage.blob as azureblob
 import azure.batch.models as batchmodels
 import azext.batch as batch
 import argparse
 
 """
-This python module is used for valiading the rendering templates by using the azure CLI. 
+This python module is used for validating the rendering templates by using the azure CLI. 
 This module will load the manifest file 'TestConfiguration' specified by the user and
 create pools and jobs based on this file.
 """
@@ -21,15 +21,17 @@ create pools and jobs based on this file.
 sys.path.append('.')
 sys.path.append('..')
 
-_timeout = 25
-_job_managers = []
+_timeout = 25  # type: int
+_job_managers = []  # type: List[job_manager.JobManager]
 
 
-def create_batch_client(args: object):
+def create_batch_client(args: object)-> batch.BatchExtensionsClient:
     """
     Create a batch client using AAD.
 
+    :param args: The list of arguments that come in through the command line
     :type args: ArgumentParser
+    :return batch.BatchExtensionsClient: returns the valid batch extension client that used AAD.
     """
     credentials = ServicePrincipalCredentials(
         client_id=args.ServicePrincipalCredentialsClientID,
@@ -46,9 +48,10 @@ def create_batch_client(args: object):
 
 def runner_arguments():
     """
-    Handles the user's input and what settings need to be set when running this module. 
+    Handles the user's input and what settings are needed when running this module.
 
-    :return: Returns all the arguments the module needs. 
+    :return: Returns the parser that contains all settings this module needs from the user's input
+    :rtype: Parser
     """
     parser = argparse.ArgumentParser()
     # "Tests/TestConfiguration.json"
@@ -69,30 +72,34 @@ def runner_arguments():
     return parser.parse_args()
 
 
-def run_job_manager_tests(blob_client, batch_client, images_ref):
+def run_job_manager_tests(blob_client:azureblob.BlockBlobService, batch_client:batch.BatchExtensionsClient, images_ref:'List[util.ImageReference]'):
     """
-    Creates all resources needed to run the job, including creating the containers and pool needed. Then
-    creates job and checks it expected output.
+    Creates all resources needed to run the job, including creating the containers and the pool needed to run the job.
+    Then creates job and checks if the expected output is correct.
+
     :param images_ref: The list of images the rendering image will run on
-    :type blob_client: The batch client needed for making batch operations
-    :type batch_client: The blob client needed for making blob client operations
+    :type images_ref: List[util.ImageReference]
+    :param blob_client: The blob client needed for making blob client operations
+    :type blob_client: `azure.storage.blob.BlockBlobService`
+    :param batch_client: The batch client needed for making batch operations
+    :type batch_client: azure.batch.BatchExtensionsClient
     """
 
-    Logger.info("{} jobs will be created".format(len(_job_managers)))
-    Utils.create_thread_collection("upload_assets", _job_managers, blob_client)
-    Logger.info("Creating pools...")
-    Utils.create_thread_collection("create_pool", _job_managers, batch_client, images_ref)
-    Logger.info("Submitting jobs...")
-    Utils.create_thread_collection("create_and_submit_job", _job_managers, batch_client)
-    Logger.info("waiting for jobs to complete...")
-    Utils.create_thread_collection("wait_for_job_results", _job_managers, batch_client, _timeout)
+    logger.info("{} jobs will be created.".format(len(_job_managers)))
+    utils.create_thread_collection("upload_assets", _job_managers, blob_client)
+    logger.info("Creating pools...")
+    utils.create_thread_collection("create_pool", _job_managers, batch_client, images_ref)
+    logger.info("Submitting jobs...")
+    utils.create_thread_collection("create_and_submit_job", _job_managers, batch_client)
+    logger.info("Waiting for jobs to complete...")
+    utils.create_thread_collection("wait_for_job_results", _job_managers, batch_client, _timeout)
 
 
 def main():
     args = runner_arguments()
-    Logger.account_info(args)
+    logger.account_info(args)
     start_time = datetime.datetime.now().replace(microsecond=0)
-    Logger.info('Template runner start time: [{}]'.format(start_time))
+    logger.info('Template runner start time: [{}]'.format(start_time))
 
     # Create the blob client, for use in obtaining references to
     # blob storage containers and uploading files to containers.
@@ -104,48 +111,45 @@ def main():
     batch_client = create_batch_client(args)
 
     # Clean up any storage container that is older than a 7 days old.
-    Utils.cleanup_old_resources(blob_client)
+    utils.cleanup_old_resources(blob_client)
 
     try:
-        images_ref = []
+        images_ref = []  # type: List[utils.ImageReference]
         with open(args.TestConfig) as f:
             template = json.load(f)
 
             for jobSetting in template["tests"]:
-                applicationLicenses = None
+                application_licenses = None
                 if 'applicationLicense' in jobSetting:
-                    applicationLicenses = jobSetting["applicationLicense"]
+                    application_licenses = jobSetting["applicationLicense"]
 
-                _job_managers.append(JobManager.JobManager(
+                _job_managers.append(job_manager.JobManager(
                                 jobSetting["template"],
                                 jobSetting["poolTemplate"],
                                 jobSetting["parameters"],
                                 jobSetting["expectedOutput"],
-                                applicationLicenses))
-        
-        
+                                application_licenses))
+
             for image in template["images"]:
-                images_ref.append(Utils.ImageReference(image["osType"], image["offer"], image["version"]))
+                images_ref.append(utils.ImageReference(image["osType"], image["offer"], image["version"]))
 
         run_job_manager_tests(blob_client, batch_client, images_ref)
 
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
-        Utils.print_batch_exception(err)
+        utils.print_batch_exception(err)
         raise
     finally:
         # Delete all the jobs and containers needed for the job
         # Reties any jobs that failed
-        Logger.info("-----------------------------------------")
-        Utils.create_thread_collection("retry", _job_managers, batch_client, blob_client, _timeout / 2)
-        Utils.create_thread_collection("delete_resouces", _job_managers, batch_client, blob_client)
-        Utils.create_thread_collection("delete_pool", _job_managers, batch_client)
+        utils.create_thread_collection("retry", _job_managers, batch_client, blob_client, _timeout / 2)
+        utils.create_thread_collection("delete_resources", _job_managers, batch_client, blob_client)
+        utils.create_thread_collection("delete_pool", _job_managers, batch_client)
         end_time = datetime.datetime.now().replace(microsecond=0)
-        Logger.print_result(_job_managers)
-        Logger.export_result(_job_managers, (end_time - start_time))
-    Logger.info("-----------------------------------------")
-    Logger.info('Sample end: {}'.format(end_time))
-    Logger.info('Elapsed time: {}'.format(end_time - start_time))
+        logger.print_result(_job_managers)
+        logger.export_result(_job_managers, (end_time - start_time))
+    logger.info('Sample end: {}'.format(end_time))
+    logger.info('Elapsed time: {}'.format(end_time - start_time))
 
 
 if __name__ == '__main__':

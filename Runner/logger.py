@@ -1,60 +1,80 @@
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 import logging
-import Utils
+import utils
 import time 
 import datetime
 
 logger = logging.getLogger('rendering-log')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('template.log')
-fh.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('template.log')
+file_handler.setLevel(logging.DEBUG)
 # create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.ERROR)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
 # add the handlers to logger
-logger.addHandler(ch)
-logger.addHandler(fh)
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 
-def info(message):
+def info(message: str):
+    """
+    Log 'msg % args' with severity 'INFO' to the logger file
+
+    :param message: The info message that will be added to the logger file
+    :type message: str
+    """
     logger.info(message)
 
 
-def error(error_message):
+def error(error_message: str):
+    """
+    Log 'msg % args' with severity 'ERROR' to the logger file
+
+    :param error_message: The info message that will be added to the logger file
+    :type error_message: str
+    """
     logger.error(error_message)
 
-def warn(warning_message):
-    logger.warn(warning_message)
+
+def warn(warning_message: str):
+    """
+    Log 'msg % args' with severity 'ERROR' to the logger file
+
+    :param warning_message: The info message that will be added to the logger file
+    :type warning_message: str
+    """
+    logger.warning(warning_message)
 
 
 def account_info(args: object):
     """
     Logs the account info
+
+    :param args: A few of the arguments set on the command line
     :type args: ArgumentParser
     """
-    info("-----------------------------------------------------")
-    info("------------------Starting runner--------------------")
-    info("-----------------------------------------------------")
     info("Batch Account Name: {}".format(args.BatchAccountName))
     info("Batch Account URL: {}".format(args.BatchAccountUrl))
     info("Storage account: {}".format(args.StorageAccountName))
     info("Reading in the list of test in the : {} file".format(args.TestConfig))
-    info("-----------------------------------------------------")
 
-def export_result(job_managers, total_time):
+
+def export_result(job_managers: 'list[job_manager.JobManager]', total_time: int):
     """
     Exports the a file that is that is similar to a pytest export file. This is consumed by
     Azure pipeline to generate a build report.
 
     :param job_managers: A collection of jobs that were run
+    :type  job_managers: List[job_managers.JobManager]
     :param timedelta total_time: The duration for all the tasks to complete
+    :type total_time: timedelta
       """
-    failed_jobs = 0
+    failed_jobs = 0  # type: int
     info("Exporting test output file")
     root = Element('testsuite')
 
@@ -62,7 +82,7 @@ def export_result(job_managers, total_time):
         child = SubElement(root, "testcase")
         # Add a message to the error
         child.attrib["name"] = str(job_item.raw_job_id)
-        if job_item.status.job_state != Utils.JobState.COMPLETE:
+        if job_item.status.job_state != utils.JobState.COMPLETE:
             failed_jobs += 1
             sub_child = SubElement(child, "failure")
             sub_child.attrib["message"] = str("Job [{}] failed due the ERROR: [{}]".format(
@@ -74,7 +94,7 @@ def export_result(job_managers, total_time):
         if job_item.duration is not None:
             info("Job {} took {} to complete".format(job_item.job_id, job_item.duration))
             converted_time = time.strptime(str(job_item.duration).split('.')[0],'%H:%M:%S')
-            total_seconds = datetime.timedelta(hours=converted_time.tm_hour,minutes=converted_time.tm_min,seconds=converted_time.tm_sec).total_seconds()            
+            total_seconds = datetime.timedelta(hours=converted_time.tm_hour, minutes=converted_time.tm_min, seconds=converted_time.tm_sec).total_seconds()            
             child.attrib["time"] = str(total_seconds)
         # job did not run, so the test did not run
         else:
@@ -88,31 +108,28 @@ def export_result(job_managers, total_time):
     tree.write("Tests/output.xml")
 
 
-def print_result(job_managers):
+def print_result(job_managers: 'list[job_manager.JobManager]'):
     """
-    Outputs all the job results into a log file, including their errors and total number of jobs
+    Outputs all the results of the jobs into a log file, including their errors and the total number of jobs
     that failed and passed
+
     :param job_managers: The collection of jobs that were run
-    :type: list of JobManager
+    :type  job_managers: List[job_managers.JobManager]
     """
-    logger.info("Number of jobs run {}.".format(len(job_managers)))
-    failedJobs = 0
+    info("Number of jobs run {}.".format(len(job_managers)))
+    failed_jobs = 0  # type: int
     for job_item in job_managers:
-        if job_item.status.job_state != Utils.JobState.COMPLETE:
-            failedJobs += 1
-            logger.info(
+        if job_item.status.job_state != utils.JobState.COMPLETE:
+            failed_jobs += 1
+            info(
                 "job {} failed because {} : {}".format(
                     job_item.job_id,
                     job_item.status.job_state,
                     job_item.status.message))
 
-    if failedJobs == 0:
-        logger.info("-----------------------------------------")
-        logger.info("All jobs ran successfully.")
-        logger.info("-----------------------------------------")
+    if failed_jobs == 0:
+        info("All jobs ran successfully.")
 
     else:
-        logger.info("-----------------------------------------")
-        logger.info("Number of jobs passed {} out of {}.".format(
-        len(job_managers) - failedJobs, len(job_managers)))
-
+        info("Number of jobs passed {} out of {}.".format(
+        len(job_managers) - failed_jobs, len(job_managers)))
