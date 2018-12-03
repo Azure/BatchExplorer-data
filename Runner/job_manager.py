@@ -111,7 +111,7 @@ class JobManager(object):
                     "Pool [{}] is already being created.".format(
                         self.pool_id))
             else:
-                logger.info("Create pool error: ", err)
+                logger.info("Create pool error: {}".format(err))
                 traceback.print_exc()
                 utils.print_batch_exception(err)
 

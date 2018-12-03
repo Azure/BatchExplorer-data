@@ -42,7 +42,7 @@ class ImageReference(object):
         self.version = version  # The attribute 'version' of type 'str'
 
     def __str__(self) -> str:
-        return "osType: {}, offer{}, version".format(
+        return "osType: {}, offer: {}, version: {}".format(
             self.osType, self.offer, self.version)
 
 
@@ -84,12 +84,11 @@ def print_batch_exception(batch_exception: batchmodels.batch_error.BatchErrorExc
     :type batch_exception: batchmodels.batch_error.BatchErrorException
     """
     logger.error('Exception encountered:')
-    if batch_exception.error and \
-            batch_exception.error.message and \
-            batch_exception.error.message.value:
+    if batch_exception.error \
+        and batch_exception.error.message \
+        and batch_exception.error.message.value:
         logger.error(batch_exception.error.message.value)
         if batch_exception.error.values:
-            logger.error()
             for mesg in batch_exception.error.values:
                 logger.error('{}:\t{}'.format(mesg.key, mesg.value))
                 logger.error('{}'.format(mesg.value))
@@ -107,9 +106,9 @@ def expected_exception(batch_exception: batchmodels.batch_error.BatchErrorExcept
     :return: If the expected exception is hit return a True.
     :rtype: bool
     """
-    if batch_exception.error and \
-            batch_exception.error.message and \
-            batch_exception.error.message.value:
+    if batch_exception.error \
+        and batch_exception.error.message \
+        and batch_exception.error.message.value:
         if message in batch_exception.error.message.value:
             return True
 

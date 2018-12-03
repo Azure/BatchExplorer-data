@@ -104,20 +104,20 @@ def set_image_reference(in_memory_json_object: str, image_ref: 'List[util.ImageR
 
     # If the image is not a rendering image then no action needs to happen on
     # the pool json_object
-    if image_reference["publisher"] is not "batch":
+    if image_reference.get("publisher") != "batch":        
         return
 
     # If json_object is windows version
-    if "windows" in json_object_image_reference["offer"]:
+    if "windows" in image_reference["offer"]:
         for i in range(0, len(image_ref)):
             if image_ref[i].osType == "windows":
-                set_image_reference_properties(json_object_image_reference, image_ref[i])
+                set_image_reference_properties(image_reference, image_ref[i])
 
     # if the json_object is centos
-    if "centos" in json_object_image_reference["offer"]:
+    if "centos" in image_reference["offer"]:
         for i in range(0, len(image_ref)):
             if image_ref[i].osType == "liunx":
-                set_image_reference_properties(json_object_image_reference, image_ref[i])
+                set_image_reference_properties(image_reference, image_ref[i])
 
 
 def get_job_id(parameters_file: str) -> str:
