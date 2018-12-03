@@ -83,7 +83,6 @@ def print_batch_exception(batch_exception: batchmodels.batch_error.BatchErrorExc
     :param batch_exception: The exception to convert into something readable
     :type batch_exception: batchmodels.batch_error.BatchErrorException
     """
-    logger.error('-------------------------------------------')
     logger.error('Exception encountered:')
     if batch_exception.error and \
             batch_exception.error.message and \
@@ -94,7 +93,6 @@ def print_batch_exception(batch_exception: batchmodels.batch_error.BatchErrorExc
             for mesg in batch_exception.error.values:
                 logger.error('{}:\t{}'.format(mesg.key, mesg.value))
                 logger.error('{}'.format(mesg.value))
-    logger.error('-------------------------------------------')
 
 
 def expected_exception(batch_exception: batchmodels.batch_error.BatchErrorException, message: str) -> bool:
@@ -106,7 +104,8 @@ def expected_exception(batch_exception: batchmodels.batch_error.BatchErrorExcept
     :type batch_exception: batchmodels.batch_error.BatchErrorException
     :param message: expected message that we are expecting.
     :type message: str
-    :return bool: if the expected exception is hit return a True.
+    :return: If the expected exception is hit return a True.
+    :rtype: bool
     """
     if batch_exception.error and \
             batch_exception.error.message and \
@@ -129,8 +128,8 @@ def get_container_sas_token(block_blob_client: azureblob.BlockBlobService,
     :type container_name: str
     :param BlobPermissions blob_permissions:
     :type blob_permissions: azure.storage.blob.models.ContainerPermissions
-    :rtype: str
     :return: A SAS token granting the specified permissions to the container.
+    :rtype: str
     """
     # Obtain the SAS token for the container, setting the expiry time and
     # permissions. In this case, no start time is specified, so the shared
@@ -169,7 +168,7 @@ def upload_file_to_container(block_blob_client: azureblob.BlockBlobService, cont
 
 
 def wait_for_tasks_to_complete(
-        batch_service_client: batch.BatchExtensionsClient, job_id: str, timeout: int) -> JobStatus:
+        batch_service_client: batch.BatchExtensionsClient, job_id: str, timeout: datetime.timedelta) -> JobStatus:
     """
     Returns when all tasks in the specified job reach the Completed state.
 
@@ -178,9 +177,11 @@ def wait_for_tasks_to_complete(
     :param job_id: The id of the job whose tasks should be to monitored.
     :type job_id: str
     :param timeout: The duration to wait for task completion. If all
-    :type timeout: timedelta
+    :type timeout: datetime.timedelta
     tasks in the specified job do not reach Completed state within this time
-    period, an exception will be raised.
+    period, an error message will be recorded.
+    :return: The job status, with a message saying the state 
+    :rtype: 'util.JobStatus'
     """
     # How long we should be checking to see if the job is complete.
     timeout_expiration = datetime.datetime.now() + timeout
@@ -208,15 +209,17 @@ def wait_for_tasks_to_complete(
                      "ERROR: Tasks did not reach 'Completed' state within timeout period of: " + str(timeout))
 
 
-def check_task_output(batch_service_client: batch.BatchExtensionsClient, job_id: str, expected_output: str):
+def check_task_output(batch_service_client: batch.BatchExtensionsClient, job_id: str, expected_file_output_name: str) -> JobStatus:
     """Prints the stdout.txt file for each task in the job.
 
     :param batch_service_client: The batch client to use.
     :type batch_service_client: `Azure.Batch.BatchExtensionsClient`
     :param job_id: The id of the job with task output files to print.
     :type job_id: str
-    :param expected_output: The file name of the expected output
-    :type expected_output: str
+    :param expected_file_output_name: The file name of the expected output
+    :type expected_file_output_name: str
+    :return: The job status, with a message saying the state 
+    :rtype: 'util.JobStatus'
     """
 
     tasks = batch_service_client.task.list(job_id)
@@ -226,26 +229,28 @@ def check_task_output(batch_service_client: batch.BatchExtensionsClient, job_id:
             job_id, task.id, recursive=True)
 
         for f in all_files:
-            if expected_output in f.name:
+            if expected_file_output_name in f.name:
                 logger.info(
                     "Job [{}] expected output matched {}".format(
-                        job_id, expected_output))
+                        job_id, expected_file_output_name))
                 return JobStatus(JobState.COMPLETE,
-                                 "File found {0}".format(expected_output))
+                                 "File found {0}".format(expected_file_output_name))
 
     return JobStatus(JobState.UNEXPECTED_OUTPUT, ValueError(
-        "Error: Cannot find file {} in job {}".format(expected_output, job_id)))
+        "Error: Cannot find file {} in job {}".format(expected_file_output_name, job_id)))
 
 
-def cleanup_old_resources(blob_client: azureblob.BlockBlobService):
+def cleanup_old_resources(blob_client: azureblob.BlockBlobService, days:int=7):
     """
-    Delete any storage container that has been around for 7 days. 
+    Delete any storage container that has been around for 7 days by default. 
 
     :param blob_client: A blob service client.
     :type blob_client: `azure.storage.blob.BlockBlobService`
+    :param days: If the storage account is older than this number of days delete it, default = 7
+    :param int: 
     """
     # The current time 7 days ago. 
-    timeout = utc.localize(datetime.datetime.now()) + datetime.timedelta(days=-7)
+    timeout = utc.localize(datetime.datetime.now()) + datetime.timedelta(days=-days)
 
     try:
         for container in blob_client.list_containers():

@@ -70,9 +70,9 @@ def export_result(job_managers: 'list[job_manager.JobManager]', total_time: int)
     Azure pipeline to generate a build report.
 
     :param job_managers: A collection of jobs that were run
-    :type  job_managers: List[job_managers.JobManager]
-    :param timedelta total_time: The duration for all the tasks to complete
-    :type total_time: timedelta
+    :type job_managers: List[job_managers.JobManager]
+    :param total_time: The duration for all the tasks to complete
+    :type total_time: int
       """
     failed_jobs = 0  # type: int
     info("Exporting test output file")
@@ -115,7 +115,7 @@ def print_result(job_managers: 'list[job_manager.JobManager]'):
     that failed and passed
 
     :param job_managers: The collection of jobs that were run
-    :type  job_managers: List[job_managers.JobManager]
+    :type job_managers: List[job_managers.JobManager]
     """
     info("Number of jobs run {}.".format(len(job_managers)))
     failed_jobs = 0  # type: int

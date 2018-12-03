@@ -149,7 +149,6 @@ class JobManager(object):
         Uploads a the file specified in the json parameters file into a storage container that will 
         delete it's self after 7 days 
 
-        :param self: self 
         :param blob_client: A blob service client used for making blob operations.
         :type blob_client: `azure.storage.blob.BlockBlobService`
         """
@@ -212,7 +211,8 @@ class JobManager(object):
 
         :param pool: The
         :type pool: The pool we want to inspect for any timeout errors
-        :return bool: True if there is a resize error
+        :return: True if there is a resize error
+        :rtype: bool 
         """
         if pool.allocation_state.value == "steady" and pool.resize_errors is not None:
             self.status = utils.JobStatus(utils.JobState.POOL_FAILED,
@@ -228,8 +228,9 @@ class JobManager(object):
         """
         Checks to see if the current time is less than the timeout and returns True if timeout hasn't been reached
         :param timeout: The duration we wait for task the complete.
-        :type timeout: int
-        :return bool: Returns a True if the timeout hasn't been reached.
+        :type timeout: datetime.timedelta
+        :return: Returns a True if the timeout hasn't been reached.
+        :rtype: bool.
         """
         timeout_expiration = datetime.datetime.now() + timeout
         return datetime.datetime.now() <= timeout_expiration
@@ -242,7 +243,8 @@ class JobManager(object):
         :param batch_service_client: A Batch service client.
         :type batch_service_client: `azure.batch.BatchExtensionsClient`
         :param timedelta timeout: The duration we wait for task complete.
-        :return bool: Returns true when their is a valid TVM in an idle state
+        :return: Returns true when their is a valid TVM in an idle state
+        :rtype bool
         """
         pool = batch_service_client.pool.get(self.pool_id)
 
@@ -282,7 +284,7 @@ class JobManager(object):
         :param batch_service_client: A Batch service client.
         :type batch_service_client: `azure.batch.BatchExtensionsClient`
         :param timeout: The duration we wait for task complete.
-        :type timeout: timedelta
+        :type timeout: int
         """
         # Starts the timer
         self.duration = time.time()

@@ -73,13 +73,13 @@ def runner_arguments():
 
 
 def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client: batch.BatchExtensionsClient,
-                          images_ref: 'List[util.ImageReference]'):
+                          images_refs: 'List[util.ImageReference]'):
     """
     Creates all resources needed to run the job, including creating the containers and the pool needed to run the job.
     Then creates job and checks if the expected output is correct.
 
-    :param images_ref: The list of images the rendering image will run on
-    :type images_ref: List[util.ImageReference]
+    :param images_refs: The list of images the rendering image will run on
+    :type images_refs: List[util.ImageReference]
     :param blob_client: The blob client needed for making blob client operations
     :type blob_client: `azure.storage.blob.BlockBlobService`
     :param batch_client: The batch client needed for making batch operations
@@ -89,7 +89,7 @@ def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client:
     logger.info("{} jobs will be created.".format(len(_job_managers)))
     utils.create_thread_collection("upload_assets", _job_managers, blob_client)
     logger.info("Creating pools...")
-    utils.create_thread_collection("create_pool", _job_managers, batch_client, images_ref)
+    utils.create_thread_collection("create_pool", _job_managers, batch_client, images_refs)
     logger.info("Submitting jobs...")
     utils.create_thread_collection("create_and_submit_job", _job_managers, batch_client)
     logger.info("Waiting for jobs to complete...")
@@ -115,7 +115,7 @@ def main():
     utils.cleanup_old_resources(blob_client)
 
     try:
-        images_ref = []  # type: List[utils.ImageReference]
+        images_refs = []  # type: List[utils.ImageReference]
         with open(args.TestConfig) as f:
             template = json.load(f)
 
@@ -132,9 +132,9 @@ def main():
                     application_licenses))
 
             for image in template["images"]:
-                images_ref.append(utils.ImageReference(image["osType"], image["offer"], image["version"]))
+                images_refs.append(utils.ImageReference(image["osType"], image["offer"], image["version"]))
 
-        run_job_manager_tests(blob_client, batch_client, images_ref)
+        run_job_manager_tests(blob_client, batch_client, images_refs)
 
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
