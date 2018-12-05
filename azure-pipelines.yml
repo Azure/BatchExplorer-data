@@ -31,7 +31,7 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     python -m pip install --upgrade pip setuptools wheel django
-    pip install -r Runner/requirements.txt
+    pip install -r runner/requirements.txt
   displayName: 'Install prerequisites'
 - script: |
     pushd '$(projectRoot)'
@@ -42,6 +42,6 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit
-    testResultsFiles: "Runner/Tests/output.xml"
+    testResultsFiles: "runner/Tests/output.xml"
     testRunTitle: 'Rendering Image Tests'
     buildPlatform:
