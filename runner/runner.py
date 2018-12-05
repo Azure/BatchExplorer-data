@@ -79,7 +79,7 @@ def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client:
     Then creates job and checks if the expected output is correct.
 
     :param images_refs: The list of images the rendering image will run on
-    :type images_refs: List[util.ImageReference]
+    :type images_refs: List[utils.ImageReference]
     :param blob_client: The blob client needed for making blob client operations
     :type blob_client: `azure.storage.blob.BlockBlobService`
     :param batch_client: The batch client needed for making batch operations
@@ -87,13 +87,13 @@ def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client:
     """
 
     logger.info("{} jobs will be created.".format(len(_job_managers)))
-    utils.create_thread_collection("upload_assets", _job_managers, blob_client)
+    utils.execute_parallel_jobmanagers("upload_assets", _job_managers, blob_client)
     logger.info("Creating pools...")
-    utils.create_thread_collection("create_pool", _job_managers, batch_client, images_refs)
+    utils.execute_parallel_jobmanagers("create_pool", _job_managers, batch_client, images_refs)
     logger.info("Submitting jobs...")
-    utils.create_thread_collection("create_and_submit_job", _job_managers, batch_client)
+    utils.execute_parallel_jobmanagers("create_and_submit_job", _job_managers, batch_client)
     logger.info("Waiting for jobs to complete...")
-    utils.create_thread_collection("wait_for_job_results", _job_managers, batch_client, _timeout)
+    utils.execute_parallel_jobmanagers("wait_for_job_results", _job_managers, batch_client, _timeout)
 
 
 def main():
@@ -143,9 +143,9 @@ def main():
     finally:
         # Delete all the jobs and containers needed for the job
         # Reties any jobs that failed
-        utils.create_thread_collection("retry", _job_managers, batch_client, blob_client, _timeout / 2)
-        utils.create_thread_collection("delete_resources", _job_managers, batch_client, blob_client)
-        utils.create_thread_collection("delete_pool", _job_managers, batch_client)
+        utils.execute_parallel_jobmanagers("retry", _job_managers, batch_client, blob_client, _timeout / 2)
+        utils.execute_parallel_jobmanagers("delete_resources", _job_managers, batch_client, blob_client)
+        utils.execute_parallel_jobmanagers("delete_pool", _job_managers, batch_client)
         end_time = datetime.datetime.now().replace(microsecond=0)
         logger.print_result(_job_managers)
         logger.export_result(_job_managers, (end_time - start_time))

@@ -180,7 +180,7 @@ def wait_for_tasks_to_complete(
     tasks in the specified job do not reach Completed state within this time
     period, an error message will be recorded.
     :return: The job status, with a message saying the state 
-    :rtype: 'util.JobStatus'
+    :rtype: 'utils.JobStatus'
     """
     # How long we should be checking to see if the job is complete.
     timeout_expiration = datetime.datetime.now() + timeout
@@ -218,7 +218,7 @@ def check_task_output(batch_service_client: batch.BatchExtensionsClient, job_id:
     :param expected_file_output_name: The file name of the expected output
     :type expected_file_output_name: str
     :return: The job status, with a message saying the state 
-    :rtype: 'util.JobStatus'
+    :rtype: 'utils.JobStatus'
     """
 
     tasks = batch_service_client.task.list(job_id)
@@ -259,15 +259,14 @@ def cleanup_old_resources(blob_client: azureblob.BlockBlobService, days:int=7):
                         "Deleting container {}, it is older than 7 days.".format(container.name))
                     blob_client.delete_container(container.name)
     except Exception as e:
-        logger.error(e)
+        logger.error("Failed to clean up resources for job:{}, due to the error: {}".format(self.job_id, e))
         raise e
 
 
-def create_thread_collection(method_name: str, job_managers: 'list[job_manager.JobManager]', *args):
+def execute_parallel_jobmanagers(method_name: str, job_managers: 'list[job_manager.JobManager]', *args):
     """
-    Creates and runs a thread for every job_managers and runs the method_name for the given job_managers. 
-    Will also wait until all the tasks are complete
-
+    Executes the specified job manager methods in parallel. This returns once all job manager methods have completed
+    
     :param method_name: The job_managers method to be called
     :type method_name: str
     :param job_managers: a collection of jobs that will be run
@@ -281,6 +280,6 @@ def create_thread_collection(method_name: str, job_managers: 'list[job_manager.J
         threads.append(thread)
         thread.start()
 
-    # wait for all threads to finish
+    # Wait for all threads to finish
     for thread in threads:
         thread.join()

@@ -9,15 +9,10 @@ logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
 file_handler = logging.FileHandler('template.log')
 file_handler.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.ERROR)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 # add the handlers to logger
-logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
@@ -41,7 +36,7 @@ def error(error_message: str):
     logger.error(error_message)
 
 
-def warn(warning_message: str):
+def warning(warning_message: str):
     """
     Log 'msg % args' with severity 'ERROR' to the logger file
 
@@ -122,7 +117,7 @@ def print_result(job_managers: 'list[job_manager.JobManager]'):
     for job_item in job_managers:
         if job_item.status.job_state != utils.JobState.COMPLETE:
             failed_jobs += 1
-            info(
+            warning(
                 "job {} failed because {} : {}".format(
                     job_item.job_id,
                     job_item.status.job_state,

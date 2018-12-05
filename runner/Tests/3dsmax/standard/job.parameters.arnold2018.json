@@ -38,7 +38,7 @@
    "frameHeight":{
       "value":300
    },
-   "outputFilegroup":{
+   "outputs":{
       "value":"rendering-output"
    }
 }

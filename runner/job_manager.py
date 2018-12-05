@@ -21,30 +21,7 @@ _time = str(datetime.datetime.now().day) + "-" + \
         str(datetime.datetime.now().minute)
 
 
-def submit_job(batch_service_client: batch.BatchExtensionsClient, template: str, parameters: str):
-    """
-    Submits a Job against the batch service.
 
-    :param batch_service_client: The batch client to use.
-    :type batch_service_client: `azure.batch.BatchExtensionsClient`
-    :param template: The json description of the job
-    :type template: str
-    :param parameters: The job parameters of the job
-    :type parameters: str
-    """
-    try:
-        job_json = batch_service_client.job.expand_template(
-            template, parameters)
-        job_parameters = batch_service_client.job.jobparameter_from_json(
-            job_json)
-        batch_service_client.job.add(job_parameters)
-    except batchmodels.batch_error.BatchErrorException as err:
-        logger.info(
-            "Failed to submit job\n{}\n with params\n{}".format(
-                template, parameters))
-        traceback.print_exc()
-        utils.print_batch_exception(err)
-        raise
 
 
 class JobManager(object):
@@ -64,10 +41,41 @@ class JobManager(object):
         self.status = utils.JobStatus(
             utils.JobState.NOT_STARTED,
             "Job hasn't started yet.")  # The attribute 'status' of type 'utils.JobState'
-        self.duration = None  # The attribute 'duration' of type 'str'
+        self.duration = None  # The attribute 'duration' of type 'int'
 
     def __str__(self) -> str:
         return "job_id: [{}] pool_id: [{}] ".format(self.job_id, self.pool_id)
+    
+    def submit_job(self, batch_service_client: batch.BatchExtensionsClient, template: str, parameters: str):
+        """
+        Submits a Job against the batch service.
+
+        :param batch_service_client: The batch client to use.
+        :type batch_service_client: `azure.batch.BatchExtensionsClient`
+        :param template: The json description of the job
+        :type template: str
+        :param parameters: The job parameters of the job
+        :type parameters: str
+        """
+        try:
+            job_json = batch_service_client.job.expand_template(
+                template, parameters)
+            job_parameters = batch_service_client.job.jobparameter_from_json(
+                job_json)
+            batch_service_client.job.add(job_parameters)
+        except batchmodels.batch_error.BatchErrorException as err:
+            logger.info(
+                "Failed to submit job\n{}\n with params\n{}".format(
+                    template, parameters))
+            traceback.print_exc()
+            utils.print_batch_exception(err)
+            raise
+        except batch.errors.MissingParameterValue as mpv:
+            logger.error("Job {}, failed to submit, because of the error: {}".format(self.raw_job_id, mpv))
+            raise
+        except:
+            logger.error("Job {}, failed to submit, because of the error: {}".format(self.raw_job_id, sys.exc_info()[0]))
+            raise
 
     def create_and_submit_job(self, batch_client: batch.BatchExtensionsClient):
         """
@@ -88,7 +96,7 @@ class JobManager(object):
         ctm.set_parameter_storage_info(parameters, self.storage_info)
 
         # Submits the job
-        submit_job(batch_client, template, parameters)
+        self.submit_job(batch_client, template, parameters)
 
     def submit_pool(self, batch_service_client: batch.BatchExtensionsClient, template: str):
         """
@@ -107,7 +115,7 @@ class JobManager(object):
         except batchmodels.batch_error.BatchErrorException as err:
             if utils.expected_exception(
                     err, "The specified pool already exists"):
-                logger.info(
+                logger.warning(
                     "Pool [{}] is already being created.".format(
                         self.pool_id))
             else:
@@ -319,7 +327,7 @@ class JobManager(object):
         if self.status.job_state == utils.JobState.NOT_COMPLETE or self.status.job_state == utils.JobState.UNEXPECTED_OUTPUT:
             # Deletes the resources needed for the old job.
             self.delete_resources(batch_service_client, blob_client, True)
-            logger.warn(
+            logger.warning(
                 "Job [{}] did not complete in time so it will be recreated with the '-retry' postfix ".format(
                     self.job_id))
             # Set a new job id
@@ -343,11 +351,11 @@ class JobManager(object):
         except batchmodels.batch_error.BatchErrorException as batch_exception:
             if utils.expected_exception(
                     batch_exception, "The specified pool has been marked for deletion"):
-                logger.warn(
+                logger.warning(
                     "The specified pool [{}] has been marked for deletion.".format(
                         self.pool_id))
             elif utils.expected_exception(batch_exception, "The specified pool does not exist"):
-                logger.warn(
+                logger.warning(
                     "The specified pool [{}] has been deleted.".format(
                         self.pool_id))
             else:
