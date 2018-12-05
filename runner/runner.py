@@ -73,7 +73,7 @@ def runner_arguments():
 
 
 def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client: batch.BatchExtensionsClient,
-                          images_refs: 'List[util.ImageReference]'):
+                          images_refs: 'List[utils.ImageReference]'):
     """
     Creates all resources needed to run the job, including creating the containers and the pool needed to run the job.
     Then creates job and checks if the expected output is correct.

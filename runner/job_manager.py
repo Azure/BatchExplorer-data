@@ -124,7 +124,7 @@ class JobManager(object):
                 utils.print_batch_exception(err)
 
     def create_pool(self, batch_service_client: batch.BatchExtensionsClient,
-                    image_references: 'List[util.ImageReference]'):
+                    image_references: 'List[utils.ImageReference]'):
         """
         Creates the Pool that will be submitted to the batch service.
 
