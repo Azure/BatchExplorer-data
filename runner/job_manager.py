@@ -31,7 +31,7 @@ class JobManager(object):
         super(JobManager, self).__init__()
         self.raw_job_id = ctm.get_job_id(parameters_file)  # The attribute 'raw_job_id' of type 'str'
         self.job_id = _time + "-" + self.raw_job_id  # The attribute 'job_id' of type 'str'
-        self.pool_id = ctm.get_pool_id(parameters_file)  # The attribute 'pool_id' of type 'str'
+        self.pool_id = _time + "-" + ctm.get_pool_id(parameters_file)  # The attribute 'pool_id' of type 'str'
         self.template_file = template_file  # The attribute 'template_file' of type 'str'
         self.parameters_file = parameters_file  # The attribute 'parameters_file' of type 'str '
         self.application_licenses = application_licenses  # The attribute 'application_licenses' of type 'str'
@@ -94,6 +94,7 @@ class JobManager(object):
         # tokens need to be generated for the container
         ctm.set_parameter_name(parameters, self.job_id)
         ctm.set_parameter_storage_info(parameters, self.storage_info)
+        ctm.set_template_pool_id(parameters, self.pool_id)
 
         # Submits the job
         self.submit_job(batch_client, template, parameters)

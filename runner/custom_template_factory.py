@@ -17,15 +17,25 @@ def set_template_pool_id(in_memory_json_object: str, pool_id: str):
     """
 
     # Since these are nested we have to do some deeper digging. 
-    if in_memory_json_object.get("parameters").get("poolName") is not None:
-        in_memory_json_object["parameters"]["poolName"]["defaultValue"] = pool_id
+    if in_memory_json_object.get("parameters") is None:
+        if in_memory_json_object.get("poolId"):
+            in_memory_json_object["poolId"]["value"] = pool_id
 
-    elif in_memory_json_object.get("parameters").get("poolId") is not None:
-        if in_memory_json_object.get("parameters").get("poolId").get('defaultValue') is not None:
-            in_memory_json_object["parameters"]["poolId"]["defaultValue"] = pool_id
+        elif in_memory_json_object.get("poolName"):
+            in_memory_json_object["poolName"]["value"] = pool_id
 
-        elif in_memory_json_object.get("parameters").get("poolId").get('value') is not None:
-            in_memory_json_object["parameters"]["poolId"]["value"] = pool_id
+    elif in_memory_json_object.get("parameters"):
+        if in_memory_json_object.get("parameters").get("poolName"):
+            in_memory_json_object["parameters"]["poolName"]["defaultValue"] = pool_id
+
+        elif in_memory_json_object.get("parameters").get("poolId"):
+            if in_memory_json_object.get("parameters").get("poolId").get('defaultValue'):
+                in_memory_json_object["parameters"]["poolId"]["defaultValue"] = pool_id
+
+            elif in_memory_json_object.get("parameters").get("poolId").get('value'):
+                in_memory_json_object["parameters"]["poolId"]["value"] = pool_id
+
+    
 
 
 def set_parameter_name(in_memory_json_object: str, job_id: str):
@@ -76,7 +86,7 @@ def set_parameter_storage_info(in_memory_json_object: str, storage_info: str):
         in_memory_json_object["outputSas"]["value"] = storage_info.output_container_SAS
 
 
-def set_image_reference_properties(in_memory_json_object: str, image_ref: 'util.ImageReference'):
+def set_image_reference_properties(in_memory_json_object: str, image_ref: 'utils.ImageReference'):
     """
     Sets what rendering image the tests are going to run on. 
 
@@ -92,7 +102,7 @@ def set_image_reference_properties(in_memory_json_object: str, image_ref: 'util.
         in_memory_json_object["offer"] = image_ref.offer
 
 
-def set_image_reference(in_memory_json_object: str, image_ref: 'List[util.ImageReference]'):
+def set_image_reference(in_memory_json_object: str, image_ref: 'List[utils.ImageReference]'):
     """
     Sets what rendering image the test is going to run on.
 
