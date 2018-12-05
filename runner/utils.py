@@ -259,7 +259,7 @@ def cleanup_old_resources(blob_client: azureblob.BlockBlobService, days:int=7):
                         "Deleting container {}, it is older than 7 days.".format(container.name))
                     blob_client.delete_container(container.name)
     except Exception as e:
-        logger.error("Failed to clean up resources for job:{}, due to the error: {}".format(self.job_id, e))
+        logger.error("Failed to clean up resources due to the error: {}".format(e))
         raise e
 
 
