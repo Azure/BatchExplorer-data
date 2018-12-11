@@ -25,7 +25,7 @@
             "metadata": {
                 "description": "The size of the virtual machines that run the application"
             },
-            "defaultValue": "Standard_F8s_v2",
+            "defaultValue": "Standard_D8_v3",
             "allowedValues": [
                 "Standard_A8",
                 "Standard_A9",
