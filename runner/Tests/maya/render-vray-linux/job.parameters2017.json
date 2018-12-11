@@ -1,0 +1,29 @@
+{
+   "jobName":{
+      "value":"maya-vray-linux-2017"
+   },
+   "poolId":{
+      "value":"vray-linux"
+   },
+   "mayaVersion":{
+      "value":"Maya2017"
+   },
+   "inputFilegroup":{
+      "value":"myfilegroup"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputDataSas":{
+      "value":"rendering"
+   },
+   "sceneFile":{
+      "value":"maya-vray.mb"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   },
+   "outputFilegroup":{
+      "value":"myfilegroup"
+   }
+}

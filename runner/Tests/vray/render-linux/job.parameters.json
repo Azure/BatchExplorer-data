@@ -1,0 +1,23 @@
+{
+   "jobName":{
+      "value":"vray-render-linux"
+   },
+   "poolId":{
+      "value":"vray-render-linux"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "sceneFile":{
+      "value":"vray.vrscene"
+   },
+   "frameStart":{
+      "value":"1"
+   },
+   "frameEnd":{
+      "value":"1"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

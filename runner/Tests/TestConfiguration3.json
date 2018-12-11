@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+        "name": "arnold-windows-standalone",
+        "template": "../ncj/arnold/render-windows/job.template.json",
+        "poolTemplate": "../ncj/arnold/render-windows/pool.template.json",
+        "parameters": "Tests/arnold/render-windows/job.parameters.json",
+        "expectedOutput":"arnold.ass.tif"
+    }
+  ], 
+  "images": [
+    {
+        "osType": "windows",
+        "offer": "rendering-windows2016",
+        "version": "1.3.0"
+    },
+    {
+        "osType": "linux",
+        "offer": "rendering-centos73",
+        "version": "1.1.3"
+    }]
+}

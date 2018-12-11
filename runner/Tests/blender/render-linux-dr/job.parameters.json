@@ -1,0 +1,35 @@
+{
+   "jobName":{
+      "value":"blender-linux-dr"
+   },
+   "poolId":{
+      "value":"blender-ubuntu-dr"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputDataSas":{
+      "value":"https://"
+   },
+   "outputSas":{
+      "value":"https://"
+   },
+   "blendFile":{
+      "value":"shapes.blend"
+   },
+   "frameStart":{
+      "value":1
+   },
+   "frameEnd":{
+      "value":1
+   },
+   "xTiles":{
+      "value":3
+   },
+   "yTiles":{
+      "value":3
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

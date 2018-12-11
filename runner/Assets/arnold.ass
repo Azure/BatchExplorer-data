@@ -1,0 +1,180 @@
+options
+{
+ name options
+ AA_samples 3
+ threads 0
+ abort_on_error on
+ error_color_bad_texture 1 0 0
+ error_color_bad_pixel 0 1 0
+ outputs 1 1 STRING 
+  "RGBA rgba filter render" 
+ xres 640
+ yres 480
+ region_min_x -1
+ region_min_y -1
+ region_max_x -1
+ region_max_y -1
+ aspect_ratio 1.1111388
+ show_samples off
+ ignore_textures off
+ ignore_shaders off
+ ignore_atmosphere off
+ ignore_lights off
+ ignore_shadows off
+ ignore_subdivision off
+ ignore_displacement off
+ ignore_motion_blur off
+ ignore_smoothing off
+ ignore_sss off
+ auto_transparency_mode always
+ auto_transparency_depth 10
+ auto_transparency_threshold 0.99000001
+ texture_max_memory_MB 999999
+ texture_automip off
+ texture_autotile 0
+ texture_accept_untiled on
+ bucket_size 64
+ bucket_scanning spiral
+ camera Camera
+ shadows_obey_light_linking on
+ sss_subpixel_cache on
+ texture_gamma 1
+ light_gamma 1
+ shader_gamma 1
+ GI_diffuse_depth 1
+ GI_glossy_depth 1
+ GI_reflection_depth 2
+ GI_refraction_depth 2
+ GI_total_depth 10
+ GI_diffuse_samples 2
+ GI_glossy_samples 2
+ ignore_direct_lighting off
+ declare texture_filter constant INT
+ texture_filter 1
+ declare ambience constant RGB
+ ambience 0.2 0.2 0.2
+ declare light_list constant ARRAY POINTER
+ light_list 1 1 POINTER light 
+}
+
+gaussian_filter
+{
+ name filter
+ width 2
+}
+
+driver_tiff
+{
+ name render
+ filename triangle.tif
+ gamma 2.2
+}
+
+persp_camera
+{
+ name Camera
+ fov 1 2 FLOAT 53.638 53.638 
+ plane_distance on
+ focus_distance 1 2 FLOAT 17.071655 17.071655 
+ aperture_size 1 1 FLOAT 0 
+ matrix 1 2 MATRIX 
+  0.3446429073810577 -1.307964403451933e-009 -0.9387338757514954 0
+  -0.1866812705993652 0.98002690076828 -0.0685374066233635 0
+  0.9199844598770142 0.1988649666309357 0.3377593159675598 0
+  18.4735164642334 4.063322067260742 5.044708251953125 1 
+  
+  0.3446429073810577 -1.307964403451933e-009 -0.9387338757514954 0
+  -0.1866812705993652 0.98002690076828 -0.0685374066233635 0
+  0.9199844598770142 0.1988649666309357 0.3377593159675598 0
+  18.4735164642334 4.063322067260742 5.044708251953125 1 
+ near_clip 0.1
+ far_clip 32768
+ shutter_start 0.25
+ shutter_end 0.75
+ shutter_type box
+ screen_window_min -1 -1
+ screen_window_max 1 1
+}
+
+distant_light
+{
+ name light
+ angle 0
+ matrix 1 1 MATRIX 
+  0.7886751294136047 -0.2113248705863953 -0.5773502588272095 0
+  -0.2113248705863953 0.7886751294136047 -0.5773502588272095 0
+  0.5773502588272095 0.5773502588272095 0.5773502588272095 0
+  1 1 1 1 
+ color 1 1 1
+ intensity 1
+ exposure 1
+ cast_shadows on
+ shadow_density 1
+ shadow_color 0 0 0
+ samples 2
+ normalize on
+ affect_diffuse on
+ affect_specular on
+ max_bounces 999
+ indirect 1
+}
+
+polymesh
+{
+ name sphere
+ nsides 1 1 BYTE 3 
+ vidxs 3 1 UINT 0 2 1 
+ nidxs 3 1 UINT 0 0 0 
+ vlist 3 1 POINT 2 -2.449293705170336e-016 3.464101552963257 0 4 0 2 -2.449293705170336e-016 -3.464101552963257 
+ nlist 1 1 VECTOR 0.8944272994995117 0.4472136497497559 2.866583692541779e-016 
+ smoothing on
+ visibility 65535
+ sidedness 65535
+ matrix 1 2 MATRIX 
+  0.9960612058639526 0.08839666098356247 -0.006934314966201782 0
+  -0.08857214450836182 0.9955742359161377 -0.03141516819596291 0
+  0.004126629792153835 0.03190561756491661 0.9994823932647705 0
+  2.154234170913696 0 0 1 
+  
+  0.996161162853241 0.08662781864404678 -0.01259034313261509 0
+  -0.08714302629232407 0.9950032234191895 -0.04873118922114372 0
+  0.008305955678224564 0.04964128136634827 0.9987325668334961 0
+  1.93592119216919 0 0 1 
+ shader 1 1 POINTER grey_shader 
+}
+
+standard
+{
+ name grey_shader
+ Kd 0.69999999
+ Kd_color 1 1 1
+ Ks 0
+ Ks_color 1 1 1
+ Phong_exponent 10
+ Kr 0
+ Kr_color 1 1 1
+ Kt 0
+ Kt_color 1 1 1
+ IOR 1
+ Kb 0
+ Fresnel off
+ Krn 0
+ specular_Fresnel off
+ Ksn 0
+ Fresnel_affect_diff on
+ emission 0
+ emission_color 1 1 1
+ direct_specular 1
+ indirect_specular 1
+ direct_diffuse 1
+ indirect_diffuse 1
+ enable_glossy_caustics off
+ enable_reflective_caustics off
+ enable_refractive_caustics off
+ Ksss 0
+ Ksss_color 1 1 1
+ sss_radius 0.1 0.1 0.1
+ bounce_factor 1
+ opacity 1 1 1
+}
+
