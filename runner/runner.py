@@ -145,7 +145,7 @@ def main():
         # Reties any jobs that failed
         utils.execute_parallel_jobmanagers("retry", _job_managers, batch_client, blob_client, _timeout / 2)
         utils.execute_parallel_jobmanagers("delete_resources", _job_managers, batch_client, blob_client)
-        utils.execute_parallel_jobmanagers("delete_pool", _job_managers, batch_client)
+        #utils.execute_parallel_jobmanagers("delete_pool", _job_managers, batch_client)
         end_time = datetime.datetime.now().replace(microsecond=0)
         logger.print_result(_job_managers)
         logger.export_result(_job_managers, (end_time - start_time))
