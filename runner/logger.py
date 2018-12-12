@@ -88,9 +88,15 @@ def export_result(job_managers: 'list[job_manager.JobManager]', total_time: int)
         # Add the time it took for this test to compete.
         if job_item.duration is not None:
             info("Job {} took {} to complete".format(job_item.job_id, job_item.duration))
-            converted_time = time.strptime(str(job_item.duration).split('.')[0], '%H:%M:%S')
-            total_seconds = datetime.timedelta(hours=converted_time.tm_hour, minutes=converted_time.tm_min,
+            # If the job failed we set the duration to 0
+            job_duration = "0:00:00"
+            try:
+                converted_time = time.strptime(str(job_item.duration).split('.')[0], '%H:%M:%S')
+                total_seconds = datetime.timedelta(hours=converted_time.tm_hour, minutes=converted_time.tm_min,
                                                seconds=converted_time.tm_sec).total_seconds()
+            except ValueError as e:
+                child.attrib["time"] = job_duration
+                    
             child.attrib["time"] = str(total_seconds)
         # job did not run, so the test did not run
         else:
