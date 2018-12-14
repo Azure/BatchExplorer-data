@@ -1,0 +1,184 @@
+{
+    "templateMetadata": {
+        "description": "Application template for working with Maya and V-Ray on CentOS."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "maya-sw-pool-centos",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "maya-sw-centos",
+            "metadata": {
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
+            }
+        },
+        "mayaVersion": {
+            "type": "string",
+            "defaultValue": "Maya2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "Maya2017",
+                "Maya2018"
+            ]
+        },
+        "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The Maya scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputData"
+            }
+        },
+        "additionalFlags": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Any additional flags to pass to the renderer. Example: -of png"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the last frame to render"
+            }
+        },
+        "frameStep": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Incremental step in frame sequeunce"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "jobPreparationTask": {
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputData')]"
+                        },
+                        "filePath": "assets/"
+                    }
+                ],
+                "commandLine": "ls"
+            },
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": "[parameters('frameStep')]"
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "userIdentity": {
+                        "autoUser": {
+                            "scope": "task",
+                            "elevationLevel": "admin"
+                        }
+                    },
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;export maya_exec=[parameters('mayaVersion')].sh;export maya_exec=${{maya_exec,,}};$maya_exec -r sw [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",                    
+                    "environmentSettings": [
+                        {
+                            "name": "MAYA_SCRIPT_PATH",
+                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%/scripts"
+                        },
+                        {
+                            "name": "FLEXLM_TIMEOUT",
+                            "value": "5000000"
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}_error.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path":"[parameters('jobName')]/images"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        },
+                        {
+                            "filePattern": "thumbs/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/thumbs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        }
+                    ]
+                }
+            },
+            "onAllTasksComplete": "terminateJob"
+        }
+    }
+}
