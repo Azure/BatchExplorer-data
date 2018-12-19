@@ -110,7 +110,9 @@ if ($renderer -like "vray")
 {
     $outputFiles = "$env:AZ_BATCH_TASK_WORKING_DIR\images\____.jpg" -replace "\\", "\\"
     $pre_render_script_content += "-- Set output channel path`r`n"
-    $pre_render_script_content += "r.output_splitfilename = ""$outputFiles""`r`n"
+    $pre_render_script_content += "rendererName = r as string`r`n"
+    $pre_render_script_content += "index = findString rendererName ""V_Ray_Adv_""`r`n"
+    $pre_render_script_content += "if index == 1 then (r.output_splitfilename = ""$outputFiles"")`r`n"
 }
 
 $pre_render_script_content | Out-File $pre_render_script -Encoding ASCII
