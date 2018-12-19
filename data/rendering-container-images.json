@@ -1,5 +1,5 @@
 {
-  "image_references": [
+  "imageReferences": [
     {
         "id": "centos-75-container",
         "node_sku_id": "batch.node.centos 7",
@@ -25,7 +25,7 @@
         "version" : "latest"
     }
   ],
-  "container_images": [
+  "containerImages": [
     {
         "containerImage": "azurebatchrendering/centos_maya2017update5:latest",
         "os": "CentOS 75",
