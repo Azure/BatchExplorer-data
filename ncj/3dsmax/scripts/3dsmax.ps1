@@ -104,10 +104,12 @@ if ($renderer -eq "arnold")
     $pre_render_script_content += "-- Fail on arnold license error`r`n"
     $pre_render_script_content += "r.abort_on_license_fail = true`r`n"
     $pre_render_script_content += "r.verbosity_level = 4`r`n"
-    $pre_render_script_content += "renderMessageManager.LogFileON = true`r`n"
-    $pre_render_script_content += "renderMessageManager.ShowInfoMessage = true`r`n"
-    $pre_render_script_content += "renderMessageManager.ShowProgressMessage = true`r`n"
-    $pre_render_script_content += "renderMessageManager.LogDebugMessage = true`r`n"
+    
+    # Uncomment the below for full verbose logging from Arnold
+    #$pre_render_script_content += "renderMessageManager.LogFileON = true`r`n"
+    #$pre_render_script_content += "renderMessageManager.ShowInfoMessage = true`r`n"
+    #$pre_render_script_content += "renderMessageManager.ShowProgressMessage = true`r`n"
+    #$pre_render_script_content += "renderMessageManager.LogDebugMessage = true`r`n"
 }
 
 if ($renderer -like "vray")
