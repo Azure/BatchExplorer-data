@@ -6,6 +6,18 @@
                 "description": "Id of the pool"
             }
         },
+          "coronaFairSaasUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for Corona FairSaaS"
+            }
+        },
+          "coronaFairSaasPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Password for Corona FairSaas"
+            }
+        },
         "dedicatedVmCount": {
             "type": "int",
             "defaultValue": 1,
@@ -137,7 +149,7 @@
         "enableAutoScale": false,
         "enableInterNodeCommunication": false,
         "startTask": {
-            "commandLine": "cmd /c powershell -ExecutionPolicy Unrestricted -File %AZ_BATCH_APP_PACKAGE_CORONA_3DS_MAX_PLUGIN#2019%\\install.ps1 & cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')]",
+            "commandLine": "cmd /c powershell -ExecutionPolicy Unrestricted -File %AZ_BATCH_APP_PACKAGE_CORONA_3DS_MAX_PLUGIN#2019%\\install.ps1 [parameters('coronaFairSaasUsername')] [parameters('coronaFairSaasPassword')] & cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')]",
             "waitForSuccess": true,
             "maxTaskRetryCount": 0,
             "userIdentity": {
