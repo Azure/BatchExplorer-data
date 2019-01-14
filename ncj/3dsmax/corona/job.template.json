@@ -1,0 +1,242 @@
+{
+    "templateMetadata": {
+        "description": "Sample application template for working with 3ds Max and Corona."
+    },
+    "parameters": {
+        "jobName": {
+            "type": "string",
+            "defaultValue": "3dsmax-render",
+            "metadata": {
+                "description": "The job name",
+                "advancedType": "job-id"
+            }
+        },
+        "poolId": {
+            "type": "string",
+            "defaultValue": "ignored",
+            "metadata": {
+                "description": "The pool id"
+            }
+        },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2019",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2019"
+            ]
+        },
+        "renderer": {
+            "type": "string",
+            "defaultValue": "corona",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "corona"
+            ]
+        },
+        "inputFilegroup": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "inputFilegroupSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "sceneFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The 3ds Max scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.max"
+            }
+        },
+        "pathFile": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional 3ds Max path file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.mxp"
+            }
+        },
+        "preRenderScript": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional 3ds Max pre-render script to execute",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup"
+            }
+        },
+        "renderPresetFile": {
+            "type": "string",
+            "defaultValue": "None",
+            "metadata": {
+                "description": "Optional render preset file",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputFilegroup",
+                "wildcards": "*.rps"
+            }
+        },
+        "outputName": {
+            "type": "string",
+            "defaultValue": "image.jpg",
+            "metadata": {
+                "description": "The output filename to use when naming the rendered outputs"
+            }
+        },
+        "camera": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional camera to render, if not specified the scene selected camera will be used."
+            }
+        },
+        "additionalArgs": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1 -width:800 -height:600"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Index of the last frame to render"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "displayName": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "onAllTasksComplete": "terminateJob",
+            "jobPreparationTask": {
+                "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0",
+                "userIdentity": {
+                    "autoUser": {
+                        "elevationLevel": "admin",
+                        "scope": "pool"
+                    }
+                }
+            },
+            "jobReleaseTask": {
+                "userIdentity": {
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "admin"
+                    }
+                },
+                "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            },
+            "taskFactory": {
+                "type": "parametricSweep",
+                "parameterSets": [
+                    {
+                        "start": "[parameters('frameStart')]",
+                        "end": "[parameters('frameEnd')]",
+                        "step": 1
+                    }
+                ],
+                "repeatTask": {
+                    "displayName": "Frame {0}",
+                    "userIdentity": {
+                        "autoUser": {
+                            "elevationLevel": "admin",
+                            "scope": "pool"
+                        }
+                    },
+                    "commandLine": "powershell.exe 3dsmax.ps1 -maxVersion \\\"[parameters('maxVersion')]\\\" -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\" [parameters('additionalArgs')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
+                    "resourceFiles":[
+                        {
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                            "filePath":"3dsmax.ps1"
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}_error.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/outputs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        },
+                        {
+                            "filePattern": "*.log",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/frame_{0}"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
