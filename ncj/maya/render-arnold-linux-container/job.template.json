@@ -138,8 +138,9 @@
                             "value": "5000000"
                         }
                     ],
-                    "taskContainerSettings": {
-                      "imageName": "[parameters('containerImage')]"
+                    "containerSettings": {
+                      "imageName": "[parameters('containerImage')]",
+                      "containerRunOptions": "--privileged"
                     },
                     "outputFiles": [
                         {
