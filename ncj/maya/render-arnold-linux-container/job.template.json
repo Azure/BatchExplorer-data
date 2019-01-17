@@ -1,21 +1,33 @@
 {
     "templateMetadata": {
-        "description": "Application template for working with Maya and V-Ray on CentOS."
+        "description": "Application template for working with Maya and Arnold on CentOS."
     },
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "maya-sw-pool-centos",
+            "defaultValue": "maya-arnold-pool-centos",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
         "jobName": {
             "type": "string",
-            "defaultValue": "maya-sw-centos",
+            "defaultValue": "maya-arnold-centos",
             "metadata": {
                 "description": "The unique name of the job.",
                 "advancedType": "job-id"
+            }
+        },
+         "containerImage": {
+            "type": "string",
+            "metadata": {
+              "description": "Rendering ContainerImage to render the job with",
+              "advancedType": "rendering-container-image"
+            },
+            "additionalProperties": {
+              "app": "maya",
+              "renderEngine": "arnold",
+              "imageReferenceId": "centos-75-container"
             }
         },
         "mayaVersion": {
@@ -126,6 +138,9 @@
                             "value": "5000000"
                         }
                     ],
+                    "taskContainerSettings": {
+                      "imageName": "[parameters('containerImage')]"
+                    },
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",
