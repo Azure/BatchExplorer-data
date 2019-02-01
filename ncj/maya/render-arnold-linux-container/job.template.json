@@ -10,15 +10,7 @@
                 "description": "The ID of the pool on which to run the job."
             }
         },
-        "jobName": {
-            "type": "string",
-            "defaultValue": "maya-arnold-centos",
-            "metadata": {
-                "description": "The unique name of the job.",
-                "advancedType": "job-id"
-            }
-        },
-         "containerImage": {
+        "containerImage": {
             "type": "string",
             "metadata": {
               "description": "Rendering ContainerImage to render the job with",
@@ -30,6 +22,15 @@
               "imageReferenceId": "centos-75-container"
             }
         },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "maya-arnold-centos",
+            "metadata": {
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
+            }
+        },
+        
         "inputData": {
             "type": "string",
             "metadata": {
