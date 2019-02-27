@@ -81,6 +81,17 @@
                 "VRayRT"
             ]
         },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2018",
+                "2019"
+            ]
+        },
         "vrayPort": {
             "type": "string",
             "defaultValue": "20204",
@@ -93,9 +104,9 @@
         "osType": {
             "imageReference": {
                 "publisher": "batch",
-                "offer": "rendering-windows2016",
+                "offer": "rendering-windows2016-preview",
                 "sku": "rendering",
-                "version": "1.3.2"
+                "version": "1.3.3"
             },
             "nodeAgentSKUId": "batch.node.windows amd64"
         }
@@ -114,7 +125,7 @@
         "enableAutoScale": false,
         "enableInterNodeCommunication": true,
         "startTask": {
-            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')] & PrepareVrayServices.bat 2018 [parameters('vrayRenderer')] [parameters('vrayPort')]",
+            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')] & PrepareVrayServices.bat [parameters('maxVersion')] [parameters('vrayRenderer')] [parameters('vrayPort')]",
             "waitForSuccess": false,
             "maxTaskRetryCount": 1,
             "userIdentity": {
@@ -129,7 +140,7 @@
                     "filePath": "install-azure-nc-drivers.cmd"
                 },
                 {
-                    "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/PrepareVrayServices.bat",
+                    "blobSource":"https://renderingapplications.blob.core.windows.net/test-scenes/PrepareVrayServices.bat?sr=b&sv=2015-02-21&st=2019-02-11T23%3A45%3A11Z&se=2019-02-27T00%3A45%3A11Z&sp=rwd&sig=mPZoMQ%2F4y9rotw4HAr%2FvzqXOT8nxGph4QJGdubdXK8o%3D",
                     "filePath":"PrepareVrayServices.bat"
                 }
             ]

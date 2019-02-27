@@ -35,6 +35,10 @@ def set_template_pool_id(in_memory_json_object: str, pool_id: str):
             elif in_memory_json_object.get("parameters").get("poolId").get('value'):
                 in_memory_json_object["parameters"]["poolId"]["value"] = pool_id
 
+    if in_memory_json_object.get("pool") is not None: 
+        if in_memory_json_object.get("id") is None:
+            in_memory_json_object["pool"]["id"] = pool_id
+
 
 def set_custom_image(in_memory_json_object: str, VM_image_URL: str, VM_image_type: str):
     """

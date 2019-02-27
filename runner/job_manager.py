@@ -62,13 +62,16 @@ class JobManager(object):
                 template, parameters)
             job_parameters = batch_service_client.job.jobparameter_from_json(
                 job_json)
+
+            #print("job_json {}".format(job_json))
+            #print("job_parameters {}".format(job_parameters))
             batch_service_client.job.add(job_parameters)
         except batchmodels.batch_error.BatchErrorException as err:
-            logger.info(
+            logger.error(
                 "Failed to submit job\n{}\n with params\n{}".format(
                     template, parameters))
             traceback.print_exc()
-            utils.print_batch_exception(err)
+            utils.print_batch_exception("Error: {}".format(err))
             raise
         except batch.errors.MissingParameterValue as mpv:
             logger.error("Job {}, failed to submit, because of the error: {}".format(self.raw_job_id, mpv))
@@ -95,8 +98,10 @@ class JobManager(object):
         ctm.set_parameter_name(parameters, self.job_id)
         ctm.set_parameter_storage_info(parameters, self.storage_info)
         ctm.set_template_pool_id(parameters, self.pool_id)
-
         # Submits the job
+
+        #print("template {}".format(template))
+        #print("parameters {}".format(parameters))
         self.submit_job(batch_client, template, parameters)
 
     def submit_pool(self, batch_service_client: batch.BatchExtensionsClient, template: str):
@@ -108,8 +113,12 @@ class JobManager(object):
         :param template: The in memory version of the template used to create a the job.
         :type template: str
         """
-        pool_json = batch_service_client.pool.expand_template(template)
+        parameters = ctm.load_file(self.parameters_file)
+        pool_json = batch_service_client.pool.expand_template(template, parameters)
+        ctm.set_template_pool_id(template, self.pool_id)
+        #print("pool_json: {}".format(pool_json))
         pool = batch_service_client.pool.poolparameter_from_json(pool_json)
+        #print("pool: {}, {}".format(pool, parameters))
         logger.info('Creating pool [{}]...'.format(self.pool_id))
         try:
             batch_service_client.pool.add(pool)

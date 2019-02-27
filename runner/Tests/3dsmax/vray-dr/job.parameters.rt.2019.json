@@ -3,7 +3,7 @@
       "value":"max2019-vray-rt"
    },
    "poolId":{
-      "value":"3dsmax-vray-dr-RT"
+      "value":"3dsmax-vray-dr-RT2019"
    },
    "inputFilegroup":{
       "value":"rendering"
@@ -12,13 +12,16 @@
       "value":"https://"
    },
    "sceneFile":{
-      "value":"3dsmax-vray.max"
+      "value":"3ds_max_next.max"
    },
    "maxVersion":{
       "value":"2019"
    },
    "renderer":{
       "value":"vray"
+   },
+   "vrayRenderer":{
+      "value": "VRayRT"
    },
    "outputName":{
       "value":"image.jpg"
