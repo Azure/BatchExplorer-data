@@ -3,7 +3,7 @@
       "value":"max2018-vray-adv"
    },
    "poolId":{
-      "value":"3dsmax-vray-Adv"
+      "value":"3dsmax-vray-Adv2018"
    },
    "inputFilegroup":{
       "value":"rendering"
@@ -12,13 +12,16 @@
       "value":"https://"
    },
    "sceneFile":{
-      "value":"3dsmax-vray.max"
+      "value":"3dsmax_adv_2018.max"
    },
    "maxVersion":{
       "value":"2018"
    },
    "outputName":{
       "value":"image.jpg"
+   },
+   "vrayRenderer":{
+      "value": "VRayAdv"
    },
    "frameStart":{
       "value":1

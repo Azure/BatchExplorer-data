@@ -3,7 +3,7 @@
       "value":"max2018-vray-rt"
    },
    "poolId":{
-      "value":"3dsmax-vray-dr-RT"
+      "value":"3dsmax-vray-dr-RT2018"
    },
    "inputFilegroup":{
       "value":"rendering"
@@ -19,6 +19,9 @@
    },
    "renderer":{
       "value":"vray"
+   },
+   "vrayRenderer":{
+      "value": "VRayRT"
    },
    "outputName":{
       "value":"image.jpg"
