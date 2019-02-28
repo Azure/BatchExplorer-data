@@ -77,14 +77,12 @@ function SetupDistributedRendering
     {
         IF($renderer -eq "VRayRT")
         {
-            echo "RT 2018"
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_RT_""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
 
         }
         ElseIf($renderer -eq "VRayAdv")
         {
-            echo "Adv 2018"
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = ""$vrayLogFile"")`r`n"
 
@@ -92,9 +90,8 @@ function SetupDistributedRendering
     }
     ElseIf($maxVersion -eq "2019"){
         IF($renderer -eq "VRayRT"){
-            echo "RT 2019"
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_GPU_""`r`n"
-            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = ""$vrayLogFile"")`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
         }
     }
 
