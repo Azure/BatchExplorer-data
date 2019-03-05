@@ -84,7 +84,7 @@ function SetupDistributedRendering
         ElseIf($renderer -eq "VRayAdv")
         {
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
-            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = ""$vrayLogFile"")`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
 
         }
     }
@@ -92,8 +92,16 @@ function SetupDistributedRendering
         IF($renderer -eq "VRayRT"){
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_GPU_""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
+        }    
+        ElseIf($renderer -eq "VRayAdv")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
         }
     }
+
+    $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+    $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
 
     # We need to wait for vrayspawner or vray.exe to start before continuing
     Start-Sleep 30
