@@ -131,7 +131,7 @@
     {
         "osType": "windows",
         "offer": "rendering-windows2016",
-        "version": "1.3.3"
+        "version": "1.3.4"
     },
     {
         "osType": "linux",

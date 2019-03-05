@@ -79,29 +79,32 @@ function SetupDistributedRendering
         {
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_RT_""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
-
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
         }
         ElseIf($renderer -eq "VRayAdv")
         {
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
-
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
         }
     }
     ElseIf($maxVersion -eq "2019"){
         IF($renderer -eq "VRayRT"){
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_GPU_""`r`n"
-            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"            
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_file = ""$vrayLogFile""`r`n"
         }    
         ElseIf($renderer -eq "VRayAdv")
         {
             $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
             $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
         }
     }
-
-    $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
-    $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
 
     # We need to wait for vrayspawner or vray.exe to start before continuing
     Start-Sleep 30
@@ -124,7 +127,17 @@ if (ParameterValueSet $irradianceMap -and $renderer -like "vray")
     $irMap = "$workingDirectory\$irradianceMap"
     Write-Host "Setting IR map to $irMap"
     $pre_render_script_content += "-- Set the IR path`r`n"
-    $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+    If ($maxVersion -eq "2018")
+    {
+        $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+    }
+    ElseIf ($maxVersion -eq "2019")
+    {
+        IF($renderer -ne "VRayRT"){
+
+            $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+        }
+    }
 }
 
 if ($renderer -eq "arnold")
