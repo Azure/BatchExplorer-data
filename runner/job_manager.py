@@ -64,11 +64,11 @@ class JobManager(object):
                 job_json)
             batch_service_client.job.add(job_parameters)
         except batchmodels.batch_error.BatchErrorException as err:
-            logger.info(
+            logger.error(
                 "Failed to submit job\n{}\n with params\n{}".format(
                     template, parameters))
             traceback.print_exc()
-            utils.print_batch_exception(err)
+            utils.print_batch_exception("Error: {}".format(err))
             raise
         except batch.errors.MissingParameterValue as mpv:
             logger.error("Job {}, failed to submit, because of the error: {}".format(self.raw_job_id, mpv))
@@ -108,7 +108,9 @@ class JobManager(object):
         :param template: The in memory version of the template used to create a the job.
         :type template: str
         """
-        pool_json = batch_service_client.pool.expand_template(template)
+        parameters = ctm.load_file(self.parameters_file)
+        pool_json = batch_service_client.pool.expand_template(template, parameters)
+        ctm.set_template_pool_id(template, self.pool_id)
         pool = batch_service_client.pool.poolparameter_from_json(pool_json)
         logger.info('Creating pool [{}]...'.format(self.pool_id))
         try:
