@@ -144,6 +144,7 @@ if ($renderer -eq "arnold")
 {
     $pre_render_script_content += "-- Fail on arnold license error`r`n"
     $pre_render_script_content += "r.abort_on_license_fail = true`r`n"
+    $pre_render_script_content += "r.prepass_enabled = false`r`n"
     $pre_render_script_content += "r.verbosity_level = 4`r`n"
     $pre_render_script_content += "renderMessageManager.LogFileON = true`r`n"
     $pre_render_script_content += "renderMessageManager.ShowInfoMessage = true`r`n"
