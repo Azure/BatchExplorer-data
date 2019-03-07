@@ -70,10 +70,41 @@ function SetupDistributedRendering
     $vrayLogFile = "$env:AZ_BATCH_TASK_WORKING_DIR\VRayLog.log" -replace "\\", "\\"
     $script:pre_render_script_content += "-- VRay DR setup`r`n"
     $script:pre_render_script_content += "rendererName = r as string`r`n"
-    $script:pre_render_script_content += "index = findString rendererName ""V_Ray_""`r`n"
+
     $script:pre_render_script_content += "if index != 1 then (print ""VRay renderer not used, please save the scene with a VRay renderer selected."")`r`n"
-    $script:pre_render_script_content += "index = findString rendererName ""V_Ray_RT_""`r`n"
-    $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = ""$vrayLogFile"")`r`n"
+
+    If($maxVersion -eq "2018")
+    {
+        IF($renderer -eq "VRayRT")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_RT_""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+        ElseIf($renderer -eq "VRayAdv")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+    }
+    ElseIf($maxVersion -eq "2019"){
+        IF($renderer -eq "VRayRT"){
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_GPU_""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"            
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }    
+        ElseIf($renderer -eq "VRayAdv")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+    }
 
     # We need to wait for vrayspawner or vray.exe to start before continuing
     Start-Sleep 30
@@ -96,21 +127,38 @@ if (ParameterValueSet $irradianceMap -and $renderer -like "vray")
     $irMap = "$workingDirectory\$irradianceMap"
     Write-Host "Setting IR map to $irMap"
     $pre_render_script_content += "-- Set the IR path`r`n"
-    $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+    If ($maxVersion -eq "2018")
+    {
+        $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+    }
+    ElseIf ($maxVersion -eq "2019")
+    {
+        IF($renderer -ne "VRayRT"){
+
+            $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+        }
+    }
 }
 
 if ($renderer -eq "arnold")
 {
     $pre_render_script_content += "-- Fail on arnold license error`r`n"
     $pre_render_script_content += "r.abort_on_license_fail = true`r`n"
+    $pre_render_script_content += "r.prepass_enabled = false`r`n"
     $pre_render_script_content += "r.verbosity_level = 4`r`n"
+    $pre_render_script_content += "renderMessageManager.LogFileON = true`r`n"
+    $pre_render_script_content += "renderMessageManager.ShowInfoMessage = true`r`n"
+    $pre_render_script_content += "renderMessageManager.ShowProgressMessage = true`r`n"
+    $pre_render_script_content += "renderMessageManager.LogDebugMessage = true`r`n"
 }
 
 if ($renderer -like "vray")
 {
     $outputFiles = "$env:AZ_BATCH_TASK_WORKING_DIR\images\____.jpg" -replace "\\", "\\"
     $pre_render_script_content += "-- Set output channel path`r`n"
-    $pre_render_script_content += "r.output_splitfilename = ""$outputFiles""`r`n"
+    $pre_render_script_content += "rendererName = r as string`r`n"
+    $pre_render_script_content += "index = findString rendererName ""V_Ray_Adv_""`r`n"
+    $pre_render_script_content += "if index == 1 then (r.output_splitfilename = ""$outputFiles"")`r`n"
 }
 
 $pre_render_script_content | Out-File $pre_render_script -Encoding ASCII
@@ -278,10 +326,19 @@ Else
 
 Write-Host "Executing $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" $pathFileParam `"$sceneFile`""
 
-cmd.exe /c $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
+cmd.exe /c $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -v:5 -outputName:`"$outputName`" $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
 $result = $lastexitcode
 
-Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
+Write-Host "last exit code $result"
+
+If ($maxVersion -eq "2018")
+{
+    Copy-Item "${env:LOCALAPPDATA}\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
+}
+ElseIf ($maxVersion -eq "2019")
+{   
+    Copy-Item "${env:LOCALAPPDATA}\Autodesk\3dsMaxIO\2019 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue 
+}
 
 if ($renderer -like "vray")
 {

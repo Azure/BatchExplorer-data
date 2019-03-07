@@ -81,6 +81,17 @@
                 "VRayRT"
             ]
         },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2018",
+                "2019"
+            ]
+        },
         "vrayPort": {
             "type": "string",
             "defaultValue": "20204",
@@ -95,7 +106,7 @@
                 "publisher": "batch",
                 "offer": "rendering-windows2016",
                 "sku": "rendering",
-                "version": "1.3.1"
+                "version": "1.3.4"
             },
             "nodeAgentSKUId": "batch.node.windows amd64"
         }
@@ -114,7 +125,7 @@
         "enableAutoScale": false,
         "enableInterNodeCommunication": true,
         "startTask": {
-            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')] & PrepareVrayServices.bat 2018 [parameters('vrayRenderer')] [parameters('vrayPort')]",
+            "commandLine": "cmd.exe /c install-azure-nc-drivers.cmd [parameters('vmSize')] & PrepareVrayServices.bat [parameters('maxVersion')] [parameters('vrayRenderer')] [parameters('vrayPort')]",
             "waitForSuccess": false,
             "maxTaskRetryCount": 1,
             "userIdentity": {

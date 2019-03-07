@@ -5,13 +5,11 @@
 
 pool:
   vmImage: 'Ubuntu 16.04'
-
 steps:
 - task: UsePythonVersion@0
   inputs:
     versionSpec: 3.7.0
     architecture: 'x64'
-
 - task: PythonScript@0
   displayName: 'Template Runner'
   inputs:
@@ -22,7 +20,6 @@ steps:
       from os import path
       import os
       # Python >= 3.7.0
- 
       Runner_py = next(iglob(path.join('**', 'runner.py'), recursive=True), None)
       if not Runner_py:
           raise SystemExit('Could not find a runner.py')
@@ -35,11 +32,10 @@ steps:
   displayName: 'Install prerequisites'
 - script: |
     pushd '$(projectRoot)'
-    python runner.py "Tests/TestConfiguration.json" "$(PS_BATCH_ACCOUNT_NAME)" "$(BatchAccountKey)" "$(PS_BATCH_ACCOUNT_URL)" "$(PS_BATCH_ACCOUNT_SUB)" "$(PS_STORAGE_ACCOUNT_NAME)" "$(StorageAccountKey)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" "$(ServicePrincipalCredentialsSecret)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
+    python runner.py "Tests/TestConfiguration.json" "$(PS_BATCH_ACCOUNT_NAME)" "$(runnerBatchAccountSecret)" "$(PS_BATCH_ACCOUNT_URL)" "$(PS_BATCH_ACCOUNT_SUB)" "$(PS_STORAGE_ACCOUNT_NAME)" "$(StorageAccountKey)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_CLIENT_ID)" "$(ServicePrincipalCredentialsSecret)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_TENANT)" "$(PS_SERVICE_PRINCIPAL_CREDENTIALS_RESOUCE)" 
     cat template.log
   condition: succeededOrFailed()
   displayName: 'Run tests'
-
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit

@@ -110,16 +110,16 @@
                 "userIdentity": {
                     "autoUser": {
                         "scope": "pool",
-                        "elevationLevel": "nonAdmin"
+                        "elevationLevel": "admin"
                     }
                 },
-                "commandLine": "cmd.exe /c set & echo --- & azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S || exit /b %errorlevel%"
+                "commandLine": "cmd.exe /c set & echo --- & azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S /Y /V:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\azcopy.log\" || exit /b %errorlevel%"
             },
             "jobReleaseTask": {
                 "userIdentity": {
                     "autoUser": {
                        "scope": "pool",
-                       "elevationLevel": "nonAdmin"
+                       "elevationLevel": "admin"
                     }
                 },
                 "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"

@@ -68,12 +68,14 @@ def runner_arguments():
     parser.add_argument("ServicePrincipalCredentialsSecret", help="Service Principal secret")
     parser.add_argument("ServicePrincipalCredentialsTenant", help="Service Principal tenant")
     parser.add_argument("ServicePrincipalCredentialsResouce", help="Service Principal resource")
+    parser.add_argument("-VMImageURL", default=None, help="The custom image resource URL, if you want the temlates to run on a custom image")
+    parser.add_argument("-VMImageType", choices=['windows','Windows','centos','Centos','CentOS', None], default=None, help="The custom image type, windows or centos")
 
     return parser.parse_args()
 
 
 def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client: batch.BatchExtensionsClient,
-                          images_refs: 'List[utils.ImageReference]'):
+                          images_refs: 'List[utils.ImageReference]', VMImageURL: str , VMImageType: str):
     """
     Creates all resources needed to run the job, including creating the containers and the pool needed to run the job.
     Then creates job and checks if the expected output is correct.
@@ -89,7 +91,7 @@ def run_job_manager_tests(blob_client: azureblob.BlockBlobService, batch_client:
     logger.info("{} jobs will be created.".format(len(_job_managers)))
     utils.execute_parallel_jobmanagers("upload_assets", _job_managers, blob_client)
     logger.info("Creating pools...")
-    utils.execute_parallel_jobmanagers("create_pool", _job_managers, batch_client, images_refs)
+    utils.execute_parallel_jobmanagers("create_pool", _job_managers, batch_client, images_refs, VMImageURL, VMImageType)
     logger.info("Submitting jobs...")
     utils.execute_parallel_jobmanagers("create_and_submit_job", _job_managers, batch_client)
     logger.info("Waiting for jobs to complete...")
@@ -134,7 +136,7 @@ def main():
             for image in template["images"]:
                 images_refs.append(utils.ImageReference(image["osType"], image["offer"], image["version"]))
 
-        run_job_manager_tests(blob_client, batch_client, images_refs)
+        run_job_manager_tests(blob_client, batch_client, images_refs, args.VMImageURL, args.VMImageType)
 
     except batchmodels.batch_error.BatchErrorException as err:
         traceback.print_exc()
@@ -155,3 +157,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    exit(0)
