@@ -7,7 +7,8 @@
             "type": "string",
             "defaultValue": "3dsmax-vray-dr",
             "metadata": {
-                "description": "The job name"
+                "description": "The job name",
+                "advancedType": "job-id"
             }
         },
         "poolId": {
@@ -16,6 +17,16 @@
             "metadata": {
                 "description": "The pool id"
             }
+        },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2018",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2018"
+            ]
         },
         "vrayRenderer": {
             "type": "string",
@@ -132,21 +143,7 @@
                 "description": "Index of the last frame to render"
             }
         },
-        "frameWidth": {
-            "type": "int",
-            "defaultValue": 1600,
-            "metadata": {
-                "description": "Frame width"
-            }
-        },
-        "frameHeight": {
-            "type": "int",
-            "defaultValue": 1200,
-            "metadata": {
-                "description": "Frame height"
-            }
-        },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -162,8 +159,6 @@
         }
     },
    "variables":{
-      "VRayRT":"cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')]",
-      "VRayAdv":"cmd.exe /c start \"\" \"C:\\Autodesk\\3dsMax2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\""
    },
     "job":{
         "type":"Microsoft.Batch/batchAccounts/jobs",
@@ -178,7 +173,7 @@
                 "commandLine": "azcopy /source:\"[parameters('inputFilegroupSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\" /S || exit /b %errorlevel% & rmdir /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\assets\\outputs\" & exit /b 0",
                 "userIdentity": {
                     "autoUser": {
-                        "elevationLevel": "nonAdmin",
+                        "elevationLevel": "admin",
                         "scope": "pool"
                     }
                 }
@@ -189,22 +184,20 @@
                     {
                         "id":"Render",
                         "displayName":"Frame",
-                        "commandLine":"powershell.exe -File 3dsmax.ps1 -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer vray -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \"[parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
+                        "commandLine":"powershell.exe -File 3dsmax.ps1 -maxVersion \"[parameters('maxVersion')]\" -start [parameters('frameStart')] -end [parameters('frameEnd')] -outputName \"images\\[parameters('outputName')]\" -sceneFile \"[parameters('sceneFile')]\" -pathFile \"[parameters('pathFile')]\" -renderer [parameters('vrayRenderer')] -preRenderScript \"[parameters('preRenderScript')]\" -camera \"[parameters('camera')]\" -additionalArgs \" [parameters('additionalArgs')]\" -irradianceMap \"[parameters('irradianceMapFile')]\" -nodeCount [parameters('nodeCount')] -renderPresetFile \"[parameters('renderPresetFile')]\" -dr -vrayPort [parameters('vrayPort')]",
                         "userIdentity": {
                             "autoUser": {
-                                "elevationLevel": "nonAdmin",
+                                "elevationLevel": "admin",
                                 "scope": "pool"
                             }
                         },
                         "multiInstanceSettings":{
                             "numberOfInstances":"[parameters('nodeCount')]",
-                            "coordinationCommandLine":"cmd.exe /c if \"[parameters('vrayRenderer')]\" == \"VRayAdv\" (cmd.exe /c start \"\" \"C:\\Autodesk\\3dsMax2018\\vrayspawner2018.exe\" \"-port=[parameters('vrayPort')]\") else (cmd.exe /c start C:\\server\\3dsmaxVray\\bin\\vray.exe -server -portNumber=[parameters('vrayPort')])",
-                            "commonResourceFiles":[
-                            ]
+                            "coordinationCommandLine":"cmd.exe /c echo noop"
                         },
                         "resourceFiles":[
                             {
-                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                                "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                                 "filePath":"3dsmax.ps1"
                             }
                         ],
@@ -213,7 +206,7 @@
                                 "filePattern":"../stdout.txt",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs/frame.log"
                                     }
                                 },
@@ -225,7 +218,7 @@
                                 "filePattern":"../stderr.txt",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs/frame_error.log"
                                     }
                                 },
@@ -237,7 +230,7 @@
                                 "filePattern":"images/**/*",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/outputs"
                                     }
                                 },
@@ -249,7 +242,7 @@
                                 "filePattern":"*.log",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs"
                                     }
                                 },
@@ -261,7 +254,7 @@
                                 "filePattern":"vraylog.*",
                                 "destination":{
                                     "autoStorage":{
-                                        "fileGroup":"[parameters('outputFilegroup')]",
+                                        "fileGroup":"[parameters('outputs')]",
                                         "path":"[parameters('jobName')]/logs"
                                     }
                                 },

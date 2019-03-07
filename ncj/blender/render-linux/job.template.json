@@ -11,7 +11,8 @@
             "type": "string",
             "defaultValue": "blender-render",
             "metadata": {
-                "description": "The name of the Azure Batch job, also used to prefix rendered outputs"
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs",
+                "advancedType": "job-id"
             }
         },
          "inputData": {
@@ -19,6 +20,14 @@
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
+            }
+        },
+        "inputDataSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
             }
         },
         "blendFile": {
@@ -66,31 +75,25 @@
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
-            "displayName": "[parameters('blendFile')]",
+            "displayName": "",
             "onAllTasksComplete": "terminateJob",
             "jobPreparationTask":{
                 "userIdentity": {
                     "autoUser": {
-                        "scope": "pool"
+                        "scope": "pool",
+                        "elevationLevel": "admin"
                     }
                 },
-                "resourceFiles": [
-                {
-                    "source": { 
-                        "fileGroup": "[parameters('inputData')]",
-                        "prefix": ""
-                    },
-                    "filePath": "."
-                }],
-                "commandLine": "echo blender"
+                "commandLine": "/bin/bash -c 'azcopy --source \"[parameters('inputDataSas')]\" --destination \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" --recursive'"
             },
-            "jobReleaseTask":{
-               "userIdentity":{
-                   "autoUser": {
-                       "scope": "pool"
-                   }
-               },
-              "commandLine":"DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            "jobReleaseTask": {
+                "userIdentity": {
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "admin"
+                    }
+                },
+                "commandLine": "/bin/bash -c \"sudo rm -rfv $AZ_BATCH_JOB_PREP_WORKING_DIR/*\""
             },
             "taskFactory": {
                 "type": "parametricSweep",

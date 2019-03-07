@@ -131,23 +131,16 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
     blend_file = os.environ["BLEND_FILE"]
     output_sas = os.environ["OUTPUT_CONTAINER_SAS"]
     optionalParams = os.environ["OPTIONAL_PARAMS"]
-
-    # generate the blender command line
-    command_line = "blender -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}".format(
-        os_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
-        blend_file,
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
-        optionalParams
-    )
+    command_line = blender_command(blend_file, optionalParams)
 
     # only print this once
     if task_id == 1:
         print("tile task command line: {}".format(command_line))
-    
+
     return models.TaskAddParameter(
         id=pad_number(task_id, PAD_LEN_ID),
-        display_name="frame: {}, tile: {}".format(frame, tile_num),        
-        command_line="/bin/bash -c '{}'".format(command_line),
+        display_name="frame: {}, tile: {}".format(frame, tile_num),
+        command_line=os_specific_command_line(command_line),
         constraints=models.TaskConstraints(max_task_retry_count = 2),
         environment_settings=[
             models.EnvironmentSetting("X_TILES", os.environ["X_TILES"]),
@@ -162,7 +155,7 @@ def create_task(frame, task_id, job_id, tile_num, current_x, current_y):
         ],
         resource_files=[
             models.ResourceFile(
-                "https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/blender/scripts/python-task-manager.py",
+                "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/python-task-manager.py",
                 "scripts/python-task-manager.py"
             )
         ],
@@ -259,21 +252,19 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
     if crop == "true":
         command_line = montage_command(frame, x_tiles, y_tiles, output_format)
     else:
-        command_line = convert_flatten_command(frame, output_format)
+        command_line = convert_command(frame, output_format)
     
     print("merge task command line: {}".format(command_line))
     return models.TaskAddParameter(
         id=pad_number(task_id, PAD_LEN_ID),
         display_name="frame: {} - merge task".format(frame),
-        command_line="/bin/bash -c '{}'".format(command_line),
+        command_line=os_specific_command_line(command_line),
         constraints=models.TaskConstraints(max_task_retry_count = 2),
         environment_settings=[
             models.EnvironmentSetting("X_TILES", str(x_tiles)),
             models.EnvironmentSetting("Y_TILES", str(y_tiles))
         ],
-        depends_on=models.TaskDependencies(task_id_ranges=[
-            models.TaskIdRange(depend_start, depend_end)
-        ]),
+        depends_on=models.TaskDependencies(task_ids=get_dependent_tasks(depend_start, depend_end)),
         resource_files=get_resource_files(x_tiles, y_tiles, frame),
         output_files=[
             models.OutputFile(
@@ -309,9 +300,26 @@ def create_merge_task(frame, task_id, job_id, depend_start, depend_end):
         ])
 
 
-def os_env(env_var_name): 
+def blender_command(blend_file, optionalParams): 
     """
-    Gets the operating specific environment variable format string.
+    Gets the operating system specific blender exe.
+    """
+    if os.environ["TEMPLATE_OS"].lower() == "linux":
+        command = "blender -b \"{}/{}\" -P \"{}/scripts/python-task-manager.py\" -y -t 0 {}"
+    else:
+        command = "\"%BLENDER_2018_EXEC%\" -b \"{}\\{}\" -P \"{}\\scripts\\python-task-manager.py\" -y -t 0 {}"
+
+    return command.format(
+        os_specific_env("AZ_BATCH_JOB_PREP_WORKING_DIR"),
+        blend_file,
+        os_specific_env("AZ_BATCH_TASK_WORKING_DIR"),
+        optionalParams
+    )
+
+
+def os_specific_env(env_var_name): 
+    """
+    Gets the operating system specific environment variable format string.
 
     :param env_var_name: Environment variable name.
     :type env_var_name: str
@@ -323,7 +331,19 @@ def os_env(env_var_name):
         return "%{}%".format(env_var_name)
 
 
-def convert_flatten_command(frame, output_format):
+def os_specific_command_line(command_line): 
+    """
+    Gets the operating system specific command string.
+
+    :param command_line: command line to execute.
+    :type command_line: str
+    """
+    current_os = os.environ["TEMPLATE_OS"]
+    command = "/bin/bash -c '{}'" if current_os.lower() == "linux" else "cmd.exe /c \"{}\""
+    return command.format(command_line)
+
+
+def convert_command(frame, output_format):
     """
     Command for executing the ImageMagick 'convert' command.
     This command layers the output image tiles on top of one another 
@@ -336,8 +356,15 @@ def convert_flatten_command(frame, output_format):
     :param output_format: Blender output format (PNG, OPEN_EXR, etc).
     :type output_format: str
     """
-    return "cd {};convert tile_* -flatten frame_{}.{}".format(
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+    command = ""
+    current_os = os.environ["TEMPLATE_OS"]
+
+    if current_os.lower() == "linux":
+        command = "cd $AZ_BATCH_TASK_WORKING_DIR;convert tile_* -flatten frame_{}.{}"
+    else:
+        command = "cd /d %AZ_BATCH_TASK_WORKING_DIR% & magick convert tile_* -flatten frame_{}.{}"
+    
+    return command.format(
         pad_number(frame, PAD_LEN_FRAME),
         get_file_extension(output_format)
     )
@@ -357,9 +384,16 @@ def montage_command(frame, x_tiles, y_tiles, output_format):
     :param y_tiles: Number of tiles on the Y axis.
     :type y_tiles: int
     """
+    command = ""
     tiles = get_tile_names(x_tiles * y_tiles)
-    return "cd {};montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}".format(
-        os_env("AZ_BATCH_TASK_WORKING_DIR"),
+    current_os = os.environ["TEMPLATE_OS"]
+
+    if current_os.lower() == "linux":
+        command = "cd $AZ_BATCH_TASK_WORKING_DIR;montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}"
+    else:
+        command = "cd /d %AZ_BATCH_TASK_WORKING_DIR% & magick montage {} -tile {}x{} -background none -geometry +0+0 frame_{}.{}"
+    
+    return command.format(
         " ".join(tiles),
         x_tiles,
         y_tiles,
@@ -435,6 +469,23 @@ def get_tile_names(tile_count):
         tiles.append("tile_{}.{}".format(str(num).zfill(3), extension))
     
     return tiles
+
+
+def get_dependent_tasks(depend_start, depend_end): 
+    """
+    Returns an array of task IDs for the dependency list. 
+    E.g. [000001, 000002, 000003, 000004, ...]
+
+    :param depend_start: range start task ID.
+    :type depend_start: int
+    :param depend_end: range end task ID.
+    :type depend_end: int
+    """
+    taskIds = []
+    for task_id in range(depend_start, depend_end + 1):
+        taskIds.append(pad_number(task_id, PAD_LEN_ID))
+    
+    return taskIds
 
 
 def submit_task_collection(batch_client, job_id, tasks, frame):

@@ -1,0 +1,44 @@
+{
+   "jobName":{
+      "value":"max2018-vray-adv"
+   },
+   "poolId":{
+      "value":"3dsmax-vray-Adv2018"
+   },
+   "inputFilegroup":{
+      "value":"rendering"
+   },
+   "inputFilegroupSas":{
+      "value":"https://"
+   },
+   "sceneFile":{
+      "value":"3dsmax_adv_2018.max"
+   },
+   "maxVersion":{
+      "value":"2018"
+   },
+   "outputName":{
+      "value":"image.jpg"
+   },
+   "vrayRenderer":{
+      "value": "VRayAdv"
+   },
+   "frameStart":{
+      "value":1
+   },
+   "frameEnd":{
+      "value":1
+   },
+   "frameStep":{
+      "value":1
+   },
+   "frameWidth":{
+      "value":400
+   },
+   "frameHeight":{
+      "value":300
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

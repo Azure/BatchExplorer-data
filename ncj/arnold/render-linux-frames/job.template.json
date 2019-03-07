@@ -1,0 +1,120 @@
+{
+    "templateMetadata": {
+        "description": "Application template for working with Arnold standalone renderer on Linux."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "arnold-linux",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "render-arnold",
+            "metadata": {
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
+            }
+        },
+        "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "outputFormat": {
+            "type": "string",
+            "metadata": {
+                "description": "The output format of the rendered image"
+            },
+            "defaultValue": "png",
+            "allowedValues": [
+                "jpg",
+                "png"
+            ]
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "onAllTasksComplete": "terminateJob",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "jobPreparationTask": {
+                "commandLine": "env;export"
+            },
+            "taskFactory": {
+                "type": "taskPerFile",
+                "source": {
+                    "fileGroup": "[parameters('inputData')]"
+                },
+                "repeatTask": {
+                    "displayName": "frame {fileNameWithoutExtension}",
+                    "commandLine": "sudo mkdir -m a=rwx \"$AZ_BATCH_TASK_WORKING_DIR/images\";/opt/solidangle/mtoa/2018/bin/kick -i \"$AZ_BATCH_TASK_WORKING_DIR/assets/{fileName}\" -dw -v 6 -of [parameters('outputFormat')] -o \"$AZ_BATCH_TASK_WORKING_DIR/images/{fileNameWithoutExtension}.[parameters('outputFormat')]\"",
+                    "userIdentity": {
+                        "autoUser": {
+                            "scope": "task",
+                            "elevationLevel": "admin"
+                        }
+                    },
+                    "resourceFiles": [
+                        {
+                            "blobSource": "{url}",
+                            "filePath": "assets/{fileName}"
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stdout.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stderr.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/outputs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

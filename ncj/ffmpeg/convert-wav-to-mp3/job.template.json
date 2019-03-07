@@ -13,7 +13,8 @@
             "type": "string",
             "defaultValue": "ffmpeg-convert",
             "metadata": {
-                "description": "The name of the job"
+                "description": "The name of the job",
+                "advancedType": "job-id"
             }
         },
         "inputFilegroup": {
@@ -23,7 +24,7 @@
                 "advancedType": "file-group"
             }
         },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -63,7 +64,7 @@
                             "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}.log"
                                 }
                             },
@@ -75,7 +76,7 @@
                             "filePattern": "../stderr.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}_error.log"
                                 }
                             },
@@ -87,7 +88,7 @@
                             "filePattern": "converted/**/*",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/outputs"
                                 }
                             },

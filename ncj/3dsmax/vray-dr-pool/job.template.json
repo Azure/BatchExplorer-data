@@ -1,13 +1,14 @@
 {
     "templateMetadata":{
-        "description":"VRay DR Pool Rendering"
+        "description":"VRay DR Pool Setup Job.  This job will start the VRay DR services."
     },
     "parameters":{
         "jobName": {
             "type": "string",
             "defaultValue": "3dsmax-vray-dr-pool",
             "metadata": {
-                "description": "The job name"
+                "description": "The job name",
+                "advancedType": "job-id"
             }
         },
         "poolId": {

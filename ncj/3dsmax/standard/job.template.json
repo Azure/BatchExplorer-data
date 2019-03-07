@@ -7,7 +7,8 @@
             "type": "string",
             "defaultValue": "3dsmax-render",
             "metadata": {
-                "description": "The job name"
+                "description": "The job name",
+                "advancedType": "job-id"
             }
         },
         "poolId": {
@@ -16,6 +17,17 @@
             "metadata": {
                 "description": "The pool id"
             }
+        },
+        "maxVersion": {
+            "type": "string",
+            "defaultValue": "2019",
+            "metadata": {
+                "description": "The renderer to use"
+            },
+            "allowedValues":[
+                "2018",
+                "2019"
+            ]
         },
         "renderer": {
             "type": "string",
@@ -108,7 +120,7 @@
             "type": "string",
             "defaultValue": " ",
             "metadata": {
-                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1"
+                "description": "Any additional arguments to pass to 3ds Max, e.g. -superBlack:1 -width:800 -height:600"
             }
         },
         "frameStart": {
@@ -125,21 +137,7 @@
                 "description": "Index of the last frame to render"
             }
         },
-        "frameWidth": {
-            "type": "int",
-            "defaultValue": 1600,
-            "metadata": {
-                "description": "Frame width"
-            }
-        },
-        "frameHeight": {
-            "type": "int",
-            "defaultValue": 1200,
-            "metadata": {
-                "description": "Frame height"
-            }
-        },
-        "outputFilegroup": {
+        "outputs": {
             "type": "string",
             "metadata": {
                 "description": "The file group where outputs will be stored",
@@ -165,6 +163,15 @@
                     }
                 }
             },
+            "jobReleaseTask": {
+                "userIdentity": {
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "nonAdmin"
+                    }
+                },
+                "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            },
             "taskFactory": {
                 "type": "parametricSweep",
                 "parameterSets": [
@@ -182,10 +189,10 @@
                             "scope": "pool"
                         }
                     },
-                    "commandLine": "powershell.exe 3dsmax.ps1 -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -width [parameters('frameWidth')] -height [parameters('frameHeight')] -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\"[parameters('additionalArgs')]\\\" -irradianceMap \\\"[parameters('irradianceMapFile')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
+                    "commandLine": "powershell.exe 3dsmax.ps1 -maxVersion \\\"[parameters('maxVersion')]\\\" -start {0} -end {0} -outputName \\\"images\\[parameters('outputName')]\\\" -sceneFile \\\"[parameters('sceneFile')]\\\" -pathFile \\\"[parameters('pathFile')]\\\" -renderer [parameters('renderer')] -preRenderScript \\\"[parameters('preRenderScript')]\\\" -camera \\\"[parameters('camera')]\\\" -additionalArgs \\\" [parameters('additionalArgs')]\\\" -irradianceMap \\\"[parameters('irradianceMapFile')]\\\" -renderPresetFile \\\"[parameters('renderPresetFile')]\\\"",
                     "resourceFiles":[
                         {
-                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
+                            "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/3dsmax/scripts/3dsmax.ps1",
                             "filePath":"3dsmax.ps1"
                         }
                     ],
@@ -194,7 +201,7 @@
                             "filePattern": "../stdout.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}.log"
                                 }
                             },
@@ -206,7 +213,7 @@
                             "filePattern": "../stderr.txt",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/frame_{0}/frame_{0}_error.log"
                                 }
                             },
@@ -218,7 +225,7 @@
                             "filePattern": "images/**/*",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/outputs"
                                 }
                             },
@@ -230,7 +237,7 @@
                             "filePattern": "*.log",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/frame_{0}"
                                 }
                             },
@@ -242,7 +249,7 @@
                             "filePattern": "vraylog.*",
                             "destination": {
                                 "autoStorage": {
-                                    "fileGroup": "[parameters('outputFilegroup')]",
+                                    "fileGroup": "[parameters('outputs')]",
                                     "path": "[parameters('jobName')]/logs/frame_{0}"
                                 }
                             },

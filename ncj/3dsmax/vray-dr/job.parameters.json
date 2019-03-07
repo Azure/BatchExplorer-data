@@ -11,6 +11,9 @@
     "inputFilegroupSas":{
         "value":""
     },
+    "maxVersion":{
+      "value":"2019"
+    },
     "sceneFile":{
         "value":"MyScene.max"
     },
@@ -23,13 +26,7 @@
     "frameEnd":{
         "value":1
     },
-    "frameWidth":{
-        "value":1600
-    },
-    "frameHeight":{
-        "value":1200
-    },
-    "outputFilegroup":{
+    "outputs":{
         "value":"myfilegroup"
     },
     "nodeCount":{

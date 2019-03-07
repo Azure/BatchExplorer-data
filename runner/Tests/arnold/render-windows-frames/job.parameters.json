@@ -1,0 +1,14 @@
+{
+   "jobName":{
+      "value":"render-windows-frames"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "sceneFile":{
+      "value":"shapes.blend"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

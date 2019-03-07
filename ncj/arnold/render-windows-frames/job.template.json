@@ -1,0 +1,103 @@
+{
+    "templateMetadata": {
+        "description": "Application template for working with Arnold standalone renderer on Windows."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "arnold-windows",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "render-arnold",
+            "metadata": {
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
+            }
+        },
+        "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "onAllTasksComplete": "terminateJob",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "jobPreparationTask": {
+                "commandLine": "cmd.exe /c set"
+            },
+            "taskFactory": {
+                "type": "taskPerFile",
+                "source": {
+                    "fileGroup": "[parameters('inputData')]"
+                },
+                "repeatTask": {
+                    "displayName": "frame {fileNameWithoutExtension}",
+                    "commandLine": "mkdir images & %ARNOLD_2018_EXEC% -l \"C:\\server\\mayaArnold\\2018\\shaders\" -i \"%AZ_BATCH_TASK_WORKING_DIR%\\assets\\{fileName}\" -dw -v 6 -o \"%AZ_BATCH_TASK_WORKING_DIR%\\images\\{fileNameWithoutExtension}.jpeg\"",
+                    "resourceFiles": [
+                        {
+                            "blobSource": "{url}",
+                            "filePath": "assets/{fileName}"
+                        }
+                    ],
+                    "outputFiles": [
+                        {
+                            "filePattern": "../stdout.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stdout.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "../stderr.txt",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/logs/{fileNameWithoutExtension}/stderr.log"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskCompletion"
+                            }
+                        },
+                        {
+                            "filePattern": "images/**/*",
+                            "destination": {
+                                "autoStorage": {
+                                    "fileGroup": "[parameters('outputs')]",
+                                    "path": "[parameters('jobName')]/outputs"
+                                }
+                            },
+                            "uploadOptions": {
+                                "uploadCondition": "taskSuccess"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

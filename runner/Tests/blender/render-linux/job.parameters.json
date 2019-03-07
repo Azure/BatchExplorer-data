@@ -1,0 +1,26 @@
+{
+   "jobName":{
+      "value":"blender-linux"
+   },
+   "poolId":{
+      "value":"blender-linux"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "inputDataSas":{
+      "value":"https://"
+   },
+   "blendFile":{
+      "value":"shapes.blend"
+   },
+   "frameStart":{
+      "value":1
+   },
+   "frameEnd":{
+      "value":1
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

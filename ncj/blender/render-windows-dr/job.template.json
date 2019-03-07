@@ -1,0 +1,222 @@
+{
+    "templateMetadata":{
+        "description":"Distributed render Blender frames over multiple nodes."
+    },
+    "parameters": {
+        "poolId": {
+            "type": "string",
+            "defaultValue": "blender-windows-dr",
+            "metadata": {
+                "description": "The ID of the pool on which to run the job."
+            }
+        },
+        "jobName": {
+            "type": "string",
+            "defaultValue": "blender-tile",
+            "metadata": {
+                "description": "The name of the Azure Batch job, also used to prefix rendered outputs",
+                "advancedType": "job-id"
+            }
+        },
+         "inputData": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where the input data is stored",
+                "advancedType": "file-group"
+            }
+        },
+        "inputDataSas": {
+            "type": "string",
+            "metadata": {
+                "description": "SAS token for reading the data from the selected file group",
+                "advancedType": "file-group-sas",
+                "dependsOn": "inputData"
+            }
+        },
+        "blendFile": {
+            "type": "string",
+            "metadata": {
+                "description": "The Blender scene file to be rendered",
+                "advancedType": "file-in-file-group",
+                "dependsOn": "inputData",
+                "wildcards": "*.blend"
+            }
+        },
+        "outputFormat": {
+            "type": "string",
+            "metadata": {
+                "description": "The output format of the rendered image, (default to PNG only at the moment)"
+            },
+            "defaultValue": "PNG",
+            "allowedValues": [
+                "PNG",
+                "EXR"
+            ]
+        },
+        "xTiles": {
+            "type": "string",
+            "metadata": {
+                "description": "The number of tiles on the X axis to split the frame into"
+            },
+            "defaultValue": "6",
+            "allowedValues": [
+                "2",
+                "4",
+                "6",
+                "8"
+            ]
+        },
+        "yTiles": {
+            "type": "string",
+            "metadata": {
+                "description": "The number of tiles on the Y axis to split the frame into"
+            },
+            "defaultValue": "6",
+            "allowedValues": [
+                "2",
+                "4",
+                "6",
+                "8"
+            ]
+        },
+        "cropToBorder": {
+            "type": "string",
+            "metadata": {
+                "description": "When rendering the tile the output image will be cropped to the size of the tile"
+            },
+            "defaultValue": "True",
+            "allowedValues": [
+                "True",
+                "False"
+            ]
+        },
+        "optionalParameters": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Optional parameters to pass to blender, e.g. --scene <name>"
+            }
+        },
+        "frameStart": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The first frame to render"
+            }
+        },
+        "frameEnd": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The last frame to render"
+            }
+        },
+        "outputs": {
+            "type": "string",
+            "metadata": {
+                "description": "The file group where outputs will be stored",
+                "advancedType": "file-group"
+            }
+        },
+        "outputSas": {
+            "type": "string",
+            "metadata": {
+                "description": "Writable SAS token for uploading outputs to the container",
+                "advancedType": "file-group-write-sas",
+                "dependsOn": "outputs"
+            }
+        }
+    },
+    "job": {
+        "type": "Microsoft.Batch/batchAccounts/jobs",
+        "properties": {
+            "id": "[parameters('jobName')]",
+            "poolInfo": {
+                "poolId": "[parameters('poolId')]"
+            },
+            "displayName": "",
+            "onAllTasksComplete": "terminateJob",
+            "usesTaskDependencies": true,
+            "jobPreparationTask": {
+                "userIdentity": {
+                    "autoUser": {
+                        "scope": "pool",
+                        "elevationLevel": "nonAdmin"
+                    }
+                },
+                "commandLine": "cmd.exe /c azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S || exit /b %errorlevel%"
+            },
+            "jobReleaseTask": {
+                "userIdentity": {
+                    "autoUser": {
+                       "scope": "pool",
+                       "elevationLevel": "nonAdmin"
+                    }
+                },
+                "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+            },
+            "jobManagerTask":{
+                "id": "_manager",
+                "displayName": "job manager task",
+                "allowLowPriorityNode" : true,
+                "runExclusive": true,
+                "environmentSettings": [
+                    { "name": "TEMPLATE_OS", "value": "Windows" },
+                    { "name": "CROP_TO_BORDER", "value": "[parameters('cropToBorder')]" },
+                    { "name": "OUTPUT_FORMAT", "value": "[parameters('outputFormat')]" },
+                    { "name": "BLEND_FILE", "value": "[parameters('blendFile')]" },
+                    { "name": "OPTIONAL_PARAMS", "value": "[parameters('optionalParameters')]" },
+                    { "name": "INPUT_CONTAINER_SAS", "value": "[parameters('inputDataSas')]" },
+                    { "name": "OUTPUT_CONTAINER_SAS", "value": "[parameters('outputSas')]" },
+                    { "name": "X_TILES", "value": "[parameters('xTiles')]" },
+                    { "name": "Y_TILES", "value": "[parameters('yTiles')]" },
+                    { "name": "FRAME_START", "value": "[parameters('frameStart')]" },
+                    { "name": "FRAME_END", "value": "[parameters('frameEnd')]" }
+                ],
+                "authenticationTokenSettings":{
+                    "access": ["job"]
+                },
+                "userIdentity": {
+                    "autoUser": {
+                        "scope": "pool",
+                        "elevationLevel": "nonAdmin"
+                    }
+                },
+                "commandLine": "cmd.exe /c \"python %AZ_BATCH_TASK_WORKING_DIR%\\scripts\\python-frame-splitter.py\"",
+                "killJobOnCompletion": false,
+                "resourceFiles": [
+                    {
+                        "blobSource": "https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/blender/scripts/python-frame-splitter.py",
+                        "filePath": "scripts/python-frame-splitter.py"
+                    }
+                ],
+                "outputFiles": [
+                    {
+                        "filePattern": "../stdout.txt",
+                        "destination": {
+                            "autoStorage": {
+                                "fileGroup": "[parameters('outputs')]",
+                                "path": "[parameters('jobName')]/logs/manager/stdout.txt"
+                            }
+                        },
+                        "uploadOptions": {
+                            "uploadCondition": "taskCompletion"
+                        }
+                    },
+                    {
+                        "filePattern": "../stderr.txt",
+                        "destination": {
+                            "autoStorage": {
+                                "fileGroup": "[parameters('outputs')]",
+                                "path": "[parameters('jobName')]/logs/manager/stderr.txt"
+                            }
+                        },
+                        "uploadOptions": {
+                            "uploadCondition": "taskCompletion"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

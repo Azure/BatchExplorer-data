@@ -5,7 +5,7 @@
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "arnold-pool-windows",
+            "defaultValue": "arnold-windows",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "render-arnold",
             "metadata": {
-                "description": "The unique name of the job."
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
             }
         },
         "inputData": {
@@ -44,6 +45,7 @@
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
             "id": "[parameters('jobName')]",
+            "onAllTasksComplete": "terminateJob",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
@@ -108,8 +110,7 @@
                         ]
                     }
                 ]
-            },
-            "onAllTasksComplete": "terminateJob"
+            }
         }
     }
 }

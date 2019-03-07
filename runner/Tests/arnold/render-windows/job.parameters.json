@@ -1,0 +1,17 @@
+{
+   "jobName":{
+      "value":"arnold-windows"
+   },
+   "poolId":{
+      "value":"arnold-windows"
+   },
+   "inputData":{
+      "value":"rendering"
+   },
+   "sceneFile":{
+      "value":"arnold.ass"
+   },
+   "outputs":{
+      "value":"rendering-output"
+   }
+}

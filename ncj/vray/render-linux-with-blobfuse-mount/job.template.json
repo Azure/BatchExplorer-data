@@ -14,7 +14,8 @@
             "type": "string",
             "defaultValue": "render-vray",
             "metadata": {
-                "description": "The unique name of the job."
+                "description": "The unique name of the job.",
+                "advancedType": "job-id"
             }
         },
         "inputFilegroupName": {
@@ -65,7 +66,7 @@
             "jobPreparationTask": {
                 "resourceFiles":[
                     {
-                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchLabs-data/master/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
+                        "blobSource":"https://raw.githubusercontent.com/Azure/BatchExplorer-data/master/ncj/vray/render-linux-with-blobfuse-mount/installblobfuse.sh",
                         "filePath":"installblobfuse.sh"
                     }
                 ],

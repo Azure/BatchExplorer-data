@@ -2,8 +2,6 @@ param (
     [int]$start = 1,
     [int]$end = 1,
     [string]$outputName = "images\image.jpg",
-    [int]$width = 800,
-    [int]$height = 600,
     [string]$sceneFile,
     [int]$nodeCount = 1,
     [switch]$dr,
@@ -15,7 +13,8 @@ param (
     [string]$camera = $null,
     [string]$additionalArgs = $null,
     [int]$vrayPort = 20204,
-    [string]$renderPresetFile = $null
+    [string]$renderPresetFile = $null,
+    [string]$maxVersion = $null
 )
 
 $OutputEncoding = New-Object -typename System.Text.UnicodeEncoding
@@ -30,8 +29,8 @@ function SetupDistributedRendering
     Write-Host "Setting up DR..."
 
     $port = $vrayPort
-    $vraydr_file = "vray_dr.cfg"
-    $vrayrtdr_file = "vrayrt_dr.cfg"
+    $vraydr_content = ""
+    $vrayrtdr_content = ""
     $hosts = $env:AZ_BATCH_HOST_LIST.Split(",")
 
     if ($hosts.Count -ne $nodeCount) {
@@ -40,50 +39,81 @@ function SetupDistributedRendering
     }
 
     $env:AZ_BATCH_HOST_LIST.Split(",") | ForEach {
-        "$_ 1 $port" | Out-File -Append $vraydr_file
-        "$_ 1 $port" | Out-File -Append $vrayrtdr_file
+        $vraydr_content += "$_ 1 $port`r`n"
+        $vrayrtdr_content += "$_ 1 $port`r`n"
     }
 
-    # Create vray_dr.cfg with cluster hosts
-@"
-restart_slaves 0
-list_in_scene 0
-max_servers 0
-use_local_machine 0
-transfer_missing_assets 1
-use_cached_assets 1
-cache_limit_type 2
-cache_limit 100.000000
-"@ | Out-File -Append $vraydr_file
+    $vraydr_content += "restart_slaves 0`r`n"
+    $vraydr_content += "list_in_scene 0`r`n"
+    $vraydr_content += "max_servers 0`r`n"
+    $vraydr_content += "use_local_machine 0`r`n"
+    $vraydr_content += "transfer_missing_assets 1`r`n"
+    $vraydr_content += "use_cached_assets 1`r`n"
+    $vraydr_content += "cache_limit_type 2`r`n"
+    $vraydr_content += "cache_limit 100.000000"
 
-@"
-autostart_local_slave 0
-"@ | Out-File -Append $vrayrtdr_file
+    $vrayrtdr_content += "autostart_local_slave 0`r`n"
 
-    New-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg" -ItemType Directory
-    cp $vraydr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vray_dr.cfg"
-    cp $vrayrtdr_file "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg\vrayrt_dr.cfg"
+    # Max 2018
+    $pluginConfig2018 = "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\en-US\plugcfg"
+    New-Item "$pluginConfig2018" -ItemType Directory -Force
+    $vraydr_content | Out-File "$pluginConfig2018\vray_dr.cfg" -Force -Encoding ASCII
+    $vrayrtdr_content | Out-File "$pluginConfig2018\vrayrt_dr.cfg" -Force -Encoding ASCII
 
-# Create preRender script to enable distributed rendering in the scene
-@"
--- Enables VRay DR
--- The VRay RT and VRay Advanced renderer have different DR properties
--- so we need to detect the renderer and use the appropriate one.
-r = renderers.current
-rendererName = r as string
-index = findString rendererName "V_Ray_"
-if index != 1 then (print "VRay renderer not used, please save the scene with a VRay renderer selected.")
-index = findString rendererName "V_Ray_RT_"
-if index == 1 then (r.distributed_rendering = true) else (r.system_distributedRender = true;r.system_vrayLog_level = 4; r.system_vrayLog_file = "%AZ_BATCH_TASK_WORKING_DIR%\VRayLog.log")
-"@ | Out-File -Append $pre_render_script
+    # Max 2019
+    $pluginConfig2019 = "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2019 - 64bit\ENU\en-US\plugcfg"
+    New-Item "$pluginConfig2019" -ItemType Directory -Force
+    $vraydr_content | Out-File "$pluginConfig2019\vray_dr.cfg" -Force -Encoding ASCII
+    $vrayrtdr_content | Out-File "$pluginConfig2019\vrayrt_dr.cfg" -Force -Encoding ASCII
+
+    # Create preRender script to enable distributed rendering in the scene
+    $vrayLogFile = "$env:AZ_BATCH_TASK_WORKING_DIR\VRayLog.log" -replace "\\", "\\"
+    $script:pre_render_script_content += "-- VRay DR setup`r`n"
+    $script:pre_render_script_content += "rendererName = r as string`r`n"
+
+    $script:pre_render_script_content += "if index != 1 then (print ""VRay renderer not used, please save the scene with a VRay renderer selected."")`r`n"
+
+    If($maxVersion -eq "2018")
+    {
+        IF($renderer -eq "VRayRT")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_RT_""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+        ElseIf($renderer -eq "VRayAdv")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+    }
+    ElseIf($maxVersion -eq "2019"){
+        IF($renderer -eq "VRayRT"){
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_GPU_""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.distributed_rendering = true)`r`n"            
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.V_Ray_settings.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }    
+        ElseIf($renderer -eq "VRayAdv")
+        {
+            $script:pre_render_script_content += "index = findString rendererName ""V_Ray_Adv""`r`n"
+            $script:pre_render_script_content += "if index == 1 then (r.system_distributedRender)`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_level = 4`r`n"
+            $script:pre_render_script_content += "r.system_vrayLog_file = ""$vrayLogFile""`r`n"
+        }
+    }
+
+    # We need to wait for vrayspawner or vray.exe to start before continuing
+    Start-Sleep 30
 }
 
 # Create pre-render script
 $pre_render_script = "prerender.ms"
-@"
--- Pre render script
-r = renderers.current
-"@ | Out-File $pre_render_script
+$pre_render_script_content = "-- Pre render script`r`n"
+$pre_render_script_content += "r = renderers.current`r`n"
 
 if ($dr)
 {
@@ -92,34 +122,46 @@ if ($dr)
 
 Write-Host "Using renderer $renderer"
 
-if (ParameterValueSet $irradianceMap -and $renderer -eq "vray")
+if (ParameterValueSet $irradianceMap -and $renderer -like "vray")
 {
     $irMap = "$workingDirectory\$irradianceMap"
     Write-Host "Setting IR map to $irMap"
-@"
--- Set the IR path
-r.adv_irradmap_loadFileName = "$irMap"
-"@ | Out-File -Append $pre_render_script
+    $pre_render_script_content += "-- Set the IR path`r`n"
+    If ($maxVersion -eq "2018")
+    {
+        $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+    }
+    ElseIf ($maxVersion -eq "2019")
+    {
+        IF($renderer -ne "VRayRT"){
+
+            $pre_render_script_content += "r.adv_irradmap_loadFileName = ""$irMap""`r`n"
+        }
+    }
 }
 
 if ($renderer -eq "arnold")
 {
-@"
--- Fail on arnold license error
-r.prepass_enabled = false
-r.abort_on_license_fail = true
-r.verbosity_level = 4
-"@ | Out-File -Append $pre_render_script
+    $pre_render_script_content += "-- Fail on arnold license error`r`n"
+    $pre_render_script_content += "r.abort_on_license_fail = true`r`n"
+    $pre_render_script_content += "r.prepass_enabled = false`r`n"
+    $pre_render_script_content += "r.verbosity_level = 4`r`n"
+    $pre_render_script_content += "renderMessageManager.LogFileON = true`r`n"
+    $pre_render_script_content += "renderMessageManager.ShowInfoMessage = true`r`n"
+    $pre_render_script_content += "renderMessageManager.ShowProgressMessage = true`r`n"
+    $pre_render_script_content += "renderMessageManager.LogDebugMessage = true`r`n"
 }
 
-if ($renderer -eq "vray")
+if ($renderer -like "vray")
 {
     $outputFiles = "$env:AZ_BATCH_TASK_WORKING_DIR\images\____.jpg" -replace "\\", "\\"
-@"
--- Set output channel path
-r.output_splitfilename = "$outputFiles"
-"@ | Out-File -Append $pre_render_script
+    $pre_render_script_content += "-- Set output channel path`r`n"
+    $pre_render_script_content += "rendererName = r as string`r`n"
+    $pre_render_script_content += "index = findString rendererName ""V_Ray_Adv_""`r`n"
+    $pre_render_script_content += "if index == 1 then (r.output_splitfilename = ""$outputFiles"")`r`n"
 }
+
+$pre_render_script_content | Out-File $pre_render_script -Encoding ASCII
 
 if (ParameterValueSet $preRenderScript)
 {
@@ -131,8 +173,8 @@ if (ParameterValueSet $preRenderScript)
         exit 1
     }
 
-    "`r`n" | Out-File -Append $pre_render_script
-    Get-Content -Path $preRenderScript | Out-File -Append $pre_render_script
+    "`r`n" | Out-File -Append $pre_render_script -Encoding ASCII
+    Get-Content -Path $preRenderScript | Out-File -Append $pre_render_script -Encoding ASCII
 }
 else
 {
@@ -184,12 +226,56 @@ else
     Write-Host "No camera specified"
 }
 
+# User specified arguments
 $additionalArgumentsParam = ""
 if (ParameterValueSet $additionalArgs)
 {
     Write-Host "Using additional arguments $additionalArgs"
     $additionalArgumentsParam = $additionalArgs
 }
+
+# Default 3ds Max args
+$defaultArguments = @{
+    '-atmospherics'='0';
+    '-renderHidden'='0';
+    '-effects'='0';
+    '-useAreaLights'='0';
+    '-displacements'='0';
+    '-force2Sided'='0';
+    '-videoColorCheck'='0';
+    '-superBlack'='0';
+    '-renderFields'='0';
+    '-fieldOrder'='Odd';
+    '-skipRenderedFrames'='0';
+    '-renderElements'='1';
+    '-useAdvLight'='0';
+    '-computeAdvLight'='0';
+    '-ditherPaletted'='0';
+    '-ditherTrueColor'='0';
+    '-gammaCorrection'='1';
+    '-gammaValueIn'='2.2';
+    '-gammaValueOut'='2.2';
+    '-rfw'='0';
+    '-videopostJob'='0';
+    '-v'='5';
+}
+
+# If the user has specified an argument that overrides a default,
+# remove the default.
+$additionalArgumentsParam.Split(" ") | % {
+    $arg = $_
+    if ($arg.StartsWith("-") -And $arg.Contains(":"))
+    {
+        $name = $arg.Split(":")[0]
+        if ($defaultArguments.ContainsKey($name))
+        {
+            Write-Host "Removing default argument $name as the user has specified $arg"
+            $defaultArguments.Remove($name)
+        }
+    }
+}
+
+$defaultArgumentsParam = $defaultArguments.GetEnumerator() | % { "$($_.Name):$($_.Value)" }
 
 $renderPresetFileParam = ""
 if (ParameterValueSet $renderPresetFile)
@@ -210,25 +296,51 @@ mkdir -Force images > $null
 
 # Render
 $max_exec = "3dsmaxcmdio.exe"
-if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
+If ($maxVersion -eq "2018")
 {
-    # New image
-    $max_exec = "${env:3DSMAX_2018}3dsmaxcmdio.exe"
+    if ($env:3DSMAX_2018 -and (Test-Path "$env:3DSMAX_2018"))
+    {
+        # New image
+        $max_exec = "${env:3DSMAX_2018}3dsmaxcmdio.exe"
+    }
+
+    if($env:3DSMAX_2018_EXEC -MATCH "cmdio")
+    {
+        $max_exec = $env:3DSMAX_2018_EXEC
+    }
+}
+ElseIf ($maxVersion -eq "2019")
+{
+        $max_exec = $env:3DSMAX_2019_EXEC
+        if(-Not (Test-Path "$env:3DSMAX_2019"))
+        {
+            Write-Host "3ds Max 2019 doesn't exist on this rendering image, please use a newer version of the rendering image."
+            exit 1
+        }
+}
+Else 
+{
+    Write-Host "No version of 3ds Max was selected. 3ds Max 2019 was selected by default."
+    $max_exec = $env:3DSMAX_2019_EXEC
 }
 
-if($env:3DSMAX_2018_EXEC -MATCH "cmdio")
-{
-    $max_exec = $env:3DSMAX_2018_EXEC
-}
+Write-Host "Executing $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" $pathFileParam `"$sceneFile`""
 
-Write-Host "Executing $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`""
-
-cmd.exe /c $max_exec -secure off -v:5 -rfw:0 $cameraParam $renderPresetFileParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -outputName:`"$outputName`" -width:$width -height:$height $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
+cmd.exe /c $max_exec -secure off $cameraParam $renderPresetFileParam $defaultArgumentsParam $additionalArgumentsParam -preRenderScript:`"$pre_render_script`" -start:$start -end:$end -v:5 -outputName:`"$outputName`" $pathFileParam `"$sceneFile`" `>Max_frame.log 2`>`&1
 $result = $lastexitcode
 
-Copy-Item "$env:LOCALAPPDATA\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
+Write-Host "last exit code $result"
 
-if ($renderer -eq "vray")
+If ($maxVersion -eq "2018")
+{
+    Copy-Item "${env:LOCALAPPDATA}\Autodesk\3dsMaxIO\2018 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue
+}
+ElseIf ($maxVersion -eq "2019")
+{   
+    Copy-Item "${env:LOCALAPPDATA}\Autodesk\3dsMaxIO\2019 - 64bit\ENU\Network\Max.log" .\Max_full.log -ErrorAction SilentlyContinue 
+}
+
+if ($renderer -like "vray")
 {
     Copy-Item "$env:LOCALAPPDATA\Temp\vraylog.txt" . -ErrorAction SilentlyContinue
 }

@@ -12,6 +12,6 @@
     {
         "id": "vray-dr-pool",
         "name": "VRay Distributed Pool",
-        "description": "This will create a VRay DR Pool that can be used from 3ds Max."
+        "description": "This will create a VRay DR Pool that can be used from 3ds Max.  After creating the DR Pool you must submit a VRay DR Job to start the required VRay DR services."
     }
 ]
