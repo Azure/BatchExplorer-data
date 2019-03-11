@@ -5,6 +5,11 @@
         "description": "Render a Maya scene with the Arnold renderer on Linux"
     },
     {
+        "id": "render-arnold-linux-container",
+        "name": "Render Maya/Arnold scene on Linux using containers",
+        "description": "Render a Maya scene with the Arnold renderer on Linux containers"
+    },
+    {
         "id": "render-arnold-windows",
         "name": "Render Maya/Arnold scene on Windows",
         "description": "Render a Maya scene with the Arnold renderer on Windows"
