@@ -130,7 +130,7 @@
                     ],
                     "containerSettings": {
                       "imageName": "[parameters('containerImage')]",
-                      "containerRunOptions": "--privileged"
+                      "containerRunOptions": "--privileged --rm"
                     },
                     "outputFiles": [
                         {
