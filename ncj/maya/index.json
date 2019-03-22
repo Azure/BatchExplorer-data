@@ -19,6 +19,11 @@
         "name": "Render Maya scene on CentOS",
         "description": "Render a Maya scene with the default renderer on Linux"
     },
+     {
+        "id": "render-default-linux-container",
+        "name": "Render Maya scene on CentOS using containers",
+        "description": "Render a Maya scene with the default renderer on Linux containers"
+    },
     {
         "id": "render-default-windows",
         "name": "Render Maya scene on Windows",
@@ -28,6 +33,11 @@
         "id": "render-vray-linux",
         "name": "Render Maya/V-Ray scene on CentOS",
         "description": "Render a Maya scene with the V-Ray renderer on Linux"
+    },
+     {
+        "id": "render-vray-linux-container",
+        "name": "Render Maya/V-Ray scene on CentOS using containers",
+        "description": "Render a Maya scene with the V-Ray renderer on Linux containers"
     },
     {
         "id": "render-vray-windows",
