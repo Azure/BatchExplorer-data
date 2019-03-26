@@ -196,6 +196,15 @@
         "renderer": "vray",
         "rendererVersion": "36004",
         "imageReferenceId" : "centos-75-container"
+    },
+    {
+        "containerImage": "azurebatchrendering/windows_3dsmax2018_arnold5024:latest",
+        "os": "WindowsServer 2016",
+        "app": "3dsmax",
+        "appVersion": "2018",
+        "renderer": "arnold",
+        "rendererVersion": "5.0.2.4",
+        "imageReferenceId" : "windowsserver-2016-container"
     }
   ]
 }
