@@ -161,6 +161,10 @@ if ($renderer -like "vray")
     $pre_render_script_content += "if index == 1 then (r.output_splitfilename = ""$outputFiles"")`r`n"
 }
 
+$remapRenderElementsScript = (Invoke-WebRequest -URI "https://raw.githubusercontent.com/Azure/BatchExplorer-data/repath-render-elements/ncj/3dsmax/scripts/RepathRenderElements.ms").Content
+$pre_render_script_content += "-- Remap any render element paths`r`n"
+$pre_render_script_content += $remapRenderElementsScript
+
 $pre_render_script_content | Out-File $pre_render_script -Encoding ASCII
 
 if (ParameterValueSet $preRenderScript)
