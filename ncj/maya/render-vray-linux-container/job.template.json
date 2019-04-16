@@ -117,7 +117,7 @@
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;export maya_exec=maya.sh;export maya_exec=${{maya_exec,,}};$maya_exec -r sw [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",                    
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;export maya_exec=maya.sh;export maya_exec=${{maya_exec,,}};$maya_exec -r vray [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",                    
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
