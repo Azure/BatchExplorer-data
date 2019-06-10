@@ -35,7 +35,32 @@ def set_template_pool_id(in_memory_json_object: str, pool_id: str):
             elif in_memory_json_object.get("parameters").get("poolId").get('value'):
                 in_memory_json_object["parameters"]["poolId"]["value"] = pool_id
 
-    
+    if in_memory_json_object.get("pool") is not None: 
+        if in_memory_json_object.get("id") is None:
+            in_memory_json_object["pool"]["id"] = pool_id
+
+
+def set_custom_image(in_memory_json_object: str, VM_image_URL: str, VM_image_type: str):
+    """
+    Sets what the custom image the tests are going to run on. 
+
+    :param in_memory_json_object: The json object that needs to be updated with a version and offer type for the images 
+    :type in_memory_json_object: str
+    :param VM_image_URL: The resource link to an image inside your image repo.
+    :type VM_image_URL: 'str'
+    :param VM_image_type: The custom image operating system type.
+    :type VM_image_URL: 'str'
+    """
+
+    if in_memory_json_object.get("variables").get("osType").get("imageReference") is not None:
+        del in_memory_json_object["variables"]["osType"]["imageReference"]["publisher"]
+        del in_memory_json_object["variables"]["osType"]["imageReference"]["offer"]
+        del in_memory_json_object["variables"]["osType"]["imageReference"]["sku"]
+        del in_memory_json_object["variables"]["osType"]["imageReference"]["version"]
+        in_memory_json_object["variables"]["osType"]["imageReference"]["virtualMachineImageId"] = VM_image_URL
+
+    # TODO For handling windows and centos the nodeAgentSKUId needs to be changed in the json send object
+    # The centos image hasn't been tested so I haven't written logic for handling the VM_image_type
 
 
 def set_parameter_name(in_memory_json_object: str, job_id: str):

@@ -1,47 +1,41 @@
 {
     "templateMetadata": {
-        "description": "Application template for working with Maya and Arnold on Windows."
+        "description": "Application template for working with Maya and Arnold on CentOS."
     },
     "parameters": {
         "poolId": {
             "type": "string",
-            "defaultValue": "maya-arnold-pool-windows",
+            "defaultValue": "maya-arnold-pool-centos",
             "metadata": {
                 "description": "The ID of the pool on which to run the job."
             }
         },
+        "containerImage": {
+            "type": "string",
+            "metadata": {
+              "description": "Rendering ContainerImage to render the job with",
+              "advancedType": "container-image-on-pool"
+            },
+            "additionalProperties": {
+              "app": "maya",
+              "renderEngine": "arnold",
+              "imageReferenceId": "centos-75-container"
+            }
+        },
         "jobName": {
             "type": "string",
-            "defaultValue": "maya-arnold-windows",
+            "defaultValue": "maya-arnold-centos",
             "metadata": {
                 "description": "The unique name of the job.",
                 "advancedType": "job-id"
             }
         },
-        "mayaVersion": {
-            "type": "string",
-            "defaultValue": "Maya2018",
-            "metadata": {
-                "description": "The renderer to use"
-            },
-            "allowedValues":[
-                "Maya2017",
-                "Maya2018"
-            ]
-        },
+        
         "inputData": {
             "type": "string",
             "metadata": {
                 "description": "The file group where the input data is stored",
                 "advancedType": "file-group"
-            }
-        },
-        "inputDataSas": {
-            "type": "string",
-            "metadata": {
-                "description": "SAS token for reading the data from the selected file group",
-                "advancedType": "file-group-sas",
-                "dependsOn": "inputData"
             }
         },
         "sceneFile": {
@@ -56,14 +50,7 @@
             "type": "string",
             "defaultValue": " ",
             "metadata": {
-                "description": "Any additional flags to pass to the renderer. Example: -cam camera2"
-            }
-        },
-        "jobPriority": {
-            "type": "int",
-            "defaultValue": 0,
-            "metadata": {
-                "description": "Priority values can range from -1000 to 1000, with -1000 being the lowest priority and 1000 being the highest priority."
+                "description": "Any additional flags to pass to the renderer. Example: -of png"
             }
         },
         "frameStart": {
@@ -80,6 +67,13 @@
                 "description": "Index of the last frame to render"
             }
         },
+        "frameStep": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Incremental step in frame sequeunce"
+            }
+        },
         "outputs": {
             "type": "string",
             "metadata": {
@@ -88,41 +82,23 @@
             }
         }
     },
-    "variables":{
-        "MayaVersions": {
-            "Maya2017" : {
-                "environmentValue": "%MAYA_2017_EXEC%"
-            },
-            "Maya2018":{
-                "environmentValue": "%MAYA_2018_EXEC%"
-            }
-        }
-   },
     "job": {
         "type": "Microsoft.Batch/batchAccounts/jobs",
         "properties": {
             "id": "[parameters('jobName')]",
-            "priority": "[parameters('jobPriority')]",
             "poolInfo": {
                 "poolId": "[parameters('poolId')]"
             },
             "jobPreparationTask": {
-                "userIdentity": {
-                    "autoUser": {
-                        "scope": "pool",
-                        "elevationLevel": "admin"
+                "resourceFiles": [
+                    {
+                        "source": {
+                            "fileGroup": "[parameters('inputData')]"
+                        },
+                        "filePath": "assets/"
                     }
-                },
-                "commandLine": "cmd.exe /c set & echo --- & azcopy /source:\"[parameters('inputDataSas')]\" /dest:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" /S /Y /V:\"%AZ_BATCH_JOB_PREP_WORKING_DIR%\\azcopy.log\" || exit /b %errorlevel%"
-            },
-            "jobReleaseTask": {
-                "userIdentity": {
-                    "autoUser": {
-                       "scope": "pool",
-                       "elevationLevel": "admin"
-                    }
-                },
-                "commandLine":"cmd.exe /c DEL /S /Q \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" & exit /b 0"
+                ],
+                "commandLine": "ls"
             },
             "taskFactory": {
                 "type": "parametricSweep",
@@ -130,28 +106,32 @@
                     {
                         "start": "[parameters('frameStart')]",
                         "end": "[parameters('frameEnd')]",
-                        "step": 1
+                        "step": "[parameters('frameStep')]"
                     }
                 ],
                 "repeatTask": {
                     "displayName": "Frame {0}",
                     "userIdentity": {
                         "autoUser": {
-                            "scope": "pool",
+                            "scope": "task",
                             "elevationLevel": "admin"
                         }
                     },
-                    "commandLine": "mkdir \"%AZ_BATCH_TASK_WORKING_DIR%\\thumbs\" & subst X: %AZ_BATCH_JOB_PREP_WORKING_DIR% && cmd.exe /v /c \"[variables('MayaVersions')[parameters('mayaVersion')].environmentValue] -renderer arnold -ai:lve 2 [parameters('additionalFlags')] -proj \"%AZ_BATCH_JOB_PREP_WORKING_DIR%\" -rd \"%AZ_BATCH_TASK_WORKING_DIR%\\images\" -s {0} -e {0} \"X:\\[parameters('sceneFile')]\"\" & subst X: /D",
+                    "commandLine": "mkdir \"$AZ_BATCH_TASK_WORKING_DIR/thumbs\";sudo mkdir -m a=rwx -p \"/X\";sudo mount --rbind $AZ_BATCH_JOB_PREP_WORKING_DIR/assets /X;export maya_exec=maya.sh;export maya_exec=${{maya_exec,,}};$maya_exec -r sw [parameters('additionalFlags')] -proj \"$AZ_BATCH_JOB_PREP_WORKING_DIR\" -rd \"$AZ_BATCH_TASK_WORKING_DIR/images\" -s {0} -e {0} \"/X/[parameters('sceneFile')]\";err=$?;sudo umount \"/X\";exit $err",                    
                     "environmentSettings": [
                         {
                             "name": "MAYA_SCRIPT_PATH",
-                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%\\scripts"
+                            "value": "%AZ_BATCH_JOB_PREP_WORKING_DIR%/scripts"
                         },
                         {
                             "name": "FLEXLM_TIMEOUT",
                             "value": "5000000"
                         }
                     ],
+                    "containerSettings": {
+                      "imageName": "[parameters('containerImage')]",
+                      "containerRunOptions": "--privileged --rm"
+                    },
                     "outputFiles": [
                         {
                             "filePattern": "../stdout.txt",

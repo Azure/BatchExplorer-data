@@ -15,25 +15,11 @@
         "expectedOutput":"maya.exr.0001"
     },
     {
-        "name": "maya2017-default-linux",
-        "template": "../ncj/maya/render-default-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
-        "parameters": "Tests/maya/render-default-linux/job.parameters2017.json",
-        "expectedOutput":"maya.exr.0001"
-    },
-    {
         "name": "arnold-windows-standalone",
         "template": "../ncj/arnold/render-windows/job.template.json",
         "poolTemplate": "../ncj/arnold/render-windows/pool.template.json",
         "parameters": "Tests/arnold/render-windows/job.parameters.json",
         "expectedOutput":"arnold.ass.tif"
-    },
-    {
-        "name": "maya2018-default-linux",
-        "template": "../ncj/maya/render-default-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-default-linux/pool.template.json",
-        "parameters": "Tests/maya/render-default-linux/job.parameters2018.json",
-        "expectedOutput":"maya.exr.0001"
     },
     {
         "name": "maya2017-arnold-windows",
@@ -47,20 +33,6 @@
         "template": "../ncj/maya/render-arnold-windows/job.template.json",
         "poolTemplate": "../ncj/maya/render-arnold-windows/pool.template.json",
         "parameters": "Tests/maya/render-arnold-windows/job.parameters2018.json",
-        "expectedOutput":"maya.exr.0001"
-    },
-    {
-        "name": "maya2017-arnold-linux",
-        "template": "../ncj/maya/render-arnold-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-arnold-linux/pool.template.json",
-        "parameters": "Tests/maya/render-arnold-linux/job.parameters2017.json",
-        "expectedOutput":"maya.exr.0001"
-    },
-    {
-        "name": "maya2018-arnold-linux",
-        "template": "../ncj/maya/render-arnold-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-arnold-linux/pool.template.json",
-        "parameters": "Tests/maya/render-arnold-linux/job.parameters2018.json",
         "expectedOutput":"maya.exr.0001"
     },
     {
@@ -78,39 +50,11 @@
         "expectedOutput":"maya-vray.0001.png"
     },
     {
-        "name": "maya2017-vray-linux",
-        "template": "../ncj/maya/render-vray-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
-        "parameters": "Tests/maya/render-vray-linux/job.parameters2017.json",
-        "expectedOutput":"maya-vray.0001.png"
-    },
-    {
-        "name": "maya2018-vray-linux",
-        "template": "../ncj/maya/render-vray-linux/job.template.json",
-        "poolTemplate": "../ncj/maya/render-vray-linux/pool.template.json",
-        "parameters": "Tests/maya/render-vray-linux/job.parameters2018.json",
-        "expectedOutput":"maya-vray.0001.png"
-    },
-    {
-        "name": "blender-linux",
-        "template": "../ncj/blender/render-linux/job.template.json",
-        "poolTemplate": "../ncj/blender/render-linux/pool.template.json",
-        "parameters": "Tests/blender/render-linux/job.parameters.json",
-        "expectedOutput":"blender-linux_0001.png"
-    },
-    {
         "name": "blender-windows",
         "template": "../ncj/blender/render-windows/job.template.json",
         "poolTemplate": "../ncj/blender/render-windows/pool.template.json",
         "parameters": "Tests/blender/render-windows/job.parameters.json",
         "expectedOutput":"blender-windows_0001.png"
-    },
-    {
-        "name": "blender-linux-dr",
-        "template": "../ncj/blender/render-linux-dr/job.template.json",
-        "poolTemplate": "../ncj/blender/render-linux-dr/pool.template.json",
-        "parameters": "Tests/blender/render-linux-dr/job.parameters.json",
-        "expectedOutput":"tile_001.png"
     },
     {
         "name": "blender-windows-dr",
@@ -134,13 +78,6 @@
         "parameters": "Tests/3dsmax/standard/job.parameters.arnold2019.json",
         "expectedOutput":"image0001.jpg",
         "applicationLicense":"3dsmax,arnold"
-    },
-    {
-        "name": "vray-render-linux",
-        "template": "../ncj/vray/render-linux/job.template.json",
-        "poolTemplate": "../ncj/vray/render-linux/pool.template.json",
-        "parameters": "Tests/vray/render-linux/job.parameters.json",
-        "expectedOutput":"image1.png"
     },
     {
         "name": "vray-render-windows",
@@ -194,7 +131,7 @@
     {
         "osType": "windows",
         "offer": "rendering-windows2016",
-        "version": "1.3.3"
+        "version": "1.3.4"
     },
     {
         "osType": "linux",

@@ -64,11 +64,11 @@ class JobManager(object):
                 job_json)
             batch_service_client.job.add(job_parameters)
         except batchmodels.batch_error.BatchErrorException as err:
-            logger.info(
+            logger.error(
                 "Failed to submit job\n{}\n with params\n{}".format(
                     template, parameters))
             traceback.print_exc()
-            utils.print_batch_exception(err)
+            utils.print_batch_exception("Error: {}".format(err))
             raise
         except batch.errors.MissingParameterValue as mpv:
             logger.error("Job {}, failed to submit, because of the error: {}".format(self.raw_job_id, mpv))
@@ -108,7 +108,9 @@ class JobManager(object):
         :param template: The in memory version of the template used to create a the job.
         :type template: str
         """
-        pool_json = batch_service_client.pool.expand_template(template)
+        parameters = ctm.load_file(self.parameters_file)
+        pool_json = batch_service_client.pool.expand_template(template, parameters)
+        ctm.set_template_pool_id(template, self.pool_id)
         pool = batch_service_client.pool.poolparameter_from_json(pool_json)
         logger.info('Creating pool [{}]...'.format(self.pool_id))
         try:
@@ -125,7 +127,7 @@ class JobManager(object):
                 utils.print_batch_exception(err)
 
     def create_pool(self, batch_service_client: batch.BatchExtensionsClient,
-                    image_references: 'List[utils.ImageReference]'):
+                    image_references: 'List[utils.ImageReference]', VM_image_URL=None, VM_OS_type=None):
         """
         Creates the Pool that will be submitted to the batch service.
 
@@ -133,6 +135,12 @@ class JobManager(object):
         :param batch_service_client: The batch client used for making batch operations
         :type image_references: List['utils.ImageReference`]
         :param image_references: A list of image references that job can run
+        :type VM_image_URL: str
+        :param VM_image_URL: The resource link to an image inside your image repo. If this is resource link is provided
+        the VMs will use the custom image you provided.
+        :type VM_OS_type: str
+        :param VM_OS_type: The custom image operating system type, this can be windows or centos. This is needed if you
+        want to use a custom image.
         """
 
         # load the template file
@@ -145,6 +153,8 @@ class JobManager(object):
         # Set rendering version
         ctm.set_image_reference(template, image_references)
         ctm.set_template_pool_id(template, self.pool_id)
+        if VM_image_URL is not None and VM_OS_type is not None:
+            ctm.set_custom_image(template, VM_image_URL, VM_OS_type)
 
         all_pools = [p.id for p in batch_service_client.pool.list()]
 

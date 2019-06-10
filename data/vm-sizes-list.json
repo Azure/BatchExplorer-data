@@ -9,7 +9,8 @@
         "memory": [
             "^standard_g[0-9a-z]*$",
             "^standard_d[0-9a-z]*$",
-            "^standard_d[0-9a-z]*_[v2]*$"
+            "^standard_d[0-9a-z]*_[v2]*$",
+            "^standard_e.*$"
         ],
         "gpu": [
             "^standard_n[0-9a-z]*$",
@@ -40,13 +41,7 @@
         "standard_a4m_v2",
         "standard_a8m_v2",
         "standard_m64ms",
-        "standard_m128s",
-        "standard_e2_v3",
-        "standard_e4_v3",
-        "standard_e8_v3",
-        "standard_e16_v3",
-        "standard_e32_v3",
-        "standard_e64_v3"
+        "standard_m128s"
     ],
     "paas": [
         "small",
