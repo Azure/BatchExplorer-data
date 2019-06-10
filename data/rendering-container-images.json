@@ -196,6 +196,33 @@
 			"renderer": "vray",
 			"rendererVersion": "36004",
 			"imageReferenceId": "centos-75-container"
+		},
+		{
+			"containerImage": "azurebatchrendering/ubuntu-blender_268:latest",
+			"os": "Ubuntu 16.04",
+			"app": "blender",
+			"appVersion": "2.68",
+			"renderer": "blender",
+			"rendererVersion": "2.68",
+			"imageReferenceId": "ubuntu-1604lts-container"
+		},
+		{
+			"containerImage": "azurebatchrendering/ubuntu-blender_279:latest",
+			"os": "Ubuntu 16.04",
+			"app": "blender",
+			"appVersion": "2.79",
+			"renderer": "blender",
+			"rendererVersion": "2.79",
+			"imageReferenceId": "ubuntu-1604lts-container"
+		},
+		{
+			"containerImage": "azurebatchrendering/ubuntu-blender_280:latest",
+			"os": "Ubuntu 16.04",
+			"app": "blender280",
+			"appVersion": "2.80",
+			"renderer": "cycles",
+			"rendererVersion": "2.80",
+			"imageReferenceId": "ubuntu-1604lts-container"
 		}
 	]
 }
