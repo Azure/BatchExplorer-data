@@ -203,7 +203,6 @@
 			"app": "blender",
 			"appVersion": "2.68",
 			"renderer": "blender",
-			"rendererVersion": "2.68",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		},
 		{
@@ -212,7 +211,6 @@
 			"app": "blender",
 			"appVersion": "2.79",
 			"renderer": "blender",
-			"rendererVersion": "2.79",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		},
 		{
@@ -221,7 +219,6 @@
 			"app": "blender280",
 			"appVersion": "2.80",
 			"renderer": "cycles",
-			"rendererVersion": "2.80",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		}
 	]
