@@ -209,7 +209,7 @@
 			"containerImage": "azurebatchrendering/ubuntu-blender_279:latest",
 			"os": "Ubuntu 16.04",
 			"app": "blender",
-			"appVersion": "2.79",
+			"rendererVersion": "2.79",
 			"renderer": "blender",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		},
@@ -217,7 +217,7 @@
 			"containerImage": "azurebatchrendering/ubuntu-blender_280:latest",
 			"os": "Ubuntu 16.04",
 			"app": "blender280",
-			"appVersion": "2.80",
+			"rendererVersion": "2.80",
 			"renderer": "cycles",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		}
