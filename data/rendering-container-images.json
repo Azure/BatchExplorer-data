@@ -201,7 +201,7 @@
 			"containerImage": "azurebatchrendering/ubuntu-blender_268:latest",
 			"os": "Ubuntu 16.04",
 			"app": "blender",
-			"appVersion": "2.68",
+			"rendererVersion": "2.68",
 			"renderer": "blender",
 			"imageReferenceId": "ubuntu-1604lts-container"
 		},
