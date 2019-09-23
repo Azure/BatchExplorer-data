@@ -8,4 +8,4 @@ $workHours = $curTime.hour >= 8 && $curTime.hour < 18;
 $isWeekday = $curTime.weekday >= 1 && $curTime.weekday <= 5;
 $isWorkingWeekdayHour = $workHours && $isWeekday;
 // Set target pool size to 20 nodes if it's between 8 AM and 6 PM in weekday, otherwise set  to 10 nodes
-$TargetDedicated = $isWorkingWeekdayHour ? 20:10;
+$TargetDedicatedNodes = $isWorkingWeekdayHour ? 20:10;
