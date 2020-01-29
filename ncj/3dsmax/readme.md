@@ -74,7 +74,7 @@ Click the Submit button to start the job.
 
 ![Job Parameters](docs/images/Market3dsMax-JobInput.png)
 
-* When using irradiance maps to render multiple frames, V-Ray expects a filename without the frame number.  For example, if you have pre-calculated irradiance maps with file names like myscene_irmap####.vrmap, where #### is the frame number.  The correct irradiance map input is myscene_irmap.vrmap - without the frame numbers.  VRay will append the frame when searching for each map.  If the file is in a subdirectory, you need to prefix the filename with the correct subdirectory, e.g. irmaps\myscene_irmap.vrmap.
+* When using irradiance maps to render multiple frames, V-Ray expects a filename without the frame number.  For example, if you have pre-calculated irradiance maps with file names like myscene_irmap####.vrmap, where #### is the frame number, the correct irradiance map input is myscene_irmap.vrmap - without the frame numbers.  VRay will append the frame when searching for each map.  If the file is in a subdirectory, you need to prefix the filename with the correct subdirectory, e.g. irmaps\myscene_irmap.vrmap.
 
 ### 3. Monitor your Job
 
