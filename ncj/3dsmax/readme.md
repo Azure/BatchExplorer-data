@@ -66,13 +66,15 @@ For the Input Filegroup select the '3dsmax-project' that you created earlier.
 
 Select the scene file from the filegroup and optionally select the scene path file from the filegroup if using one.
 
-For the output name, Frame start, Frame end, Frame width and Frame height you can keep the defaults or adjust them as required.
+For the output name, Frame start, Frame end, Frame width and Frame height you can keep the defaults or adjust them as required.  If you're using V-Ray irradiance maps please refer to the note below*.
 
 For the output filegroup we'll re-use the existing '3dsmax-project' filegroup.  This is the location outputs are uploaded.
 
 Click the Submit button to start the job.
 
 ![Job Parameters](docs/images/Market3dsMax-JobInput.png)
+
+* When using irradiance maps to render multiple frames, V-Ray expects a filename without the frame number.  For example, if you have pre-calculated irradiance maps with file names like myscene_irmap####.vrmap, where #### is the frame number.  The correct irradiance map input is myscene_irmap.vrmap - without the frame numbers.  VRay will append the frame when searching for each map.  If the file is in a subdirectory, you need to prefix the filename with the correct subdirectory, e.g. irmaps\myscene_irmap.vrmap.
 
 ### 3. Monitor your Job
 
