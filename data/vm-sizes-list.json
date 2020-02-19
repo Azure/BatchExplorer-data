@@ -19,6 +19,7 @@
         ],
         "hpc": [
             "^standard_h[0-9a-z]*$",
+            "^standard_h[0-9a-z]*_[v2]*$",
             "^standard_a8",
             "^standard_a9",
             "^standard_a10",
