@@ -322,6 +322,33 @@
       "renderer": "arnold",
       "rendererVersion": "3.1.0.1",
       "imageReferenceId": "centos-75-container"
+    },
+    {
+      "containerImage": "mcr.microsoft.com/azure-batch/rendering/blender:1.0.0.ubuntu-1.0.0.279",
+      "os": "Ubuntu 16.04",
+      "app": "blender",
+      "appVersion": "2.79",
+      "renderer": "blender",
+      "rendererVersion": "2.79",
+      "imageReferenceId": "ubuntu-1604lts-container"
+    },
+    {
+      "containerImage": "mcr.microsoft.com/azure-batch/rendering/blender:1.0.0.ubuntu-1.0.0.268",
+      "os": "Ubuntu 16.04",
+      "app": "blender",
+      "appVersion": "2.68",
+      "renderer": "blender",
+      "rendererVersion": "2.68",
+      "imageReferenceId": "ubuntu-1604lts-container"
+    },
+    {
+      "containerImage": "mcr.microsoft.com/azure-batch/rendering/blender:1.0.0.ubuntu-1.0.0.280",
+      "os": "Ubuntu 16.04",
+      "app": "blender280",
+      "appVersion": "2.80",
+      "renderer": "cycles",
+      "rendererVersion": "2.80",
+      "imageReferenceId": "ubuntu-1604lts-container"
     }
   ]
 }
