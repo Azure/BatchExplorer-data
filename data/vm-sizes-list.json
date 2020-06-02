@@ -10,17 +10,22 @@
             "^standard_g[0-9a-z]*$",
             "^standard_d[0-9a-z]*$",
             "^standard_d[0-9a-z]*_[v2]*$",
-            "^standard_e.*$"
+            "^standard_e.*$",
+            "^standard_e[0-9]*a_[v4]*$",
+            "^standard_e[0-9]*as_[v4]*$"
         ],
         "gpu": [
             "^standard_n[0-9a-z]*$",
             "^standard_n[0-9a-z]*_[v2]*$",
             "^standard_n[0-9a-z]*_[v3]*$"
         ],
+        "storage": [
+            "^standard_l[0-9]*s_v2*$"
+        ],
         "hpc": [
             "^standard_h[0-9a-z]*$",
             "^standard_h[0-9a-z]*_[v2]*$",
-            "^standard_a8",
+            "^standard_a8m_v2",
             "^standard_a9",
             "^standard_a10",
             "^standard_a11"
@@ -134,6 +139,11 @@
         "standard_d13_v2",
         "standard_d14_v2",
         "standard_d15_v2",
+        "standard_d2as_v4",
+        "standard_d4as_v4",
+        "standard_d8as_v4",
+        "standard_d16as_v4",
+        "standard_d32as_v4",
         "standard_g1",
         "standard_g2",
         "standard_g3",
