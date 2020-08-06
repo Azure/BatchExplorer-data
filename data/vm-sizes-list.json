@@ -107,7 +107,15 @@
         "standard_e8_v3",
         "standard_e16_v3",
         "standard_e32_v3",
-        "standard_e64_v3"
+        "standard_e64_v3",
+        "standard_d2a_v4",
+        "standard_d4a_v4",
+        "standard_d8a_v4",
+        "standard_d16a_v4",
+        "standard_d32a_v4",
+        "standard_d48a_v4",
+        "standard_d64a_v4",
+        "standard_d96a_v4"
     ],
     "paas": [
         "small",
@@ -120,12 +128,7 @@
         "a8",
         "a9",
         "a10",
-        "a11",
-        "standard_d2a_v4",
-        "standard_d4a_v4",
-        "standard_d8a_v4",
-        "standard_d16a_v4",
-        "standard_d32a_v4"
+        "a11"
     ],
     "iaas": [
         "basic_a1",
@@ -258,15 +261,24 @@
         "standard_d8as_v4",
         "standard_d16as_v4",
         "standard_d32as_v4",
+        "standard_d48as_v4",
+        "standard_d64as_v4",
+        "standard_d96as_v4",
         "standard_e2a_v4",
         "standard_e4a_v4",
         "standard_e8a_v4",
         "standard_e16a_v4",
         "standard_e32a_v4",
+        "standard_e48a_v4",
+        "standard_e64a_v4",
+        "standard_e96a_v4",
         "standard_e2as_v4",
         "standard_e4as_v4",
         "standard_e8as_v4",
         "standard_e16as_v4",
-        "standard_e32as_v4"
+        "standard_e32as_v4",
+        "standard_e48as_v4",
+        "standard_e64as_v4",
+        "standard_e96as_v4"
     ]
 }
