@@ -310,6 +310,19 @@
         "standard_m208s_v2",
         "standard_m416ms_v2",
         "standard_m416s_v2",
-        "standard_e64i_v3"
+        "standard_e64i_v3",
+        "harvest_e2s_v3",
+        "harvest_e4s_v3",
+        "harvest_e8s_v3",
+        "standard_nv4as_v4",
+        "standard_nv8as_v4",
+        "standard_nv16as_v4",
+        "standard_nv32as_v4",
+        "standard_nc4as_t4_v3",
+        "standard_nc8as_t4_v3",
+        "standard_nc16as_t4_v3",
+        "standard_nc64as_t4_v3",
+        "standard_e80ids_v4",
+        "standard_nd96asr_v4"
     ]
 }
