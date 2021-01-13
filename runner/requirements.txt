@@ -1,6 +1,6 @@
 websockets==3.3
 pylint==1.6.5
 azure-batch-extensions==3.1.2
-pyinstaller==3.3.1
+pyinstaller==3.6
 azure-batch==4.1.1
 pytz==2018.7
