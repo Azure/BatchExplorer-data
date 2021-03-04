@@ -21,6 +21,14 @@
         "hpc": [
             "^standard_h[0-9a-z]*$",
             "^standard_h[0-9a-z]*_promo$",
+            "^standard_a8",
+            "^standard_a9",
+            "^standard_a10",
+            "^standard_a11",
+            "^a8",
+            "^a9",
+            "^a10",
+            "^a11",
             "^standard_h[bc][0-9a-z]*$",
             "^standard_h[bc][0-9a-z]*_promo*$",
             "^standard_h[bc][0-9a-z]*_[v2]*$",
@@ -116,7 +124,11 @@
         "extralarge",
         "a5",
         "a6",
-        "a7"
+        "a7",
+        "a8",
+        "a9",
+        "a10",
+        "a11"
     ],
     "iaas": [
         "basic_a1",
@@ -130,6 +142,10 @@
         "standard_a5",
         "standard_a6",
         "standard_a7",
+        "standard_a8",
+        "standard_a9",
+        "standard_a10",
+        "standard_a11",
         "standard_f1",
         "standard_f2",
         "standard_f4",
