@@ -26,7 +26,14 @@
             "^standard_h[bc][0-9a-z]*$",
             "^standard_h[bc][0-9a-z]*_promo*$",
             "^standard_h[bc][0-9a-z]*_[v2]*$",
-            "^standard_h[bc][0-9a-z]*_[v2]*_promo*$"
+            "^standard_h[bc][0-9a-z]*_[v2]*_promo*$",
+            "standard_hb60rs",
+            "standard_hc44rs",
+            "standard_hb120rs_v3",
+            "standard_hb120_16rs_v3",
+            "standard_hb120_32rs_v3",
+            "standard_hb120_64rs_v3",
+            "standard_hb120_96rs_v3"
         ],
         "standard": [
             "^standard_a[0-9a-z]*$",
@@ -40,6 +47,11 @@
         ],
         "storage": [
             "^standard_l[0-9]*s_v2*$"
+        ],
+        "fpga": [
+            "standard_np10s",
+            "standard_np20s",
+            "standard_np40s"
         ]
     },
     "all": [
@@ -355,6 +367,14 @@
         "standard_dc4s_v2",
         "standard_dc8s_v2",
 
-        "standard_hb120rs_v3"
+        "standard_hb120rs_v3",
+        "standard_hb120_16rs_v3",
+        "standard_hb120_32rs_v3",
+        "standard_hb120_64rs_v3",
+        "standard_hb120_96rs_v3",
+
+        "standard_np10s",
+        "standard_np20s",
+        "standard_np40s"
     ]
 }
