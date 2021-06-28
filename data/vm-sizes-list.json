@@ -16,7 +16,8 @@
         "gpu": [
             "^standard_n[0-9a-z]*$",
             "^standard_n[0-9a-z]*_[v2]*$",
-            "^standard_n[0-9a-z]*_[v3]*$"
+            "^standard_n[0-9a-z]*_[v3]*$",
+            "^standard_nd[0-9a-z]*asr_[v4]*$"
         ],
         "hpc": [
             "standard_a8_v2",
