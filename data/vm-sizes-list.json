@@ -4,7 +4,12 @@
         "compute": [
             "^standard_f[0-9a-z]*$",
             "^standard_f[0-9a-z]*_[v2]*$",
-            "^standard_f[0-9a-z]*_[v3]*$"
+            "^standard_f[0-9a-z]*_[v3]*$",
+            "standard_fx4mds",
+            "standard_fx12mds",
+            "standard_fx24mds",
+            "standard_fx36mds",
+            "standard_fx48mds"
         ],
         "memory": [
             "standard_d11_v2",
@@ -504,6 +509,12 @@
 
         "standard_np10s",
         "standard_np20s",
-        "standard_np40s"
+        "standard_np40s",
+
+        "standard_fx4mds",
+        "standard_fx12mds",
+        "standard_fx24mds",
+        "standard_fx36mds",
+        "standard_fx48mds"
     ]
 }
